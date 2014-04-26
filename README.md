@@ -2,16 +2,16 @@
 
 _CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Diagnostic tools help determine if peak detection is warranted, and if so, what parameters are most reasonable. Analytical tools help summarize results statistically and graphically. The entire code is distributed and well commented. Users are encouraged to "look under the hood", understand what's going on, and modify the program to suit individual needs.
 
-##### (c) 2004-2012
+###### (c) 2004-2014
 
-#####Philip Higuera, Assistant Professor
-#####College of Natural Resources,
-#####University of Idaho, 
-#####http://webpages.uidaho.edu/phiguera/ 
+######Philip Higuera, Assistant Professor
+######College of Natural Resources,
+######University of Idaho, 
+######http://webpages.uidaho.edu/phiguera/ 
 
 ## Using this site 
 ###Downloads
-Downloads are found in the Downloads tab. Be sure to select "current downloads" to obtain the most up-to-date version of each file. To view older versions, modify the selection in the "Search" pull-down menu.
+Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on this page. Alternativly, download individual files by visiting the GitHub page. To view older versions of the program (prior to April 2014), visit Google Code http://code.google.com/p/charanalysis/.
 
 ###Updates and Comments
 Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
