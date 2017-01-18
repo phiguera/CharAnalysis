@@ -3,9 +3,9 @@ function [CharAnalysisResults] = CharAnalysis (fileName)
 %   
 %    *****************************************************************  
 %                           CharAnalysis 1.1                       
-%                      (c) 2004 - 2010, P.E. Higuera                   
-%              MATLAB (r). (c) 1984 - 2010 The MathWorks, Inc.           
-%                        phiguera@uidaho.edu                   
+%                      (c) 2004 - 2017, P.E. Higuera                   
+%              MATLAB (r). (c) 1984 - 2016 The MathWorks, Inc.           
+%                        philip.higuera@umontana.edu
 %                       Please read documentation at:              
 %                  http://code.google.com/p/charanalysis/               
 %    '*****************************************************************
@@ -17,9 +17,9 @@ function [CharAnalysisResults] = CharAnalysis (fileName)
 disp('                                                                 ') 
 disp('*****************************************************************')  
 disp('                       CharAnalysis 1.1                          ')
-disp('                   (c) 2004 - 2010, P.E. Higuera                 ')
-disp('          MATLAB(r). (c) 1984 - 2010 The MathWorks, Inc.         ')
-disp('                       phiguera@uidaho.edu                       ')
+disp('                   (c) 2004 - 2017, P.E. Higuera                 ')
+disp('          MATLAB(r). (c) 1984 - 2016 The MathWorks, Inc.         ')
+disp('                   philip.higuera@umontana.edu                   ')
 disp('                    Please read documentation:                   ')
 disp('              http://code.google.com/p/charanalysis/             ')
 disp('*****************************************************************')  
