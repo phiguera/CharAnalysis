@@ -777,9 +777,9 @@ subplot(3,5,11:14); hold off    % FRIs through time.
     plot(FRIyr,FRI,'sk','MarkerFaceColor',[.75 .75 .75],'MarkerSize',4)
     hold on
     plot(smFRIyr,smFRI,'-k')
-    h = fill(X,Y,[0.8 0.8 0.8]);
+    H = fill(X,Y,[0.8 0.8 0.8]);
 %     legend('FRI','mean FRI',[num2str(100*(1-alpha)) '% CI'],1)
-    set(h,'edgecolor',[0.8 0.8 0.8])
+    set(H,'edgecolor',[0.8 0.8 0.8])
     plot(FRIyr,FRI,'sk','MarkerFaceColor',[.75 .75 .75],'MarkerSize',4)
     plot(smFRIyr,smFRI,'-k')
     set(gca,'FontSize',FS,'XDir','reverse','XMinorTick','on',...
@@ -854,9 +854,9 @@ figure (8); clf; set(gcf,'color','w','units','normalized',...
     if length(zoneDiv) > 2   % If there is more than one zone, compare the 
         % CHAR distributions between zones.
     for i = 1:length(zoneDiv)-2
-        for j = 2:length(zoneDiv)-1
-        [h(i,j-1) pKS(i,j-1) k(i,j-1)] = kstest2(Charcoal.accZone(:,i),...
-            Charcoal.accZone(:,j));
+        for j = 2:length(zoneDiv)-1     
+         [h(i,j-1) pKS(i,j-1) k(i,j-1)] = kstest2(Charcoal.accZone(:,i),...
+             Charcoal.accZone(:,j));
         end
     end
     pKSResults(2:length(pKS)+1,2:length(pKS)+1) = pKS;
