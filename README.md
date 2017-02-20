@@ -2,12 +2,13 @@
 
 _CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Diagnostic tools help determine if peak detection is warranted, and if so, what parameters are most reasonable. Analytical tools help summarize results statistically and graphically. The entire code is distributed and well commented. Users are encouraged to "look under the hood", understand what's going on, and modify the program to suit individual needs.
 
-###### (c) 2004-2014
+###### (c) 2004-2017
 
-######Philip Higuera, Assistant Professor
-######College of Natural Resources,
-######University of Idaho, 
-######http://webpages.uidaho.edu/phiguera/ 
+######Philip Higuera, Associate Professor
+######Department of Ecosystem and Conservation Sciences 
+######University of Montana
+######Missoula, MT, USA
+######http://www.cfc.umt.edu/phiguera 
 
 ## Using this site 
 ###Downloads
@@ -35,11 +36,11 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 > Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
 
 
-###*Other studies using _CharAnalysis_ (incomplete list)*
+###*Other studies using _CharAnalysis_ (incomplete list, through 2014)*
 
-> Dunnette, P.V., P.E. Higuera, K.K. McLauchlan, K.M. Derr, C.E. Briles, and M.H. Keefe. 2014. Biogeochemical impacts of wildfires over four millennia in a Rocky Mountain subalpine watershed. _New Phytologist_ Accepted.
+> Dunnette, P.V., P.E. Higuera, K.K. McLauchlan, K.M. Derr, C.E. Briles, and M.H. Keefe. 2014. Biogeochemical impacts of wildfires over four millennia in a Rocky Mountain subalpine watershed. _New Phytologist_ 203: 900-912.
 
-> Brossier, B., F. Oris, W. Finsinger, H. Asselin, Y. Bergeron, and A. A. Ali. 2014. Using tree-ring records to calibrate peak detection in fire reconstructions based on sedimentary charcoal records. _The Holocene_ In Press.
+> Brossier, B., F. Oris, W. Finsinger, H. Asselin, Y. Bergeron, and A. A. Ali. 2014. Using tree-ring records to calibrate peak detection in fire reconstructions based on sedimentary charcoal records. _The Holocene_ 24: 635–645.
 
 > Kelly, R., M.L. Chipman, P.E. Higuera, I. Stefanova, L.B. Brubaker, and F.S. Hu. 2013. Recent burning of boreal forests exceeds fire regime limits of the past 10,000 years. _Proceedings of the National Academy of Sciences_ 110:13055-13060.
 
