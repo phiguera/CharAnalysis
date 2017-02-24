@@ -387,7 +387,7 @@ end     % End for each zone
 
 subplot(3,5,11:13)  % Local signal-to-noise index
     if PeakAnalysis.threshType == 1
-        CharThresh.SNI = CharThresh.SNI*ones(size(Charcoal.peak));
+        CharThresh.SNI = CharThresh.SNI.*ones(size(Charcoal.peak));
     end
     semilogy(Charcoal.ybpI,CharThresh.SNI,'k')
     plot(Charcoal.ybpI,CharThresh.SNI,'k')
@@ -795,7 +795,7 @@ subplot(3,5,11:14); hold off    % FRIs through time.
            warning('Less than 3 FRIs - smoothing cannot be done; values set to -999')
        end
 %     plot(smFRIyr,smFRI,'k','linewidth',1)    % Plot smoothed FRIs.
-     if nGaps > 0   % If there are gaps in the record, then fill in the 
+        if nGaps > 0   % If there are gaps in the record, then fill in the 
                     % graph with white
         buffer = 0; % [yr] Years to pad the years with missing values. 
         for i = 1:nGaps
@@ -807,22 +807,23 @@ subplot(3,5,11:14); hold off    % FRIs through time.
             patch(x,[y(1) y(2) y(2) y(1)],'w','edgecolor',[.75 .75 .75],...
                 'facecolor',[.75 .75 .75])
         end
-     end
-     if length(zoneDiv) > 2
-    for z = 2:length(zoneDiv)
-        if z < length(zoneDiv)
+        end
+        if length(zoneDiv) > 2
+        for z = 2:length(zoneDiv)
+            if z < length(zoneDiv)
             plot([zoneDiv(z) zoneDiv(z)],[max(x_lim)*0.90 max(x_lim)],...
                 '-k','color',[.5 .5 .5],'linewidth',2); 
+            end
         end
-    end
-    end
-    ylabel ({['FRI (yr fire^-^1)'],...
+        end
+        ylabel ({['FRI (yr fire^-^1)'],...
         [num2str(PeakAnalysis.peakFrequ) '-yr mean'],...
         [num2str((1-alpha)*100) '% CI']},'FontSize',FS)
-    grid on
-else
-    yis = NaN;
-end
+        grid on
+    else
+        yis = NaN;
+        smFRI = NaN;
+    end
     
 %% FIGURE 8
 figPosition = figPosition - [0.0165 0.0225 0 0];
@@ -854,9 +855,9 @@ figure (8); clf; set(gcf,'color','w','units','normalized',...
     if length(zoneDiv) > 2   % If there is more than one zone, compare the 
         % CHAR distributions between zones.
     for i = 1:length(zoneDiv)-2
-        for j = 2:length(zoneDiv)-1     
-         [h(i,j-1) pKS(i,j-1) k(i,j-1)] = kstest2(Charcoal.accZone(:,i),...
-             Charcoal.accZone(:,j));
+        for j = 2:length(zoneDiv)-1
+        [h(i,j-1) pKS(i,j-1) k(i,j-1)] = kstest2(Charcoal.accZone(:,i),...
+            Charcoal.accZone(:,j));
         end
     end
     pKSResults(2:length(pKS)+1,2:length(pKS)+1) = pKS;
