@@ -15,7 +15,7 @@ http://files.cfc.umt.edu/phiguera/CharAnalysis/CharAnalsyisInstaller.exe [4 mb]
 
 ### (2) Double click the .exe file and wait...
 
-The program will direct you through the installation of the MATLAB Component Runtime (MCR)program, accessing it from a MATLAB server. The first time you install the program, this will take a few minutes. 
+The program will direct you through the installation of the MATLAB Component Runtime (MCR)program, accessing it from a MATLAB server. The first time you install the program, this will take a few minutes. In order to be able to save output data and figure, you should save the program in a directory that has read/write privileges. Sometimes this is not the case in the default "programs" file on a Windows OS; if you run the program and it closes out before saving the data and figures, move the entire directory to a different location, outside of the "programs" directory.
 
 ## _CharAnalysis_ 1.1, for Windows XP or Vista, 32 bit machines: 
 
