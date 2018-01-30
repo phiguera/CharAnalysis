@@ -11,7 +11,7 @@ the type of computer you are using (e.g., 64 bit vs. 32 bit machine, Windows 7 v
 
 ### (1) Download CharAnalsyisInstaller.exe:
 
-http://www.webpages.uidaho.edu/phiguera/CharAnalysisWeb/CharAnalysisInstaller.exe [4 mb]
+http://files.cfc.umt.edu/phiguera/CharAnalysis/CharAnalysisInstaller.exe [4 mb]
 
 ### (2) Double click the .exe file and wait...
 
@@ -20,11 +20,11 @@ The program will direct you through the installation of the MATLAB Component Run
 ## _CharAnalysis_ 1.1, for Windows XP or Vista, 32 bit machines: 
 
 ### (1) Download CharAnalysis_1_1_WinXP.exe:
-http://www.webpages.uidaho.edu/phiguera/CharAnalysisWeb/CharAnalysis_1_1_WinXP.exe [590 mb]
+http://files.cfc.umt.edu/phiguera/CharAnalysis/CharAnalysis_1_1_WinXP.exe [590 mb]
 
 ### (2) Download MATLAB Compiler Runtime (MCR): MCRInstaller_7.11.exe
 
-http://www.webpages.uidaho.edu/phiguera/CharAnalysisWeb/MCRInstaller_7.11.exe [580 mb]
+http://files.cfc.umt.edu/phiguera/CharAnalysis/MCRInstaller_7.11.exe [580 mb]
 
 ### (3) Install MCR file by double-clicking on MCRInstaller_*.exe.
 
