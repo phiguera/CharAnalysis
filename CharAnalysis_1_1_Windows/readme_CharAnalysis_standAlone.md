@@ -11,7 +11,7 @@ the type of computer you are using (e.g., 64 bit vs. 32 bit machine, Windows 7 v
 
 ### (1) Download CharAnalsyisInstaller.exe:
 
-http://files.cfc.umt.edu/phiguera/CharAnalysis/CharAnalysisInstaller.exe [4 mb]
+http://files.cfc.umt.edu/phiguera/CharAnalysis/CharAnalsyisInstaller.exe [4 mb]
 
 ### (2) Double click the .exe file and wait...
 
