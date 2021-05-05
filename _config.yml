@@ -1,0 +1,8 @@
+title: CharAnalysis
+description: Diagnostic and analystical tools for sediment-charcoal analysis
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
