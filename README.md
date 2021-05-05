@@ -89,7 +89,7 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 
 ##Acknowledgments
 
-Many features in _CharAnalysis_ are based on the programs CHAPS, by Patrick Bartlein (U of OR), and Charster, by Daniel Gavin (U of OR). The Gaussian mixture model used in _CharAnalysis_ was created by Charles Bouman (Purdue). _CharAnalysis_ was written in and compiled by Matlab 7.0 with resources from the University of Washington, Montana State University, the University of Illinois, and the University of Idaho. Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, and Ryan Kelly. Please see the _CharAnalysis_ User's Guide for more details.
+Many features in _CharAnalysis_ are based on the programs CHAPS, by Patrick Bartlein (U of OR), and Charster, by Daniel Gavin (U of OR). The Gaussian mixture model used in _CharAnalysis_ was created by Charles Bouman (Purdue). _CharAnalysis_ was written in and compiled by Matlab 7.0 with resources from the University of Washington, Montana State University, the University of Illinois, the University of Idaho, and the University of Montana. Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, and Ryan Kelly. Please see the _CharAnalysis_ User's Guide for more details.
 
 
 ##Disclaimer
