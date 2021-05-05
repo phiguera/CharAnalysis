@@ -2,13 +2,17 @@
 
 _CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Diagnostic tools help determine if peak detection is warranted, and if so, what parameters are most reasonable. Analytical tools help summarize results statistically and graphically. The entire code is distributed and well commented. Users are encouraged to "look under the hood", understand what's going on, and modify the program to suit individual needs.
 
-###### (c) 2004-2017
+###### (c) 2004-2021
 
-######Philip Higuera, Professor
-######Department of Ecosystem and Conservation Sciences 
-######University of Montana
-######Missoula, MT, USA
-######http://www.cfc.umt.edu/phiguera 
+Philip Higuera, Professor
+
+Department of Ecosystem and Conservation Sciences 
+
+University of Montana
+
+Missoula, MT, USA
+
+http://www.cfc.umt.edu/phiguera 
 
 ## Using this site 
 ###Downloads
