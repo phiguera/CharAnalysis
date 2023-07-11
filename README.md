@@ -12,7 +12,7 @@ University of Montana
 
 Missoula, MT, USA
 
-http://www.cfc.umt.edu/phiguera 
+https://www.umt.edu/people/phiguera
 
 ## Using this site 
 ###Downloads
