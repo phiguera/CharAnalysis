@@ -1,0 +1,178 @@
+function [CharAnalysisResults] = CharAnalysis(fileName)
+% CharAnalysis   Analyse charcoal time series based on selected parameters.
+%
+%    *****************************************************************
+%                          CharAnalysis 2.0
+%                     (c) 2004 - 2025, P.E. Higuera
+%             MATLAB (r). (c) 1984 - 2024 The MathWorks, Inc.
+%                       philip.higuera@umontana.edu
+%                      Please read documentation at:
+%                 http://code.google.com/p/charanalysis/
+%    *****************************************************************
+%
+%   CharAnalysis requires an input file in .xls or .csv format. This file
+%   includes the selected parameters for peak analysis, and it either
+%   includes (.xls) or references (.csv) the input charcoal dataset. See
+%   the template file templateChar.xls for details.
+%
+%   v2.0 changes vs v1.1
+%     - global plotData  removed; passed as explicit argument to
+%       CharThreshGlobal (and set to 1 here for the main run).
+%     - global bkgSensIn removed; passed as explicit argument to
+%       CharThreshGlobal (set to 0 here; bkgCharSensitivity sets it to 1).
+%     - CharPeakAnalysisResults is now a thin wrapper over CharPostProcess
+%       and CharPlotResults; call signature is unchanged.
+%     - Version banner updated to 2.0.
+
+%% ── Banner ───────────────────────────────────────────────────────────────
+disp(' ')
+disp('*****************************************************************')
+disp('                      CharAnalysis 2.0                           ')
+disp('                  (c) 2004 - 2025, P.E. Higuera                  ')
+disp('         MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.          ')
+disp('                  philip.higuera@umontana.edu                    ')
+disp('                   Please read documentation:                    ')
+disp('             http://code.google.com/p/charanalysis/              ')
+disp('*****************************************************************')
+disp(' ')
+
+%% ── Prompt for file name if not supplied ────────────────────────────────
+if nargin == 0
+    disp('  CharAnalysis requires an input file in .xls or .csv format.    ')
+    disp('   This file includes the selected parameters for peak analysis,  ')
+    disp('   and it either includes (.xls) or references (.csv) the input   ')
+    disp('   charcoal dataset. The input file must be in the working        ')
+    disp('   directory for the program to run.                              ')
+    disp(' ')
+    disp('  If you choose to save the results (figures and/or data), they   ')
+    disp('   will be saved in the directory containing the input file.      ')
+    disp('   *NOTE*: you must close the input file before running           ')
+    disp('   CharAnalysis for the .xls or .csv file to be updated with new  ')
+    disp('   results.                                                       ')
+    disp(' ')
+    disp('*****************************************************************')
+    fileName = input('\n Input the file name OR the full path to the site directory,\n bounded with single quotations and including the file\n extension (if file name): ', 's');
+end
+
+warning('off', 'all')
+clear charData
+
+%% ── Handle directory-name input ─────────────────────────────────────────
+if (~min(fileName(end-2:end) == 'xls') && ...
+    ~min(fileName(end-2:end) == 'csv'))
+    cd(fileName)
+    i1   = regexp(fileName, '\');
+    i2   = regexp(fileName, '/');
+    i    = max([i1, i2]);
+    site = fileName((i(end)+1):end);
+    fileName = [site '_CharParams.csv'];
+end
+
+%% ── (1) Read input file ──────────────────────────────────────────────────
+disp('(1) Reading input file...')
+[charData, Pretreatment, Smoothing, PeakAnalysis, Results, site] = ...
+    CharParameters(fileName);
+disp('      ...done.')
+
+%% ── (1b) Validate parameters ─────────────────────────────────────────────
+disp('(1b) Validating input parameters...')
+CharValidateParams(charData, Pretreatment, Smoothing, PeakAnalysis, Results);
+
+%% ── Run-wide flags (set once, used by multiple downstream functions) ─────
+plotData  = 1;   % Draw diagnostic figures (Figures 1 and 2) on main run.
+bkgSensIn = 0;   % Normal run — not inside the sensitivity loop.
+
+%% ── (2) Pretreatment ─────────────────────────────────────────────────────
+disp('(2) Pretreating charcoal data...')
+[Charcoal, Pretreatment, gapIn] = CharPretreatment(charData, site, ...
+    Pretreatment, Results, plotData);
+disp('      ...done.')
+
+%% ── (3) Smooth to estimate low-frequency trends ──────────────────────────
+disp('(3) Smoothing resampled CHAR to estimate low-frequency trends')
+disp('    and calculating peak CHAR...')
+[Charcoal] = CharSmooth(Charcoal, Pretreatment, Smoothing, Results, plotData);
+
+if min(Charcoal.accIS) == 0 && PeakAnalysis.cPeak == 2
+    error('Cannot calculate C_peak when C_background = 0; change parameters.')
+end
+
+%% ── (4) Calculate peak CHAR ──────────────────────────────────────────────
+if PeakAnalysis.cPeak == 1
+    Charcoal.peak = Charcoal.accI - Charcoal.accIS;   % Residuals.
+else
+    Charcoal.peak = Charcoal.accI ./ Charcoal.accIS;  % Ratios.
+end
+disp('      ...done.')
+
+%% ── (4) Define thresholds ────────────────────────────────────────────────
+% plotData = 1 : draw Figure 2 on the main run.
+% bkgSensIn = 0 : normal run (not inside the sensitivity loop).
+disp('(4) Defining possible thresholds for peak identification...')
+
+if PeakAnalysis.threshType == 1
+    [CharThresh] = CharThreshGlobal(Charcoal, Pretreatment, ...
+        PeakAnalysis, site, Results, plotData, bkgSensIn);
+else
+    [CharThresh] = CharThreshLocal(Charcoal, Smoothing, ...
+        PeakAnalysis, site, Results, plotData);
+end
+disp('      ...done.')
+
+%% ── (5) Identify peaks ───────────────────────────────────────────────────
+disp('(5) Identifying peaks based on possible thresholds...')
+[Charcoal, CharThresh] = CharPeakID(Charcoal, Pretreatment, ...
+    PeakAnalysis, CharThresh);
+disp('      ...done.')
+
+%% ── (6) Plot results and save data ──────────────────────────────────────
+if Results.save == 1
+    disp('(6) Plotting results and saving data...')
+else
+    disp('(6) Plotting results...')
+end
+
+[Charcoal] = CharPeakAnalysisResults(Charcoal, Pretreatment, ...
+    PeakAnalysis, CharThresh, Smoothing, site, Results, fileName, gapIn);
+disp('      ...CharAnalysis finished.')
+
+if Results.save == 1
+    disp(' ')
+    if min(fileName(end-2:end) == 'xls') > 0
+        disp('   Results saved to input file:')
+        disp(['     ', cd, '\', fileName])
+    else
+        disp('   Results saved to file:')
+        disp(['     ', cd, '\', site, '_CharResults.csv'])
+    end
+    disp(' ')
+end
+
+%% ── Assemble workspace return struct ────────────────────────────────────
+CharAnalysisResults.Charcoal     = Charcoal;
+CharAnalysisResults.CharThresh   = CharThresh;
+CharAnalysisResults.Pretreatment = Pretreatment;
+CharAnalysisResults.Smoothing    = Smoothing;
+CharAnalysisResults.PeakAnalysis = PeakAnalysis;
+CharAnalysisResults.Results      = Results;
+
+%% ── (7) Background sensitivity analysis (optional) ───────────────────────
+if PeakAnalysis.bkgSens == 1
+    disp('(7) Running C_background sensitivity analysis:')
+    [z, GOF_i, SNI_i] = bkgCharSensitivity(Charcoal, CharThresh, ...
+        PeakAnalysis, Pretreatment, Smoothing, Results, site);
+    disp('C_background sensitivity analysis finished.')
+end
+
+%% ── Bring all figures to the front in order ─────────────────────────────
+if PeakAnalysis.bkgSens == 1
+    figIn = 1:10;
+else
+    figIn = 1:9;
+end
+if Results.allFigures ~= 1
+    figIn(ismember(figIn, [1, 2, 9])) = [];
+end
+for i = 1:length(figIn)
+    figure(figIn(i))
+end
