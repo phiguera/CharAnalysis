@@ -22,30 +22,29 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 5.  **R Translation Strategy:** Establishing a roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`. To reduce redundancies, this work will be integrated with or at a minimum quantitatively compared to the charcoal peak analysis tools included in the tapas R package (https://github.com/wfinsinger/tapas).
 
 ## Using this site 
-###Downloads
+**Downloads**
 Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on this page. Alternativly, download individual files by visiting the GitHub page. To view older versions of the program (prior to April 2014), visit Google Code http://code.google.com/p/charanalysis/.
 
-###Updates and Comments
+**Updates and Comments**
 Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
 
 You may also leave comments on the Wiki page, provided you have a gmail log in. See below ("Issues") for information on using the generic CharAnalysis.users login.
-
-###Issues
+**Issues**
 If you are having problems running _CharAnalysis_, please use the "Issues" tab to (1) look for other users who may have had the same issue or (2) register your issue. To look for old, resolved issues, be sure to select the "all issues" category in the search pull-down menu. If your problem is not listed, then please register your problem by selecting "new issue" in the upper left of the page. _To register a new issue, you must have a gmail account. If you do not have a gmail account, please log is as CharAnalysis.user, and use the password "charanalysis.user"._ Check this web site for updates to your issue and/or provide an e-mail address for correspondence.
 
-##Understanding and citing the program
+## Understanding and citing the program
 
-*The following citations provide the most thorough background for the analyses employed in _CharAnalysis_, including the assumptions inherent in charcoal peak identification using a local threshold. These may be downloaded from the author's web site, linked to above.*
+**The following citations provide the most thorough background for the analyses employed in _CharAnalysis_, including the assumptions inherent in charcoal peak identification using a local threshold. These may be downloaded from the author's web site, linked to above.**
 
 > Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise index to quantify the potential for peak detection in sediment-charcoal records. _Quaternary Research_ 75: 11-17.
 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein and D.J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. _International Journal of Wildland Fire_ 19: 996-1014. 
 
-###Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available via the web site http://sites.google.com/site/charanalysis/ 
+**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available via the web site https://github.com/phiguera/CharAnalysis**
 
 > Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
 
-###*Other studies using _CharAnalysis_ (incomplete list, through 2014)*
+**Other studies using _CharAnalysis_ (incomplete list, through 2014)**
 
 > Dunnette, P.V., P.E. Higuera, K.K. McLauchlan, K.M. Derr, C.E. Briles, and M.H. Keefe. 2014. Biogeochemical impacts of wildfires over four millennia in a Rocky Mountain subalpine watershed. _New Phytologist_ 203: 900-912.
 
@@ -91,11 +90,11 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 
 > Higuera, P. E., L. B. Brubaker, P. M. Anderson, T. A. Brown, A. T. Kennedy, and F. S. Hu. 2008. Frequent Fires in Ancient Shrub Tundra: Implications of Paleorecords for Arctic Environmental Change. _PLoS ONE_ 3:e0001744.
 
-##Acknowledgments
+### Acknowledgments
 
 Many features in _CharAnalysis_ are based on the programs CHAPS, by Patrick Bartlein (U of OR), and Charster, by Daniel Gavin (U of OR). The Gaussian mixture model used in _CharAnalysis_ was created by Charles Bouman (Purdue). _CharAnalysis_ was written in and compiled by Matlab 7.0 with resources from the University of Washington, Montana State University, the University of Illinois, the University of Idaho, and the University of Montana. Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, and Ryan Kelly. Please see the _CharAnalysis_ User's Guide for more details.
 
-##Disclaimer
+### Disclaimer
 
 THIS SOFTWARE PROGRAM AND DOCUMENTATION ARE PROVIDED “AS IS” AND WITHOUT WARRANTIES AS TO
 PERFORMANCE. THE PROGRAM _CharAnalysis_ IS PROVIDED WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES WHATSOEVER. BECAUSE OF THE DIVERSITY OF CONDITIONS AND HARDWARE UNDER WHICH THE PROGRAM MAY BE USED, NO WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE IS OFFERED. THE USER IS ADVISED TO TEST THE PROGRAM THOROUGHLY BEFORE RELYING ON IT. THE USER MUST ASSUME THE ENTIRE RISK AND RESPONSIBILITY OF USING THIS PROGRAM.
