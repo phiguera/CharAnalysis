@@ -33,7 +33,7 @@ Updates regarding the V 2.0 transition and legacy maintenance are described in t
 If you are having problems running _CharAnalysis_ or have suggestions for the Version 2.0 architecture, please use the **Issues** tab to (1) search for similar problems/solutions, or (2) post a new issue.
 
 
-## Getting Started with _CharAnalysis_ (V 1.x)
+## Getting Started with _CharAnalysis_ (V 1.1)
 To use the current version of the program, follow these general steps. Detailed instructions are provided in the _CharAnalysis_ User's Guide (included in the download).
 
 1.  **Prepare Input Data:** Create a `.xls`, `.xlsx`, or `.csv` file following the format specified in the User's Guide. This includes columns for depth, thickness, volume, and charcoal counts.
