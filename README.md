@@ -12,7 +12,7 @@ Professor, Department of Ecosystem and Conservation Sciences, University of Mont
 
 https://www.umt.edu/people/phiguera
 
-## The Road to Version 2.0
+## The Road to Version 2.0 (March 2026)
 The development of _CharAnalysis_ 2.0 is focused on several core pillars of improvement to better serve the paleoecological community:
 
 1.  **MATLAB Modernization:** Eliminating legacy code patterns, vectorizing inner loops for faster processing, and removing deprecated function calls for compatibility with modern MATLAB versions.
