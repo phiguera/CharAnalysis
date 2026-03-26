@@ -23,7 +23,7 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 2. **Architecture Improvements:** To increase stability, we are separating computational logic from visualization, introducing formal parameter objects for better record-keeping, and adding robust input validation.
 3. **Chronological Uncertainty:** A primary goal of this update is to integrate methods for incorporating chronological uncertainty directly into the characterization of fire events.
 4. **Regional Synthesis:** Version 2.0 will support new methods for synthesizing peak identification from multiple sediment-charcoal records at regional spatial scales.
-5. **R Translation Strategy:** Recognizing the dominance of R in paleoecology, Version 2.0 serves as a module-by-module roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`.
+5. **R Translation Strategy:** Recognizing the dominance of R in paleoecology, Version 2.0 serves as a module-by-module roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`. THis work will also be integrated with or at a minimum quantitatively compared to the charcoal peak analysis tools included in the tapas R package (https://github.com/wfinsinger/tapas). 
 
 ## Using this site 
 ### Downloads
