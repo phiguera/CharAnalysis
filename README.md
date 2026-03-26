@@ -18,7 +18,7 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 2.  **Architecture Improvements:** Separating computational logic from visualization, introducing formal parameter objects for better record-keeping, and adding robust input validation.
 3.  **Chronological Uncertainty:** Integrating methods for incorporating chronological uncertainty directly into the characterization of fire events.
 4.  **Regional Synthesis:** Supporting new methods for synthesizing peak identification from multiple sediment-charcoal records at regional spatial scales.
-5.  **R Translation Strategy:** Establishing a roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`.
+5.  **R Translation Strategy:** Establishing a roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`. To reduce redundancies, this work will be integrated with or at a minimum quantitatively compared to the charcoal peak analysis tools included in the tapas R package (https://github.com/wfinsinger/tapas).
 
 
 ## Using this site 
