@@ -7,9 +7,13 @@ _CharAnalysis_ is a program for analyzing sediment-charcoal records, when the go
 ###### (c) 2004-2026
 
 Philip Higuera, Professor
+
 Department of Ecosystem and Conservation Sciences 
+
 University of Montana
+
 Missoula, MT, USA
+
 https://www.umt.edu/people/phiguera
 
 ## The Road to Version 2.0
