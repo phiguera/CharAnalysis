@@ -1,4 +1,4 @@
-﻿## _CharAnalysis_: Diagnostic and analytical tools for sediment-charcoal analysis
+## _CharAnalysis_: Diagnostic and analytical tools for sediment-charcoal analysis
 
 **Note: Current software updates and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
 
@@ -23,7 +23,7 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 
 ## Using this site 
 **Downloads**
-Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on the public website (https://phiguera.github.io/CharAnalysis/). Alternativly, download individual files by visiting the GitHub page itself (https://github.com/phiguera/CharAnalysis). NOTE: prior to April 2014, CharAnalysis was hosted on Google Code (http://code.google.com/p/charanalysis/).
+Download the entire _CharAnalysis_ program as a .zip or tar.gz archive from the project website at https://phiguera.github.io/CharAnalysis/. Users familiar with GitHub can also download individual files or clone the repository directly at https://github.com/phiguera/CharAnalysis. NOTE: prior to April 2014 CharAnalysis was hosted on Google Code (http://code.google.com/p/charanalysis/).
 
 **Updates and Comments**
 Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
@@ -40,7 +40,7 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein and D.J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. _International Journal of Wildland Fire_ 19: 996-1014. 
 
-**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available via the web site https://github.com/phiguera/CharAnalysis**
+**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available at https://phiguera.github.io/CharAnalysis/**
 
 > Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
 
@@ -98,5 +98,3 @@ Many features in _CharAnalysis_ are based on the programs CHAPS, by Patrick Bart
 
 THIS SOFTWARE PROGRAM AND DOCUMENTATION ARE PROVIDED “AS IS” AND WITHOUT WARRANTIES AS TO
 PERFORMANCE. THE PROGRAM _CharAnalysis_ IS PROVIDED WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES WHATSOEVER. BECAUSE OF THE DIVERSITY OF CONDITIONS AND HARDWARE UNDER WHICH THE PROGRAM MAY BE USED, NO WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE IS OFFERED. THE USER IS ADVISED TO TEST THE PROGRAM THOROUGHLY BEFORE RELYING ON IT. THE USER MUST ASSUME THE ENTIRE RISK AND RESPONSIBILITY OF USING THIS PROGRAM.
-
-THE USE OF THE SOFTWARE DOWNLOADED FROM THIS WEBSITE IS DONE AT YOUR OWN RISK AND WITH AGREEMENT THAT YOU ARE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR LOSS OF DATA THAT RESULTS FROM SUCH ACTIVITIES.
