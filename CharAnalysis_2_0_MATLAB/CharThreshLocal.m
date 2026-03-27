@@ -40,7 +40,7 @@ function [CharThresh] = CharThreshLocal(Charcoal, Smoothing, ...
 %
 %   CharAnalysis v2.0  -  Phase 1 modernisation
 
-%% ── LOCAL VARIABLES ───────────────────────────────────────────────────────
+%% ?? LOCAL VARIABLES ???????????????????????????????????????????????????????
 threshYr    = Smoothing.yr;
 figPosition = [0.1178  0.2158  0.8648  0.6943];
 
@@ -51,7 +51,7 @@ nPk = length(Charcoal.peak);
 nTV = length(PeakAnalysis.threshValues);
 FS  = 8;
 
-%% ── PREALLOCATE OUTPUT ARRAYS ────────────────────────────────────────────
+%% ?? PREALLOCATE OUTPUT ARRAYS ????????????????????????????????????????????
 CharThresh.pos = NaN(nPk, nTV);
 CharThresh.neg = NaN(nPk, nTV);
 CharThresh.SNI = NaN(nPk, 1);
@@ -61,7 +61,7 @@ muHat    = NaN(nPk, 2);
 sigmaHat = NaN(nPk, 2);
 propN    = NaN(nPk, 2);
 
-%% ── OPEN FIGURE 2 IF PLOTTING ────────────────────────────────────────────
+%% ?? OPEN FIGURE 2 IF PLOTTING ????????????????????????????????????????????
 if plotData ~= 0 && Results.allFigures == 1
     plotIn = 1;
     figure(2); clf;
@@ -71,7 +71,7 @@ if plotData ~= 0 && Results.allFigures == 1
              'position', figPosition);
 end
 
-%% ── PER-SAMPLE LOOP: FIT NOISE DISTRIBUTION AND COMPUTE THRESHOLD ────────
+%% ?? PER-SAMPLE LOOP: FIT NOISE DISTRIBUTION AND COMPUTE THRESHOLD ????????
 for i = 1:nPk
 
     % Progress report every 100 samples
@@ -95,6 +95,48 @@ for i = 1:nPk
         X = Charcoal.peak(i - hw : i + hw);
     end
 
+    % Remove NaN values before any distribution fitting.
+    X = X(~isnan(X));
+
+    % If fewer than 4 valid samples remain, fall back to simple Gaussian
+    % using whatever valid data is available rather than skipping entirely.
+    % Skipping leaves NaN thresholds which propagates through peak ID.
+    if length(X) < 4
+        if PeakAnalysis.cPeak == 1
+            negVals = X(X <= 0);
+            if isempty(negVals)
+                sigmaHat(i,1) = std(X);
+            else
+                sigmaHat(i,1) = std([negVals; abs(negVals)]);
+            end
+            muHat(i,1) = 0;
+        else
+            subVals       = X(X <= 1) - 1;
+            sigmaHat(i,1) = std([subVals; abs(subVals)] + 1);
+            muHat(i,1)    = 1;
+        end
+        muHat(i,2)    = muHat(i,1);
+        sigmaHat(i,2) = sigmaHat(i,1);
+        propN(i,:)    = [1 0];
+        % Compute threshold, SNI and GOF from fallback params then continue
+        % to next sample � no further distribution fitting needed.
+        CharThresh.pos(i,:) = norminv(PeakAnalysis.threshValues', ...
+                                      muHat(i,1), sigmaHat(i,1));
+        CharThresh.neg(i,:) = norminv(1 - PeakAnalysis.threshValues, ...
+                                      muHat(i,1), sigmaHat(i,1));
+        tPos = norminv(P, muHat(i,1), sigmaHat(i,1));
+        sig_i   = X(X >  tPos);
+        noise_i = X(X <= tPos);
+        if ~isempty(sig_i) && length(noise_i) > 2
+            CharThresh.SNI(i) = (1/length(sig_i)) .* ...
+                sum((sig_i - mean(noise_i))./std(noise_i)) .* ...
+                ((length(noise_i)-2)/length(noise_i));
+        else
+            CharThresh.SNI(i) = 0;
+        end
+        continue
+    end
+
     %% Estimate local noise distribution
 
     if PeakAnalysis.threshMethod == 2 && PeakAnalysis.cPeak == 1
@@ -111,42 +153,26 @@ for i = 1:nPk
 
     elseif PeakAnalysis.threshMethod == 3
         % Gaussian mixture model
-        %
-        % Pre-check: the GMM requires at least two distinct groups in the
-        % window. If the data are too homogeneous (all zero, or variance so
-        % small that two components cannot be separated), fall back to the
-        % same Gaussian assumption used by threshMethod == 2. This matches
-        % the effective behaviour of v1.1, which operated on the full record
-        % and therefore always had sufficient variance for the GMM.
-        %
-        % The spread threshold is set to 3x the minimum detectable CHAR
-        % value (1 piece / median sample volume). Windows with less spread
-        % than this cannot support two meaningful components.
-
-        minDetectable = 3 * (1 / median(Charcoal.volI));
-        useGMM = (range(X) > minDetectable) && (sum(X ~= 0) > 5);
-
-        if ~useGMM || sum(X) == 0
+        if sum(X) == 0
+            % Degenerate window � all values zero, GMM cannot fit.
             % Fall back to zero-mean (residuals) or one-mean (ratios)
-            % Gaussian assumption for this window.
+            % Gaussian assumption for this window only.
             if PeakAnalysis.cPeak == 1
-                negVals     = X(X <= 0);
+                muHat(i,1) = 0;
+                negVals = X(X <= 0);
                 if isempty(negVals)
                     sigmaHat(i,1) = std(X);
                 else
                     sigmaHat(i,1) = std([negVals; abs(negVals)]);
                 end
-                muHat(i,1) = 0;
             else
+                muHat(i,1)    = 1;
                 subVals       = X(X <= 1) - 1;
                 sigmaHat(i,1) = std([subVals; abs(subVals)] + 1);
-                muHat(i,1)    = 1;
             end
-            % Fill second component with same values to satisfy indexing.
             muHat(i,2)    = muHat(i,1);
             sigmaHat(i,2) = sigmaHat(i,1);
-            propN(i,:)    = [1  0];
-
+            propN(i,:)    = [1 0];
         else
             [muHat(i,:), sigmaHat(i,:), ~, propN(i,:)] = ...
                 GaussianMixture(X, 2, 2, false);
@@ -155,6 +181,7 @@ for i = 1:nPk
                 beep
                 disp('WARNING: poor fit of Gaussian mixture model;')
                 disp('         re-fitting starting with three classes.')
+                % Fix: pass X (local window), not Charcoal.peak (full record)
                 [mu_tmp, sig_tmp] = GaussianMixture(X, 3, 2, false);
                 muHat(i,1:2)    = mu_tmp(1:2);
                 sigmaHat(i,1:2) = sig_tmp(1:2);
@@ -268,7 +295,7 @@ for i = 1:nPk
 
 end % per-sample loop
 
-%% ── SMOOTH THRESHOLD AND SNI SERIES WITH LOWESS ──────────────────────────
+%% ?? SMOOTH THRESHOLD AND SNI SERIES WITH LOWESS ??????????????????????????
 span = Smoothing.yr / r;
 
 CharThresh.SNI(:,1) = charLowess(CharThresh.SNI(:,1), span, 'lowess');

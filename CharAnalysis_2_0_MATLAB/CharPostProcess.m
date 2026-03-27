@@ -1,5 +1,5 @@
 function [Charcoal, Post] = CharPostProcess(Charcoal, Pretreatment, ...
-    PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn)
+    PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn, site)
 % CharPostProcess   Pure-computation post-processing for CharAnalysis.
 %   [Charcoal, Post] = CharPostProcess(Charcoal, Pretreatment, ...
 %       PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn)
@@ -35,13 +35,13 @@ function [Charcoal, Post] = CharPostProcess(Charcoal, Pretreatment, ...
 %   Post.nBoot           - nBoot used for bootstrapping
 %   Post.charResults     - assembled output matrix for file save
 
-%% ── Parameters ──────────────────────────────────────────────────────────
+%% ?? Parameters ??????????????????????????????????????????????????????????
 zoneDiv  = Pretreatment.zoneDiv;
 r        = Pretreatment.yrInterp;
 alpha    = 0.05;
 nBoot    = 100;
 
-%% ── 1. Resolve peak/threshold index vectors ─────────────────────────────
+%% ?? 1. Resolve peak/threshold index vectors ?????????????????????????????
 % Determine which column of Charcoal.charPeaks corresponds to each of the
 % four threshold values, and identify final peaks and screened-out peaks.
 
@@ -63,7 +63,7 @@ else                                   % Local threshold
                             PeakAnalysis.minCountP);
 end
 
-%% ── 2. Peak magnitude ───────────────────────────────────────────────────
+%% ?? 2. Peak magnitude ???????????????????????????????????????????????????
 % For each contiguous run of samples where peak CHAR exceeds the final
 % threshold, accumulate (sum * resolution) to get pieces cm^-2 peak^-1.
 
@@ -98,11 +98,11 @@ for in = 1:length(c_peaks)
     if peak_in(in,2) > 0
         peak_mag(peak_in(in,2), 1) = ...
             sum(c_peaks(peak_in(in,1):peak_in(in,2))) * ...
-            (diff(peak_in(in,:)) + 1) * r;
+            (diff(peak_in(in,:)) + r);
     end
 end
 
-%% ── 3. Fire frequency time series ───────────────────────────────────────
+%% ?? 3. Fire frequency time series ???????????????????????????????????????
 % Counts fires in a sliding window of peakFrequ years, scaled to the
 % window actually used at record edges, then smoothed with lowess.
 
@@ -130,7 +130,7 @@ end
 
 ff_sm = charLowess(peaksFrequ, ff_sm_yr/r);
 
-%% ── 4. Smoothed FRI curve ────────────────────────────────────────────────
+%% ?? 4. Smoothed FRI curve ????????????????????????????????????????????????
 peak_yrs = Charcoal.ybpI(CharcoalCharPeaks(:,end) > 0);
 
 if length(peak_yrs) > 2
@@ -142,7 +142,7 @@ if length(peak_yrs) > 2
                       Charcoal.ybpI(Charcoal.ybpI < max(smFRIyr)));
     else
         yis = -999 + zeros(size(smFRI));
-        warning('CharPostProcess: fewer than 3 FRIs — smoothing set to -999.')
+        warning('CharPostProcess: fewer than 3 FRIs � smoothing set to -999.')
     end
 else
     FRIyr  = NaN;  FRI    = NaN;
@@ -150,7 +150,7 @@ else
     yis    = NaN;
 end
 
-%% ── 5. Per-zone FRI statistics (Figure 6 data) ──────────────────────────
+%% ?? 5. Per-zone FRI statistics (Figure 6 data) ??????????????????????????
 % FRI_params_zone columns:
 %   1  nFRI
 %   2  mFRI
@@ -173,7 +173,7 @@ for i = 1:nZones
     FRIz  = diff(xPlot);
 
     if max(FRIz) > 5000
-        % FRIs too long to characterise — leave as -999
+        % FRIs too long to characterise � leave as -999
         continue
     end
     if length(FRIz) <= 1
@@ -222,7 +222,7 @@ for i = 1:nZones
     Post.zone(i).xPlot           = xPlot;
 end
 
-%% ── 6. Update Charcoal struct ───────────────────────────────────────────
+%% ?? 6. Update Charcoal struct ???????????????????????????????????????????
 Charcoal.peakInsig        = zeros(size(Charcoal.ybpI));
 Charcoal.peakInsig(peakScreenIn) = 1;
 Charcoal.peakMagnitude    = peak_mag;
@@ -230,7 +230,7 @@ Charcoal.smoothedFRI      = smFRI;
 Charcoal.smoothedFireFrequ = ff_sm;
 Charcoal.peaksFrequ       = peaksFrequ;
 
-%% ── 7. Assemble output matrix ───────────────────────────────────────────
+%% ?? 7. Assemble output matrix ???????????????????????????????????????????
 N = length(Charcoal.cmI);
 charResults = NaN * ones(N, 33);
 charResults(:, 1:22) = [Charcoal.cmI,  Charcoal.ybpI,  Charcoal.countI, ...
@@ -243,17 +243,17 @@ if ~isnan(yis)
 end
 charResults(1:nZones, 24:33) = FRI_params_zone;
 
-%% ── 8. Save output ──────────────────────────────────────────────────────
+%% ?? 8. Save output ??????????????????????????????????????????????????????
 if Results.save == 1
     if min(fileName(end-2:end) == 'xls') > 0
         writematrix(charResults, fileName, 'Sheet', 'charResults', ...
                     'Range', 'A2');
     else
-        outputResults(charResults, fileName, Pretreatment.site);
+        outputResults(charResults, fileName, site);
     end
 end
 
-%% ── 9. Pack Post struct ─────────────────────────────────────────────────
+%% ?? 9. Pack Post struct ?????????????????????????????????????????????????
 Post.peakIn           = peakIn;
 Post.peakScreenIn     = peakScreenIn;
 Post.CharcoalCharPeaks = CharcoalCharPeaks;

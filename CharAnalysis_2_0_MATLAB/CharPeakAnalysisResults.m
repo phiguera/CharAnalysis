@@ -1,22 +1,22 @@
 function [Charcoal] = CharPeakAnalysisResults(Charcoal, Pretreatment, ...
     PeakAnalysis, CharThresh, Smoothing, site, Results, fileName, gapIn)
-% CharPeakAnalysisResults   Thin wrapper — computation + plotting for CharAnalysis.
+% CharPeakAnalysisResults   Thin wrapper � computation + plotting for CharAnalysis.
 %   [Charcoal] = CharPeakAnalysisResults(Charcoal, Pretreatment, ...
 %       PeakAnalysis, CharThresh, Smoothing, site, Results, fileName, gapIn)
 %
 %   v2.0: This file is now a thin wrapper that delegates all work to:
-%     CharPostProcess  — pure computation (peak magnitudes, FRI stats,
+%     CharPostProcess  � pure computation (peak magnitudes, FRI stats,
 %                        Weibull fits, fire frequency, output matrix, save)
-%     CharPlotResults  — all figure generation (Figures 3–9)
+%     CharPlotResults  � all figure generation (Figures 3�9)
 %
 %   The external call signature is unchanged from v1.1 so that CharAnalysis.m
 %   requires no modification at this call site.
 
-%% ── Computation ──────────────────────────────────────────────────────────
+%% ?? Computation ??????????????????????????????????????????????????????????
 [Charcoal, Post] = CharPostProcess(Charcoal, Pretreatment, ...
-    PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn);
+    PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn, site);
 
-%% ── Plotting ─────────────────────────────────────────────────────────────
+%% ?? Plotting ?????????????????????????????????????????????????????????????
 CharPlotResults(Charcoal, Pretreatment, PeakAnalysis, ...
     CharThresh, Smoothing, site, Results, gapIn, Post);
 
