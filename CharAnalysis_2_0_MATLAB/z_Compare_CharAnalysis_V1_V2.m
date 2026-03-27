@@ -1,4 +1,4 @@
-function z_Compare_CharAnalysis_Results_V1_V2(paramsFile, referenceFile, varargin)
+function z_Compare_CharAnalysis_V1_V2(paramsFile, referenceFile, varargin)
 % CharRegressionTest   Regression test for CharAnalysis v2.0.
 %   CharRegressionTest(paramsFile, referenceFile)
 %   CharRegressionTest(paramsFile, referenceFile, 'Name', Value, ...)
