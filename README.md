@@ -23,7 +23,7 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 
 ## Using this site 
 **Downloads**
-Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on this page. Alternativly, download individual files by visiting the GitHub page. To view older versions of the program (prior to April 2014), visit Google Code http://code.google.com/p/charanalysis/.
+Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on the public website (https://phiguera.github.io/CharAnalysis/). Alternativly, download individual files by visiting the GitHub page itself (https://github.com/phiguera/CharAnalysis). NOTE: prior to April 2014, CharAnalysis was hosted on Google Code (http://code.google.com/p/charanalysis/).
 
 **Updates and Comments**
 Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
