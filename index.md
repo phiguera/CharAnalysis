@@ -1,16 +1,17 @@
 ## _CharAnalysis_: Diagnostic and analytical tools for sediment-charcoal analysis
 
-_CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Originally developed in the mid-2000s, the program is currently undergoing a significant update to **Version 2.0**. This evolution aims to modernize the existing MATLAB codebase—eliminating legacy patterns and improving computational efficiency—while establishing a formal bridge to the R programming environment.
+_CharAnalysis_ is a program for analyzing sediment-charcoal records to reconstruct "local" fire history via peak detection. Originally developed in the mid-2000s, **Version 2.0** modernizes the MATLAB codebase, eliminating legacy patterns, improving computational efficiency, and establishing a formal bridge to R.
 
-###### (c) 2004-2026
+######
+**(c) 2004-2026**
 
-Philip Higuera
+**Philip Higuera**
 
-Professor, Department of Ecosystem and Conservation Sciences, University of Montana, Missoula, MT, USA
+**Professor, Department of Ecosystem and Conservation Sciences, University of Montana, Missoula, MT, USA**
 
-https://www.umt.edu/people/phiguera
+**https://www.umt.edu/people/phiguera**
 
-**Note: Version 2.0 was developed in collaboration with Claude, an AI assistant developed by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.**
+**Note:** Version 2.0 was developed in collaboration with Claude, an AI assistant developed by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.
 
 ## The Road to Version 2.0 (March 2026)
 The development of _CharAnalysis_ 2.0 is focused on several core pillars of improvement to better serve the paleoecological community:
