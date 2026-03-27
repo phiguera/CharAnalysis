@@ -1,4 +1,4 @@
-## _CharAnalysis_: Diagnostic and analytical tools for sediment-charcoal analysis
+## _CharAnalysis_: Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
 **Note: Current software updates and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
 
