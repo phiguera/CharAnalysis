@@ -23,7 +23,7 @@ The development of _CharAnalysis_ 2.0 is focused on several core pillars of impr
 
 ## Using this site 
 **Downloads**
-Download the entire _CharAnalysis_ program as a .zip or tar.gz archive by clicking on the appropriate icons on this page. Alternativly, download individual files by visiting the GitHub page. To view older versions of the program (prior to April 2014), visit Google Code http://code.google.com/p/charanalysis/.
+Download the entire _CharAnalysis_ program as a .zip or tar.gz archive from the project website at https://phiguera.github.io/CharAnalysis/. Users familiar with GitHub can also download individual files or clone the repository directly at https://github.com/phiguera/CharAnalysis. NOTE: prior to April 2014 CharAnalysis was hosted on Google Code (http://code.google.com/p/charanalysis/).
 
 **Updates and Comments**
 Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
@@ -40,7 +40,7 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein and D.J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. _International Journal of Wildland Fire_ 19: 996-1014. 
 
-**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available via the web site https://github.com/phiguera/CharAnalysis**
+**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available at https://phiguera.github.io/CharAnalysis/**
 
 > Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
 
