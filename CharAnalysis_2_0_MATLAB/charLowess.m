@@ -19,7 +19,12 @@ function ys = charLowess(y, span, method)
 %   OUTPUT
 %     ys : smoothed vector, same size as y
 %
-%   ALGORITHM (lowess / rlowess)
+%   charLowess first checks whether the Curve Fitting Toolbox is available.
+%   If it is, smooth() is called directly, guaranteeing results identical
+%   to CharAnalysis v1.1. If the toolbox is not available, a pure-MATLAB
+%   implementation is used as a fallback.
+%
+%   ALGORITHM (pure-MATLAB fallback, lowess / rlowess)
 %     For each point i, a neighbourhood of k points is selected.  At
 %     interior points the window is centred on i.  At boundary points the
 %     window is SHIFTED (not shrunk) to maintain exactly k points, matching
@@ -46,7 +51,7 @@ function ys = charLowess(y, span, method)
 %
 %   CharAnalysis v2.0  -  Phase 1 modernisation
 
-%% ?? Input handling ???????????????????????????????????????????????????????
+%% ── Input handling ───────────────────────────────────────────────────────
 if nargin < 3 || isempty(method)
     method = 'lowess';
 end
@@ -54,7 +59,7 @@ isRow = isrow(y);
 y     = y(:);           % work on column vector throughout
 n     = numel(y);
 
-%% ?? Convert span to integer window width ?????????????????????????????????
+%% ── Convert span to integer window width ─────────────────────────────────
 if span < 1
     k = max(3, round(span * n));    % fraction -> point count
 else
@@ -63,17 +68,36 @@ end
 k  = min(k, n);                     % cannot exceed data length
 hw = floor(k / 2);                  % nominal half-window radius
 
-%% ?? Moving average ???????????????????????????????????????????????????????
+%% ── Moving average ───────────────────────────────────────────────────────
 if strcmpi(method, 'moving')
     ys = movmean(y, k, 'EndPoints', 'shrink');
     if isRow, ys = ys'; end
     return
 end
 
-%% ?? Lowess / rlowess: tricubic-weighted local linear regression ??????????
-nIter = 1;
+%% ── Use Curve Fitting Toolbox smooth() if available ──────────────────────
+% smooth() produces results identical to v1.1. The pure-MATLAB fallback
+% below is used only on installations without the Curve Fitting Toolbox.
+if license('test', 'Curve_Fitting_Toolbox')
+    switch lower(method)
+        case 'lowess'
+            ys = smooth(y, k, 'lowess');
+        case 'rlowess'
+            ys = smooth(y, k, 'rlowess');
+        case 'moving'
+            ys = smooth(y, k, 'moving');
+        otherwise
+            ys = smooth(y, k, 'lowess');
+    end
+    if isRow, ys = ys'; end
+    return
+end
+
+%% ── Pure-MATLAB fallback (no Curve Fitting Toolbox) ──────────────────────
 if strcmpi(method, 'rlowess')
-    nIter = 3;
+    nIter = 5;
+else
+    nIter = 1;
 end
 
 ys = y;
@@ -82,7 +106,7 @@ rw = ones(n, 1);        % robustness weights (all 1 for plain lowess)
 for iter = 1:nIter
     for i = 1:n
 
-        % ?? Window selection: shift at boundaries to keep exactly k pts ??
+        % ── Window selection: shift at boundaries to keep exactly k pts ──
         % This matches MATLAB smooth() edge behaviour.
         i0 = i - hw;
         i1 = i0 + k - 1;
@@ -100,7 +124,7 @@ for iter = 1:nIter
         ri = rw(i0:i1);
 
         % Tricubic weights: distance from i to each window point,
-        % normalised by distance to the FURTHEST point in the window.
+        % normalised by distance to the furthest point in the window.
         d    = abs(xi - i);
         dmax = max(d) + eps;
         tri  = (1 - (d ./ dmax) .^ 3) .^ 3;
