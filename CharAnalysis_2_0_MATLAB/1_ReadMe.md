@@ -1,5 +1,7 @@
 # CharAnalysis 2.0: Modernization & Functional Expansion
 
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+
 **Note: This software update and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
 
 This directory contains the development version of _CharAnalysis_ 2.0. This update represents a major overhaul of the mid-2000s MATLAB codebase, focused on increasing computational efficiency, improving software architecture, and expanding the analytical scope to meet the needs of modern paleoecological research.
