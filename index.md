@@ -2,7 +2,6 @@
 
 _CharAnalysis_ is a program for analyzing sediment-charcoal records to reconstruct "local" fire history via peak detection. Originally developed in the mid-2000s, **Version 2.0** modernizes the MATLAB codebase, eliminating legacy patterns, improving computational efficiency, and establishing a formal bridge to R.
 
-######
 **(c) 2004-2026**
 
 **Philip Higuera**
