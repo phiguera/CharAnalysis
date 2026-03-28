@@ -1,6 +1,6 @@
 ## _CharAnalysis_: Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
-**Note: Current software updates and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
 
 _CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Originally developed in the mid-2000s, the program is currently undergoing a significant update to **Version 2.0**. This evolution aims to modernize the existing MATLAB codebase—eliminating legacy patterns and improving computational efficiency—while establishing a formal bridge to the R programming environment.
 
@@ -11,6 +11,8 @@ Philip Higuera
 Professor, Department of Ecosystem and Conservation Sciences, University of Montana, Missoula, MT, USA
 
 https://www.umt.edu/people/phiguera
+
+**Note: Current software updates and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
 
 ## The Road to Version 2.0 (March 2026)
 The development of _CharAnalysis_ 2.0 is focused on several core pillars of improvement to better serve the paleoecological community:
