@@ -14,6 +14,18 @@ University of Montana, Missoula, MT, USA
 
 ## What is *CharAnalysis*?
 
+## What is *CharAnalysis*?
+
+<img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%">
+
+*Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
+center of the lake. Sediment cores collected from lakes like this preserve
+millennia of charcoal deposited from past fires. Photo: L. Lad.*
+
+<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="75%">
+
+*Collecting a sediment core from Chickaree Lake, Colorado. Photo: P. Higuera.*
+
 *CharAnalysis* is a freely available program for reconstructing local fire
 histories from high-resolution, continuously sampled lake-sediment charcoal
 records. It is designed specifically for macroscopic charcoal records — those
