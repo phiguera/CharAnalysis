@@ -39,7 +39,7 @@ https://phiguera.github.io/CharAnalysis
 
 ## Part I. Background
 
-*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
+*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics. The papers by Higuera et al. (2010) and Kelly et al. (2011) provide the most thorough background for the analyses employed in *CharAnalysis*, including the assumptions inherent in charcoal peak identification using a local threshold. 
 
 *CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs. 
 
@@ -378,7 +378,7 @@ Determine and apply a threshold value t to each C<sub>peak</sub> sample, flaggin
 - **Gaussian assumption** (`threshMethod = 2`): assumes the mean of C<sub>noise</sub> is 0 (residuals) or 1 (ratios) and estimates variance from the lower tail of the C<sub>peak</sub> distribution.
 - **Gaussian mixture model** (`threshMethod = 3`): uses a two-component Gaussian mixture model to identify the mean and variance of C<sub>noise</sub> more accurately when the noise distribution mean is not exactly 0 or 1.
 
-In both cases, t can be defined **globally** (based on the entire C<sub>peak</sub> distribution) or **locally** (based on a sliding window of the same width as the C<sub>back</sub> smoothing window). The locally-defined threshold is described in Higuera et al. (2008; 2009). When using a locally-defined threshold, ensure the window width includes at least 30 samples.
+In both cases, t can be defined **globally** (based on the entire C<sub>peak</sub> distribution) or **locally** (based on a sliding window of the same width as the C<sub>back</sub> smoothing window). The locally-defined threshold is described in Higuera et al. (2009, 2010). When using a locally-defined threshold, ensure the window width includes at least 30 samples.
 
 ##### Step 3: Minimum-Count Screening
 
@@ -545,22 +545,19 @@ THE USE OF THE SOFTWARE DOWNLOADED FROM THE UNIVERSITY OF MONTANA WEBSITE OR GIT
 
 ## Part VI. References
 
-Briles, C. E., C. Whitlock, P. J. Bartlein, and P. E. Higuera. 2008. Regional and local controls on postglacial vegetation and fire in the Siskiyou Mountains, northern California, USA. *Palaeogeography Palaeoclimatology Palaeoecology* 265:159–169.
-
 Carcaillet, C., Y. Bergeron, P. Richard, B. Frechette, S. Gauthier, and Y. Prairie. 2001. Change of fire frequency in the eastern Canadian boreal forests during the Holocene: does vegetation composition or climate trigger the fire regime? *Journal of Ecology* 89:930–946.
 
 Clark, J. S., and P. D. Royall. 1996. Local and regional sediment charcoal evidence for fire regimes in presettlement north-eastern North America. *Journal of Ecology* 84:365–382.
 
-Clark, J. S., P. D. Royall, and C. Chumbley. 1996. The role of fire during climate change in an eastern deciduous forest at Devil's Bathtub, New York. *Ecology* 77:2148–2166.
-
 Gavin, D. G., F. S. Hu, K. Lertzman, and P. Corbett. 2006. Weak climatic control of stand-scale fire history during the late Holocene. *Ecology* 87:1722–1732.
-
-Higuera, P. E., L. B. Brubaker, P. M. Anderson, T. A. Brown, A. T. Kennedy, and F. S. Hu. 2008. Frequent fires in ancient shrub tundra: implications of paleorecords for Arctic environmental change. *PLoS ONE* 3:e0001744.
 
 Higuera, P. E., L. B. Brubaker, P. M. Anderson, F. S. Hu, and T. A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79(2):201–219.
 
-Higuera, P. E., M. E. Peters, L. B. Brubaker, and D. G. Gavin. 2007. Understanding the origin and analysis of sediment-charcoal records with a simulation model. *Quaternary Science Reviews* 26:1790–1809.
+Higuera, P. E., D. G. Gavin, P. J. Bartlein and D. J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. International Journal of Wildland Fire 19: 996-1014.
+
+Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise index to quantify the potential for peak detection in sediment-charcoal records. Quaternary Research 75: 11-17.
 
 Long, C. J., C. Whitlock, P. J. Bartlein, and S. H. Millspaugh. 1998. A 9000 year fire history from the Oregon Coast Range based on a high-resolution charcoal study. *Canadian Journal of Forest Research* 28:774–787.
 
 Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.
+
