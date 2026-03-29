@@ -26,9 +26,9 @@ and the [main README](https://github.com/phiguera/CharAnalysis/blob/master/READM
 **Version comparison and validation**
 - `z_Compare_CharAnalysis_V1_V2.m` — script for comparing V2.0 outputs against
   V1.1 reference results; recommended for users migrating from Version 1.1
-- `CO_charResults_V_1_1.csv` and `CH10_charResults_V_1_1.csv` — reference
-  outputs for the Code Lake and Chickaree Lake example datasets, when using *CharAnalysis Version 1.1*,  used by the
-  comparison script
+- `CO_charResults_V_1_1.csv` and `CH10_charResults_V_1_1.csv` — Code Lake and
+  Chickaree Lake results produced by *CharAnalysis* Version 1.1, used as
+  reference outputs by the comparison script
 - `z_Validation_report_CharAnalysis_V_2.0.md` — documents V2.0 validation
   against V1.1 outputs
 
