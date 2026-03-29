@@ -51,6 +51,12 @@ Version 2.0 is the first major update to *CharAnalysis*, addressing five areas o
 
 ## Understanding and citing the program
 
+**Documentation**
+The current User's Guide is available as
+[CharAnalysis_UsersGuide.md](CharAnalysis_UsersGuide.md).
+The original guide (v0.9, January 2009) is retained for reference as
+[CharAnalysis_UsersGuide_v0.9_2009.pdf](CharAnalysis_UsersGuide_v0.9_2009.pdf).
+
 **The following citations provide the most thorough background for the analyses employed in _CharAnalysis_, including the assumptions inherent in charcoal peak identification using a local threshold. These may be downloaded from the author's web site, linked to above.**
 
 > Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise index to quantify the potential for peak detection in sediment-charcoal records. _Quaternary Research_ 75: 11-17.
