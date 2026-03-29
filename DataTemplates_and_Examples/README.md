@@ -1,4 +1,4 @@
-# DataTemplates and Examples
+# Data Templates and Examples
 
 This directory contains everything needed to get started with *CharAnalysis*:
 two worked example datasets you can run immediately, and blank template files
