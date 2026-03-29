@@ -1,38 +1,53 @@
-## _CharAnalysis_: Diagnostic and analytical tools for peak detection in sediment-charcoal records
+## *CharAnalysis*: Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
-[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+**_CharAnalysis_** is a program for analyzing sediment-charcoal records when the goal is peak detection to reconstruct local fire history. Since its original development in the mid-2000s, the program has been used in dozens of published studies across six continents. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what's going on, and modify the program to suit individual needs.
 
-_CharAnalysis_ is a program for analyzing sediment-charcoal records, when the goal is peak detection to reconstruct "local" fire history. Originally developed in the mid-2000s, the program is currently undergoing a significant update to **Version 2.0**. This evolution aims to modernize the existing MATLAB codebase—eliminating legacy patterns and improving computational efficiency—while establishing a formal bridge to the R programming environment.
-
-###### (c) 2004-2026
-
-Philip Higuera
-
-Professor, Department of Ecosystem and Conservation Sciences, University of Montana, Missoula, MT, USA
-
+###### [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026
+Philip Higuera\
+Professor, Department of Ecosystem and Conservation Sciences\
+University of Montana, Missoula, MT, USA\
 https://www.umt.edu/people/phiguera
 
-**Note: Current software updates and the development of Version 2.0 are being conducted with the assistance of AI tools, including Gemini and Claude.**
+## Getting Started
 
-## The Road to Version 2.0 (March 2026)
-The development of _CharAnalysis_ 2.0 is focused on several core pillars of improvement to better serve the paleoecological community:
+**Option 1: Download and run locally in MATLAB**\
+Download the entire *CharAnalysis* program as a .zip or tar.gz archive from the 
+project website at https://phiguera.github.io/CharAnalysis/. Users familiar with 
+GitHub can also download individual files or clone the repository directly at 
+https://github.com/phiguera/CharAnalysis. Requires MATLAB R2019a or higher.
 
-1.  **MATLAB Modernization:** Eliminating legacy code patterns, vectorizing inner loops for faster processing, and removing deprecated function calls for compatibility with modern MATLAB versions.
-2.  **Architecture Improvements:** Separating computational logic from visualization, introducing formal parameter objects for better record-keeping, and adding robust input validation.
-3.  **Chronological Uncertainty:** Integrating methods for incorporating chronological uncertainty directly into the characterization of fire events.
-4.  **Regional Synthesis:** Supporting new methods for synthesizing peak identification from multiple sediment-charcoal records at regional spatial scales.
-5.  **R Translation Strategy:** Establishing a roadmap for a native R implementation, utilizing modern packages like `mclust` and `ggplot2`. To reduce redundancies, this work will be integrated with or at a minimum quantitatively compared to the charcoal peak analysis tools included in the tapas R package (https://github.com/wfinsinger/tapas).
+**Option 2: Download and run the standalone Windows application (Version 1.1)**\
+A standalone Windows executable (.exe) is available for users without MATLAB. 
+Note that this version (1.1) predates the Version 2.0 update. See the 
+[standalone application readme](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md) 
+for download and installation instructions.
 
-## Using this site 
-**Downloads**
-Download the entire _CharAnalysis_ program as a .zip or tar.gz archive from the project website at https://phiguera.github.io/CharAnalysis/. Users familiar with GitHub can also download individual files or clone the repository directly at https://github.com/phiguera/CharAnalysis. NOTE: prior to April 2014 CharAnalysis was hosted on Google Code (http://code.google.com/p/charanalysis/).
+**Option 3: Try it online**\
+Not sure if *CharAnalysis* is the right tool for your research? Click the badge 
+below to run the program instantly in your browser on the bundled Code Lake 
+example dataset — no installation required. A free MathWorks account is needed; 
+university users can log in with their institutional email for full access. [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
 
-**Updates and Comments**
-Updates are described in the Wiki tab, with the title including "CharAnalysisUpdate".
 
-You may also leave comments on the Wiki page, provided you have a gmail log in. See below ("Issues") for information on using the generic CharAnalysis.users login.
-**Issues**
-If you are having problems running _CharAnalysis_, please use the "Issues" tab to (1) look for other users who may have had the same issue or (2) register your issue. To look for old, resolved issues, be sure to select the "all issues" category in the search pull-down menu. If your problem is not listed, then please register your problem by selecting "new issue" in the upper left of the page. _To register a new issue, you must have a gmail account. If you do not have a gmail account, please log is as CharAnalysis.user, and use the password "charanalysis.user"._ Check this web site for updates to your issue and/or provide an e-mail address for correspondence.
+## Issues and troubleshooting
+
+If you are having problems running *CharAnalysis*, please use the Issues tab on GitHub to 
+look for other users who may have had the same problem, or to register a new 
+issue. To register an issue you must have a GitHub account. Resolved issues from 
+before April 2014, when the project was hosted on Google Code, are archived at 
+http://code.google.com/p/charanalysis/.
+
+## Version 2.0 (March 2026)
+
+Version 2.0 is the first major update to *CharAnalysis*, addressing five areas of improvement:
+
+1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner loops, and removed deprecated function calls for compatibility with MATLAB R2019a and higher.
+2. **Architecture Improvements** — separated computational logic from visualization, introduced formal parameter objects, and added robust input validation.
+3. **Chronological Uncertainty** — integrated methods for incorporating chronological uncertainty into the characterization of fire events.
+4. **Regional Synthesis** — added support for synthesizing peak identification across multiple records at regional scales.
+5. **R Translation** — established a roadmap for a native R implementation using modern packages including `mclust` and `ggplot2`, to be quantitatively compared with the `tapas` R package (https://github.com/wfinsinger/tapas).
+
+*Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
 ## Understanding and citing the program
 
@@ -92,11 +107,11 @@ If you are having problems running _CharAnalysis_, please use the "Issues" tab t
 
 > Higuera, P. E., L. B. Brubaker, P. M. Anderson, T. A. Brown, A. T. Kennedy, and F. S. Hu. 2008. Frequent Fires in Ancient Shrub Tundra: Implications of Paleorecords for Arctic Environmental Change. _PLoS ONE_ 3:e0001744.
 
-### Acknowledgments
+## Acknowledgments
 
 Many features in _CharAnalysis_ are based on the programs CHAPS, by Patrick Bartlein (U of OR), and Charster, by Daniel Gavin (U of OR). The Gaussian mixture model used in _CharAnalysis_ was created by Charles Bouman (Purdue). _CharAnalysis_ was written in and compiled by Matlab 7.0 with resources from the University of Washington, Montana State University, the University of Illinois, the University of Idaho, and the University of Montana. Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, and Ryan Kelly. Please see the _CharAnalysis_ User's Guide for more details.
 
-### Disclaimer
+## Disclaimer
 
 THIS SOFTWARE PROGRAM AND DOCUMENTATION ARE PROVIDED “AS IS” AND WITHOUT WARRANTIES AS TO
 PERFORMANCE. THE PROGRAM _CharAnalysis_ IS PROVIDED WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES WHATSOEVER. BECAUSE OF THE DIVERSITY OF CONDITIONS AND HARDWARE UNDER WHICH THE PROGRAM MAY BE USED, NO WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE IS OFFERED. THE USER IS ADVISED TO TEST THE PROGRAM THOROUGHLY BEFORE RELYING ON IT. THE USER MUST ASSUME THE ENTIRE RISK AND RESPONSIBILITY OF USING THIS PROGRAM.
