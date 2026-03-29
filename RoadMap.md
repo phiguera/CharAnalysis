@@ -62,6 +62,6 @@ collaboration are welcome — please use the Issues tab at
 https://github.com/phiguera/CharAnalysis/issues to share ideas or express interest
 in contributing.*
 
-*Development of Version 2.0 and planning for future updates was carried out with
+*Development of Version 2.0 and planning for future updates is being carried out with
 the assistance of Claude, an AI assistant by Anthropic. All work has been reviewed
 and validated by the author.*
