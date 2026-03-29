@@ -1,13 +1,9 @@
----
-layout: default
-title: CharAnalysis
----
-
 # *CharAnalysis*
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
-© 2004–2026 Philip Higuera  
+© 2004–2026\
+Philip Higuera  
 Professor, Department of Ecosystem and Conservation Sciences  
 University of Montana, Missoula, MT, USA  
 [philip.higuera@umontana.edu](mailto:philip.higuera@umontana.edu) |
@@ -19,19 +15,28 @@ University of Montana, Missoula, MT, USA
 ## What is *CharAnalysis*?
 
 *CharAnalysis* is a freely available program for reconstructing local fire
-histories from lake-sediment charcoal records. It implements a widely applied
+histories from high-resolution, continuously sampled lake-sediment charcoal
+records. It is designed specifically for macroscopic charcoal records — those
+with contiguous sampling at fine enough resolution to resolve individual fire
+events — and is not appropriate for low-resolution or discontinuously sampled
+records.
+
+For records that meet these criteria, *CharAnalysis* implements a widely applied
 approach that decomposes a charcoal record into low- and high-frequency
-components, and introduced the use of a locally defined threshold to separate
-fire signal from noise (Higuera et al. 2008, 2009). The program is designed to
-make the full range of analytical choices explicit, with diagnostic tools to
-guide parameter selection and sensitivity analyses to evaluate the robustness of
-results.
+components, including the ability to use locally defined thresholds to separate
+fire signal from noise. This approach was first applied in Higuera et al. (2008, 2009), and the
+assumptions and rationale of the method are most thoroughly described in
+[Higuera et al. (2010)](http://files.cfc.umt.edu/phiguera/publications/Higuera_et_al_2010_IJWF.pdf)
+and [Kelly et al. (2011)](http://files.cfc.umt.edu/phiguera/publications/Kelly_et_al_2011_QR.pdf),
+which are recommended reading before applying the program.
 
 Since its original development in the mid-2000s, *CharAnalysis* has been used in
 dozens of published studies to analyze sediment-charcoal records on six
-continents. The entire codebase is distributed and well commented — users are
-encouraged to look under the hood, understand what is going on, and modify the
-program to suit their needs.
+continents. A selection of these application examples is listed in the
+[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md).
+The entire codebase is distributed and well commented — users are encouraged to
+look under the hood, understand what is going on, and modify the program to suit
+their needs.
 
 ---
 
@@ -64,4 +69,95 @@ intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).
 
 There are three ways to access *CharAnalysis*, suited to different users and
 needs. Full installation and usage instructions are in the
-[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_Us
+[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md).
+
+**Option 1: Download and run locally in MATLAB** *(recommended)*  
+Requires MATLAB R2019a or higher. No additional toolboxes are required.  
+[Download as .zip](https://github.com/phiguera/CharAnalysis/zipball/master) |
+[Download as tar.gz](https://github.com/phiguera/CharAnalysis/tarball/master) |
+[Clone on GitHub](https://github.com/phiguera/CharAnalysis)
+
+**Option 2: Standalone Windows application (Version 1.1)**  
+For users without a MATLAB license. Note that this version predates the Version
+2.0 update.  
+[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
+
+**Option 3: Try it online — no installation required**  
+Run *CharAnalysis* instantly in your browser on the bundled Code Lake example
+dataset. A free MathWorks account is required; university users can log in with
+their institutional email.
+
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=master&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+
+---
+
+## Documentation
+
+The [User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md)
+covers installation, data input and parameter selection, a full description of
+all analytical methods and choices, and documentation of all program output.
+The original guide (v0.9, 2009) is retained as a historical reference.
+
+Questions and bug reports can be submitted via the
+[Issues tab](https://github.com/phiguera/CharAnalysis/issues) on GitHub.
+
+---
+
+## Citation
+
+If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
+the first study to apply the core analytical tools implemented in the program.
+If you used Version 2.0 specifically, please also cite the software:
+
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
+Vegetation mediated the impacts of postglacial climate change on fire regimes
+in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219.
+[https://doi.org/10.1890/07-2019.1](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1)
+
+Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
+analysis in sediment-charcoal records (Version 2.0). Zenodo.
+[https://doi.org/10.5281/zenodo.19304064](https://doi.org/10.5281/zenodo.19304064)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19304064.svg)](https://doi.org/10.5281/zenodo.19304064)
+
+---
+
+## Methodological Background
+
+The following two papers provide the most thorough background on the rationale
+and assumptions of the analytical methods implemented in *CharAnalysis*, and are
+recommended reading before applying the program:
+
+[Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise
+index to quantify the potential for peak detection in sediment-charcoal records.
+*Quaternary Research* 75:11–17.](http://files.cfc.umt.edu/phiguera/publications/Kelly_et_al_2011_QR.pdf)
+
+[Higuera, P.E., D.G. Gavin, P.J. Bartlein, and D.J. Hallett. 2010. Peak
+detection in sediment-charcoal records: impacts of alternative data analysis
+methods on fire-history interpretations. *International Journal of Wildland
+Fire* 19:996–1014.](http://files.cfc.umt.edu/phiguera/publications/Higuera_et_al_2010_IJWF.pdf)
+
+---
+
+## Acknowledgments
+
+Many features in *CharAnalysis* are based on analytical techniques from the
+programs CHAPS (Patrick Bartlein, University of Oregon) and Charster (Daniel
+Gavin, University of Oregon). The Gaussian mixture model was created by Charles
+Bouman (Purdue University). Development benefited greatly from discussions with
+and testing by members of the Whitlock Paleoecology Lab at Montana State
+University, Dan Gavin, Patrick Bartlein, and Ryan Kelly.
+
+*CharAnalysis* was written in MATLAB with resources from the University of
+Washington, Montana State University, the University of Illinois, the University
+of Idaho, and the University of Montana.
+
+Version 2.0 was developed with the assistance of Claude, an AI assistant by
+Anthropic. Claude assisted with code modernization, bug fixes, architecture
+redesign, and documentation. All code was reviewed and validated by the author
+against Version 1.1 reference outputs.
+
+---
+
+*[View on GitHub](https://github.com/phiguera/CharAnalysis) |
+[Report an issue](https://github.com/phiguera/CharAnalysis/issues) |
+[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md)*
