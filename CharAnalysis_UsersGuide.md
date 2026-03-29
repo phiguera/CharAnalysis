@@ -41,7 +41,120 @@ https://phiguera.github.io/CharAnalysis
 
 *CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics. The papers by Higuera et al. (2010) and Kelly et al. (2011) provide the most thorough background for the analyses employed in *CharAnalysis*, including the assumptions inherent in charcoal peak identification using a local threshold. 
 
-*CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs. 
+*CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
+
+The following two papers provide the most thorough background for the analyses
+employed in *CharAnalysis*, including the assumptions inherent in charcoal peak
+identification using a local threshold:
+
+> Higuera, P.E., D.G. Gavin, P.J. Bartlein, and D.J. Hallett. 2010. Peak detection
+> in sediment-charcoal records: impacts of alternative data analysis methods on
+> fire-history interpretations. *International Journal of Wildland Fire*
+> 19:996–1014.
+>
+> Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise
+> index to quantify the potential for peak detection in sediment-charcoal records.
+> *Quaternary Research* 75:11–17.
+
+<details>
+<summary><strong>Selected publications using <em>CharAnalysis</em> (incomplete list, through 2014)</strong></summary>
+
+<br>
+
+Dunnette, P.V., P.E. Higuera, K.K. McLauchlan, K.M. Derr, C.E. Briles, and
+M.H. Keefe. 2014. Biogeochemical impacts of wildfires over four millennia in a
+Rocky Mountain subalpine watershed. *New Phytologist* 203:900–912.
+
+Brossier, B., F. Oris, W. Finsinger, H. Asselin, Y. Bergeron, and A.A. Ali.
+2014. Using tree-ring records to calibrate peak detection in fire reconstructions
+based on sedimentary charcoal records. *The Holocene* 24:635–645.
+
+Kelly, R., M.L. Chipman, P.E. Higuera, I. Stefanova, L.B. Brubaker, and F.S.
+Hu. 2013. Recent burning of boreal forests exceeds fire regime limits of the past
+10,000 years. *Proceedings of the National Academy of Sciences* 110:13055–13060.
+
+Mustaphi, C.J.C., and M.F.J. Pisaric. 2013. Varying influence of climate and
+aspect as controls of montane forest fire regimes during the late Holocene,
+south-eastern British Columbia, Canada. *Journal of Biogeography* 40:1983–1996.
+
+Blarquez, O., M.P. Girardin, B. Leys, A.A. Ali, J.C. Aleman, Y. Bergeron, and
+C. Carcaillet. 2013. Paleofire reconstruction based on an ensemble-member
+strategy applied to sedimentary charcoal. *Geophysical Research Letters*
+40:2667–2672.
+
+Barrett, C.M., R.F. Kelly, P.E. Higuera, and F.S. Hu. 2013. Climatic and land
+cover influences on the spatiotemporal dynamics of Holocene boreal fire regimes.
+*Ecology* 92:389–402.
+
+Ali, A.A., O. Blarquez, M.P. Girardin, C. Hely, F. Tinquaut, A. El Guellab, V.
+Valsecchi, A. Terrier, L. Bremond, A. Genries, S. Gauthier, and Y. Bergeron.
+2012. Control of the multimillennial wildfire size in boreal North America by
+spring climatic conditions. *Proceedings of the National Academy of Sciences*
+109:20966–20970.
+
+Marlon, J.R., P.J. Bartlein, D.G. Gavin, C.J. Long, R.S. Anderson, C.E. Briles,
+K.J. Brown, D. Colombaroli, D.J. Hallett, M.J. Power, E.A. Scharf, and M.K.
+Walsh. 2012. Long-term perspective on wildfires in the western USA. *Proceedings
+of the National Academy of Sciences* 109:3203–3208.
+
+van Bellen, S., M. Garneau, A.A. Ali, and Y. Bergeron. 2012. Did fires drive
+Holocene carbon sequestration in boreal ombrotrophic peatlands of eastern Canada?
+*Quaternary Research* 78:50–59.
+
+Higuera, P.E., M.L. Chipman, J.L. Barnes, M.A. Urban, and F.S. Hu. 2011.
+Variability of tundra fire regimes in Arctic Alaska: millennial-scale patterns
+and ecological implications. *Ecological Applications* 21:3211–3226.
+
+Briles, C.E., C. Whitlock, C.N. Skinner, and J. Mohr. 2011. Postglacial forest
+development on different substrates in the Klamath Mountains, northern
+California, USA. *Ecology* 92:590–601.
+
+Whitlock, C., C.E. Briles, M.C. Fernandez, and J. Gage. 2011. Holocene
+vegetation, fire, and climate history of the Sawtooth Range, central Idaho,
+U.S.A. *Quaternary Research* 75:114–124.
+
+Higuera, P.E., C. Whitlock, and J. Gage. 2011. Linking tree-ring and
+sediment-charcoal records to reconstruct fire occurrence and area burned in
+subalpine forests of Yellowstone National Park, U.S.A. *The Holocene* 21:327–341.
+
+Hu, F.S., P.E. Higuera, J.E. Walsh, W.L. Chapman, P.A. Duffy, L.B. Brubaker,
+and M.L. Chipman. 2010. Tundra burning in Alaska: linkages to climatic change
+and sea-ice retreat. *Journal of Geophysical Research — Biogeosciences* 115,
+G04002.
+
+Walsh, M.K., C. Whitlock, and P.J. Bartlein. 2010. 1200 years of fire and
+vegetation history in the Willamette Valley, Oregon and Washington, reconstructed
+using high-resolution macroscopic charcoal and pollen analysis. *Palaeogeography
+Palaeoclimatology Palaeoecology* 297:273–289.
+
+Chepstow-Lusty, A.J., M.R. Frogley, B.S. Bauer, M.J. Leng, K.P. Boessenkool,
+C. Carcaillet, A.A. Ali, and A. Gioda. 2009. Putting the rise of the Inca Empire
+within a climatic and land management context. *Climate of the Past* 5:375–388.
+
+Marlon, J.R., P.J. Bartlein, M.K. Walsh, S.P. Harrison, K.J. Brown, M.E.
+Edwards, P.E. Higuera, M.J. Power, R.S. Anderson, C. Briles, A. Brunelle, C.
+Carcaillet, M. Daniels, F.S. Hu, M. Lavoie, C. Long, T. Minckley, P.J.H.
+Richard, S.L. Shafer, W. Tinner, C. Umbanhowar, and C. Whitlock. 2009. Wildfire
+responses to abrupt climate change in North America. *PNAS* 106:2519–2524.
+
+Walsh, M.K., C. Whitlock, and P.J. Bartlein. 2008. A 14,300-year-long record of
+fire-vegetation-climate linkages at Battle Ground Lake, southwestern Washington.
+*Quaternary Research* 70:251–264.
+
+Huerta, M.A., C. Whitlock, and J. Yale. 2009. Holocene vegetation-fire-climate
+linkages in northern Yellowstone National Park, USA. *Palaeogeography
+Palaeoclimatology Palaeoecology* 271:170–181.
+
+Briles, C.E., C. Whitlock, P.J. Bartlein, and P.E. Higuera. 2008. Regional and
+local controls on postglacial vegetation and fire in the Siskiyou Mountains,
+northern California, USA. *Palaeogeography Palaeoclimatology Palaeoecology*
+265:159–169.
+
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, T.A. Brown, A.T. Kennedy, and F.S.
+Hu. 2008. Frequent fires in ancient shrub tundra: implications of paleorecords
+for Arctic environmental change. *PLoS ONE* 3:e0001744.
+
+</details>
 
 ### Citation
 
@@ -182,7 +295,7 @@ Missing values for `charVol` and `charCount` (but **not** for depths or ages) ca
 
 #### 2.2 Parameter Selection
 
-Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (Figure 2). Parameters are divided into four stages.
+Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (.xlsx) or file (.csv) (Figure 2). Parameters are divided into four stages.
 
 ![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png)
 *Figure 2. The CharParams worksheet in the template file, where analysis parameters are selected.*
@@ -325,6 +438,9 @@ The structure of *CharAnalysis* reflects the main analytical components of most 
 4. **Define threshold** t and apply to C<sub>peak</sub> to separate fire-related samples from non-fire-related samples.
 5. **Screen peaks** and remove any that fail to pass the minimum-count criterion.
 
+![Decision tree for peak detection in CharAnalysis](.github/docs/figures/fig_decision_tree.png)\
+*Figure 3. Decision tree for peak detection in CharAnalysis.*
+
 ---
 
 ### 6. Analytical Choices
@@ -394,7 +510,7 @@ where X<sub>1</sub>, V<sub>1</sub> are the count and volume of the minimum-count
 
 #### 7.1 Data
 
-Output data are saved to a `CharResults` worksheet (or appended to the input CSV file) when `saveData = 1`. The columns are as follows:
+Output data are saved to a `CharResults` worksheet (.xlsx) or file (.csv) when `saveData = 1` (Figure 4). The columns are as follows:
 
 | Column | Variable | Description |
 |--------|----------|-------------|
@@ -433,7 +549,7 @@ Output data are saved to a `CharResults` worksheet (or appended to the input CSV
 | GG | WBLc_lCI | Lower 95% CI for WBLc |
 
 ![charResults worksheet](.github/docs/figures/fig_charresults_worksheet.png)
-*Figure 3. Example of the CharResults worksheet after running CharAnalysis and saving data.*
+*Figure 4. Example of the CharResults worksheet after running CharAnalysis and saving data.*
 
 ---
 
