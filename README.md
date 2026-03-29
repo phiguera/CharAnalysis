@@ -76,10 +76,6 @@ analysis in sediment-charcoal records (Version 2.0). Zenodo.](https://doi.org/10
 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein and D.J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. _International Journal of Wildland Fire_ 19: 996-1014. 
 
-**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available at https://phiguera.github.io/CharAnalysis/**
-
-> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
-
 **Other studies using _CharAnalysis_ (incomplete list, through 2014)**
 
 > Dunnette, P.V., P.E. Higuera, K.K. McLauchlan, K.M. Derr, C.E. Briles, and M.H. Keefe. 2014. Biogeochemical impacts of wildfires over four millennia in a Rocky Mountain subalpine watershed. _New Phytologist_ 203: 900-912.
