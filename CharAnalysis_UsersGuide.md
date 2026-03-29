@@ -267,8 +267,7 @@ Open MATLAB and type `CharAnalysis` into the Command Window. When prompted, ente
 >>
 >> Input the file name OR the full path to the site directory, 
 >> bounded with single quotations and including the file 
->> extension (if file name): 
->> 'mysite_charParams.csv'
+>> extension (if file name): 'mysite_charParams.csv'
 ```
 
 You can also call *CharAnalysis* directly with the filename as an argument, which is useful for processing multiple records:
