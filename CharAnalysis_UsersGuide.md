@@ -8,7 +8,7 @@ Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 philip.higuera@umontana.edu\
 https://www.umt.edu/people/phiguera \
-https://github.com/phiguera/CharAnalysis
+https://phiguera.github.io/CharAnalysis
 
 > **Version 2.0 — Updated March 2026**\
 > This guide documents *CharAnalysis* Version 2.0. Where behavior differs
