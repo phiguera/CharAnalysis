@@ -3,6 +3,7 @@
 
 <div style="text-align: center;">
 <img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="80%" style="border: 1px solid black;">
+</div>
 
 *Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
