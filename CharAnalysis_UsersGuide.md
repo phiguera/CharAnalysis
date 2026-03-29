@@ -47,14 +47,14 @@ The following two papers provide the most thorough background for the analyses
 employed in *CharAnalysis*, including the assumptions inherent in charcoal peak
 identification using a local threshold:
 
-> Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise
-> index to quantify the potential for peak detection in sediment-charcoal records.
-> *Quaternary Research* 75:11–17.
-> 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein, and D.J. Hallett. 2010. Peak detection
 > in sediment-charcoal records: impacts of alternative data analysis methods on
 > fire-history interpretations. *International Journal of Wildland Fire*
 > 19:996–1014.
+>
+> Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise
+> index to quantify the potential for peak detection in sediment-charcoal records.
+> *Quaternary Research* 75:11–17.
 
 <details>
 <summary><strong>Selected publications using <em>CharAnalysis</em> (incomplete list, through 2014)</strong></summary>
