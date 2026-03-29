@@ -1,7 +1,8 @@
 # *CharAnalysis*
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
-
+<div style="text-align: center;">
 <img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="75%" style="border: 1px solid black;">
+</div>
 
 *Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
@@ -44,16 +45,16 @@ The entire codebase is distributed and well commented — users are encouraged t
 look under the hood, understand what is going on, and modify the program to suit
 their needs.
 
+<div style="text-align: center;">
 <img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%" style="border: 1px solid black;">
+</div>
 
 *Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
 center of the lake. Sediment cores collected from lakes like this preserve
 millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 
-<div class="photo-row">
 <img src="images/SilverLake_ID_ShortCore_2018.jpg" alt="The short core from Silver Lake, Montana" width="30%">
 <img src="images/20191115_CoreSample_0279.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="margin-left: 1%;">
-</div>
 
 *Left: The upper-most sediment collected from Silver Lake, a 16-m deep subalpine lake in western Montana. The core shows a distinct layer of light-grey tephra, deposited from the 1980 erruption of Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core in the University of Montana's PaleoEcology and Fire Ecology lab. The demarkations at every 0.5 cm are where the core will be sliced for continuous sampling (Photo: Univ. of Montana, 2019).*
 
