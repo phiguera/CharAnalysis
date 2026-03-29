@@ -52,10 +52,7 @@ Version 2.0 is the first major update to *CharAnalysis*, addressing five areas o
 ## Understanding and citing the program
 
 **Documentation**\
-The current User's Guide is available as
-[CharAnalysis_UsersGuide.md](CharAnalysis_UsersGuide.md).
-The original guide (v0.9, January 2009) is retained for reference as
-[CharAnalysis_UsersGuide_v0.9_2009.pdf](CharAnalysis_UsersGuide_v0.9_2009.pdf).
+The current [User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md) includes a full background and description of the program. 
 
 **Citation**\
 If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
