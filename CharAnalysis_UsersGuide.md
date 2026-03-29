@@ -7,7 +7,7 @@
 Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 philip.higuera@umontana.edu\
-https://www.umt.edu/people/phiguera\
+https://www.umt.edu/people/phiguera \
 https://github.com/phiguera/CharAnalysis
 
 > **Version 2.0 — Updated March 2026**\
@@ -84,7 +84,7 @@ Cloning or downloading retrieves the entire repository, including example datase
 
 1. After cloning or downloading, add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
    ```matlab
-   addpath '.../CharAnalysis/CharAnalysis_2_0_MATLAB'
+   addpath 'C:/CharAnalysis/CharAnalysis_2_0_MATLAB'
    ```
 2. Save the path:
    ```matlab
@@ -153,7 +153,7 @@ Enter the site name in cell G1 (column 7, row 1).
 
 Missing values for `charVol` and `charCount` (but **not** for depths or ages) can be indicated by any value < 0 (e.g. −999). *CharAnalysis* will interpolate across missing data. Note: paste only values into the spreadsheet — formulas are not supported.
 
-![charData worksheet](docs/figures/fig_chardata_worksheet.png)
+![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png) \
 *Figure 1. The charData worksheet in the template file, where data input occurs.*
 
 ---
@@ -162,7 +162,7 @@ Missing values for `charVol` and `charCount` (but **not** for depths or ages) ca
 
 Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (Figure 2). Parameters are divided into four stages.
 
-![charParams worksheet](docs/figures/fig_charparams_worksheet.png)
+![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png) \
 *Figure 2. The CharParams worksheet in the template file, where analysis parameters are selected.*
 
 ---
@@ -390,7 +390,7 @@ Output data are saved to a `CharResults` worksheet (or appended to the input CSV
 | FF | WBLc_uCI | Upper 95% CI for WBLc |
 | GG | WBLc_lCI | Lower 95% CI for WBLc |
 
-![charResults worksheet](docs/figures/fig_charresults_worksheet.png)
+![charResults worksheet](.github/docs/figures/fig_charresults_worksheet.png)
 *Figure 3. Example of the CharResults worksheet after running CharAnalysis and saving data.*
 
 ---
@@ -405,7 +405,7 @@ Output figures provide a detailed look at what the program is doing numerically 
 
 Panel (a): raw CHAR displayed as bars with C<sub>interpolated</sub> as a stair-step plot. Panel (b): C<sub>interpolated</sub> with all five smoothing options for a selected window width. Areas with missing values are indicated by grey boxes.
 
-![Figure 1](docs/figures/fig01_raw_interpolated_char.png)
+![Figure 1](.github/docs/figures/fig01_raw_interpolated_char.png)
 
 ---
 
@@ -413,7 +413,7 @@ Panel (a): raw CHAR displayed as bars with C<sub>interpolated</sub> as a stair-s
 
 Varies depending on threshold type. For a global threshold, shows the full C<sub>peak</sub> distribution as a histogram with the modeled noise distribution and threshold value. For a local threshold, shows multiple non-overlapping time periods, each with the modeled noise distribution, local threshold values (t<sub>yr</sub>), SNI, and KS goodness-of-fit (KS p-val).
 
-![Figure 2](docs/figures/fig02_cpeak_distribution.png)
+![Figure 2](.github/docs/figures/fig02_cpeak_distribution.png)
 
 ---
 
@@ -421,7 +421,7 @@ Varies depending on threshold type. For a global threshold, shows the full C<sub
 
 Panel (a): C<sub>int</sub> with C<sub>back</sub> overlaid. Panel (b): C<sub>peak</sub> with positive and negative threshold values defining C<sub>noise</sub>, and identified peaks marked as `+` symbols. Peaks failing the minimum-count criterion are shown as grey dots.
 
-![Figure 3](docs/figures/fig03_cint_cback_cpeak.png)
+![Figure 3](.github/docs/figures/fig03_cint_cback_cpeak.png)
 
 ---
 
@@ -429,7 +429,7 @@ Panel (a): C<sub>int</sub> with C<sub>back</sub> overlaid. Panel (b): C<sub>peak
 
 Panel (a): CHAR series with peaks from all three threshold values. Panel (b): mean FRI and 95% confidence limits by zone for each threshold. Panel (c): SNI time series. Panel (d): boxplot of all SNI values. Note: y-axes in panels (b) and (c) are log scales.
 
-![Figure 4](docs/figures/fig04_sensitivity_sni.png)
+![Figure 4](.github/docs/figures/fig04_sensitivity_sni.png)
 
 ---
 
@@ -437,7 +437,7 @@ Panel (a): CHAR series with peaks from all three threshold values. Panel (b): me
 
 Cumulative sum of identified peaks as a function of time. The slope at any point is the instantaneous fire frequency (fires yr⁻¹). Areas with missing values are indicated by grey boxes.
 
-![Figure 5](docs/figures/fig05_cumulative_peaks.png)
+![Figure 5](.github/docs/figures/fig05_cumulative_peaks.png)
 
 ---
 
@@ -445,7 +445,7 @@ Cumulative sum of identified peaks as a function of time. The slope at any point
 
 Histogram of FRIs within each zone (20-yr bins). If the fitted Weibull model passes the goodness-of-fit test (p > 0.10 if n < 30; p > 0.05 if n ≥ 30), model parameters and 95% confidence estimates are listed along with mFRI, confidence estimates, and n.
 
-![Figure 6](docs/figures/fig06_fri_distributions.png)
+![Figure 6](.github/docs/figures/fig06_fri_distributions.png)
 
 ---
 
@@ -453,7 +453,7 @@ Histogram of FRIs within each zone (20-yr bins). If the fitted Weibull model pas
 
 Top panel: peak magnitude as bars with identified peaks as `+` symbols. Middle panel: fire return intervals and smoothed FRI curve. Bottom panel: smoothed fire frequency. In all panels, areas with missing values are indicated by grey boxes.
 
-![Figure 7](docs/figures/fig07_continuous_fire_history.png)
+![Figure 7](.github/docs/figures/fig07_continuous_fire_history.png)
 
 ---
 
@@ -461,7 +461,7 @@ Top panel: peak magnitude as bars with identified peaks as `+` symbols. Middle p
 
 Left panel: cumulative distribution functions (CDFs) of raw CHAR values within each zone. Two-sample KS tests compare zones pairwise; a table of p-values is displayed within the plot. Right panel: box plots of raw CHAR values by zone (10th, 25th, 50th, 75th, and 90th percentiles).
 
-![Figure 8](docs/figures/fig08_zone_comparisons.png)
+![Figure 8](.github/docs/figures/fig08_zone_comparisons.png)
 
 ---
 
@@ -469,7 +469,7 @@ Left panel: cumulative distribution functions (CDFs) of raw CHAR values within e
 
 Panel (a): C<sub>int</sub> with C<sub>back</sub> and C<sub>thresh</sub>. Panel (b): C<sub>peak</sub> and C<sub>thresh</sub> displayed in the ratio domain. Panel (c): C<sub>peak</sub> and C<sub>thresh</sub> displayed in the residual domain. This figure illustrates how the selected threshold would appear under both C<sub>peak</sub> definitions.
 
-![Figure 9](docs/figures/fig09_threshold_display.png)
+![Figure 9](.github/docs/figures/fig09_threshold_display.png)
 
 ---
 
@@ -477,7 +477,7 @@ Panel (a): C<sub>int</sub> with C<sub>back</sub> and C<sub>thresh</sub>. Panel (
 
 Results from multiple analyses using varying smoothing window widths. For a local threshold: (a) KS goodness-of-fit p-values by window width; (b) SNI distributions by window width; (c) sum of (a) and (b), useful for selecting the optimal window when the two measures show opposing trends. For a global threshold: a three-variable plot of peak count (z) as a function of threshold value (x) and smoothing window (y).
 
-![Figure 10](docs/figures/fig10_sensitivity_cback_window.png)
+![Figure 10](.github/docs/figures/fig10_sensitivity_cback_window.png)
 
 ---
 
