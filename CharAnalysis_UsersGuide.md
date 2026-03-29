@@ -325,6 +325,9 @@ The structure of *CharAnalysis* reflects the main analytical components of most 
 4. **Define threshold** t and apply to C<sub>peak</sub> to separate fire-related samples from non-fire-related samples.
 5. **Screen peaks** and remove any that fail to pass the minimum-count criterion.
 
+![Decision tree for peak detection in CharAnalysis](.github/docs/figures/fig_decision_tree.png)\
+*Figure 3. Decision tree for peak detection in CharAnalysis.*
+
 ---
 
 ### 6. Analytical Choices
@@ -394,7 +397,7 @@ where X<sub>1</sub>, V<sub>1</sub> are the count and volume of the minimum-count
 
 #### 7.1 Data
 
-Output data are saved to a `CharResults` worksheet (or appended to the input CSV file) when `saveData = 1`. The columns are as follows:
+Output data are saved to a `CharResults` worksheet (.xlsx) or file (.csv) when `saveData = 1` (Figure 4). The columns are as follows:
 
 | Column | Variable | Description |
 |--------|----------|-------------|
@@ -433,7 +436,7 @@ Output data are saved to a `CharResults` worksheet (or appended to the input CSV
 | GG | WBLc_lCI | Lower 95% CI for WBLc |
 
 ![charResults worksheet](.github/docs/figures/fig_charresults_worksheet.png)
-*Figure 3. Example of the CharResults worksheet after running CharAnalysis and saving data.*
+*Figure 4. Example of the CharResults worksheet after running CharAnalysis and saving data.*
 
 ---
 
