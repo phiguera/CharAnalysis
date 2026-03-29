@@ -84,7 +84,7 @@ Cloning or downloading retrieves the entire repository, including example datase
 
 1. After cloning or downloading, add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
    ```matlab
-   addpath 'C:/CharAnalysis/CharAnalysis_2_0_MATLAB'
+   addpath '.../CharAnalysis/CharAnalysis_2_0_MATLAB'
    ```
 2. Save the path:
    ```matlab
