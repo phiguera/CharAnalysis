@@ -175,7 +175,7 @@ Enter the site name in cell G1 (column 7, row 1).
 
 Missing values for `charVol` and `charCount` (but **not** for depths or ages) can be indicated by any value < 0 (e.g. −999). *CharAnalysis* will interpolate across missing data. Note: paste only values into the spreadsheet — formulas are not supported.
 
-![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png)
+![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png) \
 *Figure 1. The charData worksheet in the template file, where data input occurs.*
 
 ---
