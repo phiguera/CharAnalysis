@@ -24,7 +24,9 @@ records.
 For records that meet these criteria, *CharAnalysis* implements a widely applied
 approach that decomposes a charcoal record into low- and high-frequency
 components, including the ability to use locally defined thresholds to separate
-fire signal from noise. This approach was first applied in Higuera et al. (2008, 2009), and the
+fire signal from noise. This approach was first applied in Higuera et al.
+([2008](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0001744),
+[2009](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1)), and the
 assumptions and rationale of the method are most thoroughly described in
 [Higuera et al. (2010)](http://files.cfc.umt.edu/phiguera/publications/Higuera_et_al_2010_IJWF.pdf)
 and [Kelly et al. (2011)](http://files.cfc.umt.edu/phiguera/publications/Kelly_et_al_2011_QR.pdf),
