@@ -182,7 +182,7 @@ Missing values for `charVol` and `charCount` (but **not** for depths or ages) ca
 
 #### 2.2 Parameter Selection
 
-Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (Figure 2). Parameters are divided into four stages.
+Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (.xlsx) or file (.csv) (Figure 2). Parameters are divided into four stages.
 
 ![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png)
 *Figure 2. The CharParams worksheet in the template file, where analysis parameters are selected.*
