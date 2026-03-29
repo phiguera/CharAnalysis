@@ -14,8 +14,6 @@ University of Montana, Missoula, MT, USA
 
 ## What is *CharAnalysis*?
 
-## What is *CharAnalysis*?
-
 <img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%">
 
 *Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
