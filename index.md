@@ -51,15 +51,30 @@ Version 2.0 is the first major update to *CharAnalysis*, addressing five areas o
 
 ## Understanding and citing the program
 
+**Documentation**\
+The current User's Guide is available as
+[CharAnalysis_UsersGuide.md](CharAnalysis_UsersGuide.md).
+The original guide (v0.9, January 2009) is retained for reference as
+[CharAnalysis_UsersGuide_v0.9_2009.pdf](CharAnalysis_UsersGuide_v0.9_2009.pdf).
+
+**Citation**\
+If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
+the first study to apply the core analytical tools implemented in *CharAnalysis*.
+If you used Version 2.0 specifically, please also cite the software:
+
+[Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
+Vegetation mediated the impacts of postglacial climate change on fire regimes
+in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219.](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1)
+
+[Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
+analysis in sediment-charcoal records (Version 2.0). Zenodo.](https://doi.org/10.5281/zenodo.19304064)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19304064.svg)](https://doi.org/10.5281/zenodo.19304064)
+
 **The following citations provide the most thorough background for the analyses employed in _CharAnalysis_, including the assumptions inherent in charcoal peak identification using a local threshold. These may be downloaded from the author's web site, linked to above.**
 
 > Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise index to quantify the potential for peak detection in sediment-charcoal records. _Quaternary Research_ 75: 11-17.
 
 > Higuera, P.E., D.G. Gavin, P.J. Bartlein and D.J. Hallett. 2010. Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. _International Journal of Wildland Fire_ 19: 996-1014. 
-
-**Please use the following citation (also available via the author's web site) if you use the _CharAnalysis_ program in a publication, and please note that it is freely available at https://phiguera.github.io/CharAnalysis/**
-
-> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climatic change on fire regimes in the south-central Brooks  Range, Alaska. _Ecological Monographs_ 79: 201-219. 
 
 **Other studies using _CharAnalysis_ (incomplete list, through 2014)**
 
