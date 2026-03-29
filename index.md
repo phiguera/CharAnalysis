@@ -2,9 +2,7 @@
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
 <div style="text-align: center;">
-<img src="images/SilverLake_ID_ShortCore_2018.jpg" alt="The short core from Silver Lake, Montana" width="30%" style="border: 1px solid black;">
-<img src="images/20191115_CoreSample_0279.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="border: 1px solid black; margin-left: 1%;">
-</div>
+<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="80%" style="border: 1px solid black;">
 
 *Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
