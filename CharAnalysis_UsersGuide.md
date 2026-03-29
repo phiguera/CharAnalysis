@@ -213,7 +213,11 @@ Download the entire *CharAnalysis* program as a `.zip` or `tar.gz` archive from 
 https://github.com/phiguera/CharAnalysis
 ```
 
-Cloning or downloading retrieves the entire repository, including example datasets and the version comparison script. The Version 2.0 MATLAB code is located in the `CharAnalysis_2_0_MATLAB` subfolder.
+Cloning or downloading retrieves the entire repository. The Version 2.0 MATLAB
+code is located in the `CharAnalysis_2_0_MATLAB` subfolder. Example datasets and
+template files are located in the `DataTemplates_and_Examples` subfolder, and the
+version comparison script (`z_Compare_CharAnalysis_V1_V2.m`) is located in
+`CharAnalysis_2_0_MATLAB`.
 
 **Installation**
 
@@ -265,11 +269,14 @@ Clicking this link clones the repository to your MATLAB Drive and opens *CharAna
 
 ### 2. Data Input and Parameter Selection
 
-Open the included template file `templateChar.csv` (or `templateChar.xls`) and save it under a new name identifying your site (e.g. `COchar.csv`). Place this file in the MATLAB working directory, or specify the full path when calling *CharAnalysis*.
+Open the included template files `template_charData.csv` and
+`template_charParams.csv` and save them under new names identifying your site
+(e.g. `CO_charData.csv` and `CO_charParams.csv`). Place these files in the MATLAB
+working directory, or specify the full path when calling *CharAnalysis*.
 
-> **V1.1 difference:** The CSV format is recommended for Version 2.0.
-> The original `.xls` template remains supported and has the same
-> structure as the CSV file.
+> **V1.1 difference:** The CSV format is recommended for Version 2.0 and is the
+> only template format distributed with the program. Input files in `.xls` format
+> remain supported but are no longer documented.
 
 #### 2.1 Data Input
 
