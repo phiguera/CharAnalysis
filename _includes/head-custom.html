@@ -1,1 +1,10 @@
 <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var links = document.querySelectorAll("a[href^='http']");
+    links.forEach(function(link) {
+      link.setAttribute("target", "_blank");
+    });
+  });
+</script>
