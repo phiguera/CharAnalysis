@@ -1,4 +1,7 @@
 # *CharAnalysis* Development Roadmap
+*Last updated: March 2026*
+
+---
 
 This document describes planned future development of *CharAnalysis*. Items are
 listed in approximate priority order. It is not yet determined whether additional
