@@ -2,7 +2,7 @@
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
 <img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="80%" style="border: 1px solid black;">
 
-*Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: P. Higuera (2010).*
+*Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 © 2004–2026\
