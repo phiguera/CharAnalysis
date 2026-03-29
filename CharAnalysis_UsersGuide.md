@@ -8,7 +8,7 @@ Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 philip.higuera@umontana.edu\
 https://www.umt.edu/people/phiguera \
-https://phiguera.github.io/CharAnalysis
+https://github.com/phiguera/CharAnalysis
 
 > **Version 2.0 — Updated March 2026**\
 > This guide documents *CharAnalysis* Version 2.0. Where behavior differs
@@ -37,9 +37,9 @@ https://phiguera.github.io/CharAnalysis
 
 ## Part I. Background
 
-*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses are based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
+*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
 
-Since its original development in the mid-2000s, *CharAnalysis* has been used in dozens of published studies across six continents. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
+Since its original development in the mid-2000s, *CharAnalysis* has been used in dozens of published studies on records spanning the globe. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
 
 **Version 2.0** (March 2026) is the first major update to the codebase. The analytical methods are unchanged from Version 1.1. Key changes include:
 
@@ -153,7 +153,7 @@ Enter the site name in cell G1 (column 7, row 1).
 
 Missing values for `charVol` and `charCount` (but **not** for depths or ages) can be indicated by any value < 0 (e.g. −999). *CharAnalysis* will interpolate across missing data. Note: paste only values into the spreadsheet — formulas are not supported.
 
-![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png) \
+![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png)
 *Figure 1. The charData worksheet in the template file, where data input occurs.*
 
 ---
@@ -162,7 +162,7 @@ Missing values for `charVol` and `charCount` (but **not** for depths or ages) ca
 
 Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (Figure 2). Parameters are divided into four stages.
 
-![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png) \
+![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png)
 *Figure 2. The CharParams worksheet in the template file, where analysis parameters are selected.*
 
 ---
