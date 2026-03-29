@@ -53,18 +53,11 @@ millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 <img src="images/photo_core_field.jpg" alt="The short core from Silver Lake, MT" width="30%" style="border: 1px solid black;">
 <img src="images/photo_core_lab.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="border: 1px solid black; margin-left: 1%;">
 
-*Left: The upper-most sediment collected from Silver Lake, Montana, showing
-distinct deposition of tephra from the 1980 erruption of Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core in the University of Montana's PaleoEcology and Fire Ecology lab with demarkations at every 0.5 cm where the core will be sliced (Photo: Univ. of Montana, 2019).*
+*Left: The upper-most sediment collected from Silver Lake, a 16-m deep lake in subalpine forests in western Montana. The core shows a distinct layer of grey tephra, deposited from the 1980 erruption of Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core in the University of Montana's PaleoEcology and Fire Ecology lab. The demarkations at every 0.5 cm are where the core will be sliced for continuous sampling (Photo: Univ. of Montana, 2019).*
 
 ---
 
 ## What does it do?
-
-<img src="images/photo_core_sample_lab.jpg" alt="Split sediment core sections in the laboratory" width="75%" style="border: 1px solid black;">
-
-*Split sediment core sections in the laboratory. Contiguous sampling of cores
-at fine resolution — typically 0.25-0.5 cm intervals — produces the high-resolution
-charcoal records that *CharAnalysis* is designed to analyze.*
 
 *CharAnalysis* takes a raw sediment-charcoal record and guides the user through
 five analytical steps: interpolating the record to equal time intervals,
