@@ -54,6 +54,12 @@ their needs.
 
 ## What does it do?
 
+<img src="images/photo_core_sample_lab.jpg" alt="Split sediment core sections in the laboratory" width="75%" style="border: 1px solid black;">
+
+*Split sediment core sections in the laboratory. Contiguous sampling of cores
+at fine resolution — typically 0.25-0.5 cm intervals — produces the high-resolution
+charcoal records that *CharAnalysis* is designed to analyze.*
+
 *CharAnalysis* takes a raw sediment-charcoal record and guides the user through
 five analytical steps: interpolating the record to equal time intervals,
 smoothing to estimate background charcoal accumulation, isolating the
