@@ -239,7 +239,36 @@ Parameter choices are entered in column C (column 3) of the `CharParams` workshe
 Open MATLAB and type `CharAnalysis` into the Command Window. When prompted, enter the name of your parameter file with single quotation marks and the file extension:
 
 ```matlab
->> CharAnalysis('mysite_charParams.csv')
+
+>> >> CharAnalysis
+>>                                                                 
+>> *****************************************************************
+>>                       CharAnalysis 2.0                           
+>>                   (c) 2004 - 2026, P.E. Higuera                  
+>>          MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.          
+>>                   philip.higuera@umontana.edu                    
+>>                    Please read documentation:                    
+>>              https://phiguera.github.io/CharAnalysis/            
+>> *****************************************************************
+>>                                                                 
+>>  CharAnalysis requires an input file in .xls or .csv format.    
+>>  This file includes the selected parameters for peak analysis, 
+>>  and it either includes (.xls) or references (.csv) the input  
+>>  charcoal dataset. The input file must be in the working       
+>>  directory for the program to run.                             
+>>                                                                 
+>>  If you choose to save the results (figures and/or data), they  
+>>  will be saved in the directory containing the input file.     
+>>  *NOTE*: you must close the input file before running          
+>>  CharAnalysis for the .xls or .csv file to be updated with new 
+>>  results.                                                      
+>>                                                               
+>>  *****************************************************************
+>>
+>> Input the file name OR the full path to the site directory, 
+>> bounded with single quotations and including the file 
+>> extension (if file name): 
+>> 'mysite_charParams.csv'
 ```
 
 You can also call *CharAnalysis* directly with the filename as an argument, which is useful for processing multiple records:
