@@ -499,7 +499,7 @@ Results from multiple analyses using varying smoothing window widths. For a loca
 
 Many features in *CharAnalysis* are based on analytical techniques from the programs CHAPS (Patrick Bartlein, University of Oregon) and Charster (Daniel Gavin, University of Oregon). The resampling algorithm and minimum-count screening were developed directly from features in Charster. Peak magnitude and smoothed fire frequency displays were developed based on CHAPS. *CharAnalysis*, like Charster, uses a Gaussian mixture model originally created by Charles Bouman (Purdue University).
 
-Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, Patrick Bartlein, and Ryan Kelly.
+Development of the program benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, Patrick Bartlein, and Ryan Kelly.
 
 **Version 2.0** was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.
 
