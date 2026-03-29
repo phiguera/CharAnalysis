@@ -54,14 +54,16 @@ explicit parameter choices, informed by diagnostic output from the program.
 The figures below illustrate typical program output for the Code Lake record
 from the south-central Brooks Range, Alaska (Higuera et al. 2009).
 
-![CharAnalysis output: sensitivity to alternative thresholds](images/fig04_sensitivity_sni.png)
+<img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%">
+
 *Figure 1. Sensitivity of peak identification to alternative threshold values
 (top), mean fire return intervals by zone for each threshold (second panel),
 signal-to-noise index through time (third panel), and boxplot of all SNI values
 (bottom). The SNI quantifies the potential for reliable peak detection at each
 point in the record.*
 
-![CharAnalysis output: continuous fire history](images/fig07_continuous_fire_history.png)
+<img src="images/fig07_continuous_fire_history.png" alt="CharAnalysis output: continuous fire history" width="75%">
+
 *Figure 2. Continuous fire history showing peak magnitude (top), fire return
 intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).*
 
