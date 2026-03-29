@@ -20,7 +20,7 @@ Peak Analysis,cPeak,1,index,How do you want to calculate high-frequency CHAR (ak
 ,,0.99,,,,
 ,minCountP,0.05,probability,"Cut-off probability for minimum count analysis. E.g. if minCountP = 0.05, then the minimum charcoal count within 75 years before a peak has to have < 5% chance of coming from the same Poisson distribution as the maximum charcoal count associated with the peak. Peaks with a probability > 5% will be flagged and displayed but not included in peak analysis. Set this value to 0.99 to turn it off.",,
 Peak Analysis Results,peakFrequ,1000,yr,Years to smooth fire frequency and fire return intervals over. ,,
-,Cbackground sensitivity,0,index,Do you want to evaluate the sensitivity of your results to varying smoothing windows? 0 == no; 1 == yes.,,
+,Cbackground sensitivity,1,index,Do you want to evaluate the sensitivity of your results to varying smoothing windows? 0 == no; 1 == yes.,,
 ,saveFigures,0,index,Do you want to save the plots as .tiff and .pdf files? 0 == no; 1 == yes.,,
 ,saveData,1,index,Do you want to save the output data by appending it to this file? 0 == no; 1 == yes.,,
 ,allFigures,1,index,Do you want to display all (diagnostic) figures or only figures related to peak analysis results? 0 == no; 1 == yes.,,
