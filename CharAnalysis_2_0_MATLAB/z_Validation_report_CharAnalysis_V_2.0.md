@@ -83,7 +83,7 @@
 | `Smoothing.yr` | 500 yr |
 | `threshType` | 2 (locally defined) |
 | `threshMethod` | 3 (Gaussian mixture model) |
-| `cPeak` | 2 (ratios) |
+| `cPeak` | 1 (residuals) |
 | `minCountP` | 0.05 |
 | Record length | 626 interpolated samples |
 | Record gaps | 1 gap (0.5 cm, 3 yr) near oldest part of record |
