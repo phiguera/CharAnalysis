@@ -48,7 +48,14 @@ their needs.
 
 *Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
 center of the lake. Sediment cores collected from lakes like this preserve
-millennia of charcoal deposited from past fires. Photo: L. Lad.*
+millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
+
+<img src="images/photo_core_field.jpg" alt="A freshly collected sediment core in the field" width="30%" style="border: 1px solid black;">
+<img src="images/photo_core_lab.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="border: 1px solid black; margin-left: 1%;">
+
+*Left: The upper-most sediment collected from Silver Lake, Idaho, showing
+distinct deposition of the 1980's tephra from Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core sections in the
+laboratory ready for sampling (Photo: Univ. of Montana, 2019).*
 
 ---
 
