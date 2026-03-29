@@ -2,8 +2,8 @@
 
 **Diagnostic and Analytical Tools for Peak Analysis in Sediment-Charcoal Records**
 
-[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
-© 2004–2026 Philip Higuera\
+[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026\
+Philip Higuera\
 Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 philip.higuera@umontana.edu\
@@ -20,6 +20,8 @@ https://github.com/phiguera/CharAnalysis
 ## Contents
 
 - [Part I. Background](#part-i-background)
+  - [Citation](#citation)
+  - [Support and Updates](#support-and-updates)
 - [Part II. Using CharAnalysis](#part-ii-using-charanalysis)
   - [1. Download and Installation](#1-download-and-installation)
   - [2. Data Input and Parameter Selection](#2-data-input-and-parameter-selection)
@@ -39,7 +41,27 @@ https://github.com/phiguera/CharAnalysis
 
 *CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
 
-Since its original development in the mid-2000s, *CharAnalysis* has been used in dozens of published studies on records spanning the globe. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
+*CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs. 
+
+### Citation
+
+If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
+the first study to apply the core analytical tools implemented in *CharAnalysis*:
+
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
+Vegetation mediated the impacts of postglacial climate change on fire regimes
+in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219.
+https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1
+
+If you used Version 2.0 specifically, please also cite the software:
+
+Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
+analysis in sediment-charcoal records (Version 2.0). Zenodo.
+https://doi.org/10.5281/zenodo.19304064
+
+### Support and Updates
+
+Updates are documented on the GitHub repository. If you encounter problems, please use the Issues tab at https://github.com/phiguera/CharAnalysis/issues. A GitHub account is required to register a new issue. Before posting, search existing issues to see whether your problem has already been addressed.
 
 **Version 2.0** (March 2026) is the first major update to the codebase. The analytical methods are unchanged from Version 1.1. Key changes include:
 
@@ -84,7 +106,7 @@ Cloning or downloading retrieves the entire repository, including example datase
 
 1. After cloning or downloading, add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
    ```matlab
-   addpath 'C:/CharAnalysis/CharAnalysis_2_0_MATLAB'
+   addpath '.../CharAnalysis_2_0_MATLAB'
    ```
 2. Save the path:
    ```matlab
@@ -235,15 +257,7 @@ To return results to the MATLAB workspace:
 
 ---
 
-#### 3.2 Citations, Support, and Updates
-
-If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009) and note that the program is freely available at https://github.com/phiguera/CharAnalysis. See the *Understanding and Citing the Program* section of the main README for the full recommended citation.
-
-Updates are documented on the GitHub repository. If you encounter problems, please use the Issues tab at https://github.com/phiguera/CharAnalysis/issues. A GitHub account is required to register a new issue. Before posting, search existing issues to see whether your problem has already been addressed.
-
----
-
-#### 3.3 Causes of Common Errors
+#### 3.2 Causes of Common Errors
 
 | Error | Likely Cause |
 |-------|-------------|
