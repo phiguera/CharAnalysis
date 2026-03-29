@@ -2,13 +2,13 @@
 
 **Diagnostic and Analytical Tools for Peak Analysis in Sediment-Charcoal Records**
 
-[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
-© 2004–2026 Philip Higuera\
+[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026\
+Philip Higuera\
 Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 philip.higuera@umontana.edu\
-https://www.umt.edu/people/phiguera\
-https://github.com/phiguera/CharAnalysis
+https://www.umt.edu/people/phiguera \
+https://phiguera.github.io/CharAnalysis
 
 > **Version 2.0 — Updated March 2026**\
 > This guide documents *CharAnalysis* Version 2.0. Where behavior differs
@@ -20,6 +20,8 @@ https://github.com/phiguera/CharAnalysis
 ## Contents
 
 - [Part I. Background](#part-i-background)
+  - [Citation](#citation)
+  - [Support and Updates](#support-and-updates)
 - [Part II. Using CharAnalysis](#part-ii-using-charanalysis)
   - [1. Download and Installation](#1-download-and-installation)
   - [2. Data Input and Parameter Selection](#2-data-input-and-parameter-selection)
@@ -37,9 +39,29 @@ https://github.com/phiguera/CharAnalysis
 
 ## Part I. Background
 
-*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses are based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
+*CharAnalysis* is a set of diagnostic and analytical tools designed for analyzing sediment-charcoal records when the goal is peak detection to reconstruct "local" fire history. The analyses were developed based on widely applied approaches that decompose a charcoal record into low- and high-frequency components (e.g. Clark and Royall 1996; Long et al. 1998; Carcaillet et al. 2001; Gavin et al. 2006), and the program introduced a technique of using a locally-defined threshold to separate signal from noise (Higuera et al. 2008; 2009). The program is set up to make explicit the range of choices an analyst must make when implementing this approach. Diagnostic tools help determine if peak detection is warranted and, if so, what parameters are most reasonable. Sensitivity analyses illustrate the impacts of alternative analysis criteria on peak-based fire-history interpretations, and graphical displays and statistical analyses summarize peak-based fire-history metrics.
 
-Since its original development in the mid-2000s, *CharAnalysis* has been used in dozens of published studies across six continents. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
+*CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs. 
+
+### Citation
+
+If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
+the first study to apply the core analytical tools implemented in *CharAnalysis*:
+
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
+Vegetation mediated the impacts of postglacial climate change on fire regimes
+in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219.
+https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1
+
+If you used Version 2.0 specifically, please also cite the software:
+
+Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
+analysis in sediment-charcoal records (Version 2.0). Zenodo.
+https://doi.org/10.5281/zenodo.19304064
+
+### Support and Updates
+
+Updates are documented on the GitHub repository. If you encounter problems, please use the Issues tab at https://github.com/phiguera/CharAnalysis/issues. A GitHub account is required to register a new issue. Before posting, search existing issues to see whether your problem has already been addressed.
 
 **Version 2.0** (March 2026) is the first major update to the codebase. The analytical methods are unchanged from Version 1.1. Key changes include:
 
@@ -84,7 +106,7 @@ Cloning or downloading retrieves the entire repository, including example datase
 
 1. After cloning or downloading, add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
    ```matlab
-   addpath '.../CharAnalysis/CharAnalysis_2_0_MATLAB'
+   addpath '.../CharAnalysis_2_0_MATLAB'
    ```
 2. Save the path:
    ```matlab
@@ -153,7 +175,7 @@ Enter the site name in cell G1 (column 7, row 1).
 
 Missing values for `charVol` and `charCount` (but **not** for depths or ages) can be indicated by any value < 0 (e.g. −999). *CharAnalysis* will interpolate across missing data. Note: paste only values into the spreadsheet — formulas are not supported.
 
-![charData worksheet](docs/figures/fig_chardata_worksheet.png)
+![charData worksheet](.github/docs/figures/fig_chardata_worksheet.png) \
 *Figure 1. The charData worksheet in the template file, where data input occurs.*
 
 ---
@@ -162,7 +184,7 @@ Missing values for `charVol` and `charCount` (but **not** for depths or ages) ca
 
 Parameter choices are entered in column C (column 3) of the `CharParams` worksheet (Figure 2). Parameters are divided into four stages.
 
-![charParams worksheet](docs/figures/fig_charparams_worksheet.png)
+![charParams worksheet](.github/docs/figures/fig_charparams_worksheet.png)
 *Figure 2. The CharParams worksheet in the template file, where analysis parameters are selected.*
 
 ---
@@ -217,7 +239,35 @@ Parameter choices are entered in column C (column 3) of the `CharParams` workshe
 Open MATLAB and type `CharAnalysis` into the Command Window. When prompted, enter the name of your parameter file with single quotation marks and the file extension:
 
 ```matlab
->> CharAnalysis('mysite_charParams.csv')
+
+>> >> CharAnalysis
+>>                                                                 
+>> *****************************************************************
+>>                       CharAnalysis 2.0                           
+>>                   (c) 2004 - 2026, P.E. Higuera                  
+>>          MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.          
+>>                   philip.higuera@umontana.edu                    
+>>                    Please read documentation:                    
+>>              https://phiguera.github.io/CharAnalysis/            
+>> *****************************************************************
+>>                                                                 
+>>  CharAnalysis requires an input file in .xls or .csv format.    
+>>  This file includes the selected parameters for peak analysis, 
+>>  and it either includes (.xls) or references (.csv) the input  
+>>  charcoal dataset. The input file must be in the working       
+>>  directory for the program to run.                             
+>>                                                                 
+>>  If you choose to save the results (figures and/or data), they  
+>>  will be saved in the directory containing the input file.     
+>>  *NOTE*: you must close the input file before running          
+>>  CharAnalysis for the .xls or .csv file to be updated with new 
+>>  results.                                                      
+>>                                                               
+>>  *****************************************************************
+>>
+>> Input the file name OR the full path to the site directory, 
+>> bounded with single quotations and including the file 
+>> extension (if file name): 'mysite_charParams.csv'
 ```
 
 You can also call *CharAnalysis* directly with the filename as an argument, which is useful for processing multiple records:
@@ -235,15 +285,7 @@ To return results to the MATLAB workspace:
 
 ---
 
-#### 3.2 Citations, Support, and Updates
-
-If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009) and note that the program is freely available at https://github.com/phiguera/CharAnalysis. See the *Understanding and Citing the Program* section of the main README for the full recommended citation.
-
-Updates are documented on the GitHub repository. If you encounter problems, please use the Issues tab at https://github.com/phiguera/CharAnalysis/issues. A GitHub account is required to register a new issue. Before posting, search existing issues to see whether your problem has already been addressed.
-
----
-
-#### 3.3 Causes of Common Errors
+#### 3.2 Causes of Common Errors
 
 | Error | Likely Cause |
 |-------|-------------|
@@ -390,7 +432,7 @@ Output data are saved to a `CharResults` worksheet (or appended to the input CSV
 | FF | WBLc_uCI | Upper 95% CI for WBLc |
 | GG | WBLc_lCI | Lower 95% CI for WBLc |
 
-![charResults worksheet](docs/figures/fig_charresults_worksheet.png)
+![charResults worksheet](.github/docs/figures/fig_charresults_worksheet.png)
 *Figure 3. Example of the CharResults worksheet after running CharAnalysis and saving data.*
 
 ---
@@ -405,7 +447,7 @@ Output figures provide a detailed look at what the program is doing numerically 
 
 Panel (a): raw CHAR displayed as bars with C<sub>interpolated</sub> as a stair-step plot. Panel (b): C<sub>interpolated</sub> with all five smoothing options for a selected window width. Areas with missing values are indicated by grey boxes.
 
-![Figure 1](docs/figures/fig01_raw_interpolated_char.png)
+![Figure 1](.github/docs/figures/fig01_raw_interpolated_char.png)
 
 ---
 
@@ -413,7 +455,7 @@ Panel (a): raw CHAR displayed as bars with C<sub>interpolated</sub> as a stair-s
 
 Varies depending on threshold type. For a global threshold, shows the full C<sub>peak</sub> distribution as a histogram with the modeled noise distribution and threshold value. For a local threshold, shows multiple non-overlapping time periods, each with the modeled noise distribution, local threshold values (t<sub>yr</sub>), SNI, and KS goodness-of-fit (KS p-val).
 
-![Figure 2](docs/figures/fig02_cpeak_distribution.png)
+![Figure 2](.github/docs/figures/fig02_cpeak_distribution.png)
 
 ---
 
@@ -421,7 +463,7 @@ Varies depending on threshold type. For a global threshold, shows the full C<sub
 
 Panel (a): C<sub>int</sub> with C<sub>back</sub> overlaid. Panel (b): C<sub>peak</sub> with positive and negative threshold values defining C<sub>noise</sub>, and identified peaks marked as `+` symbols. Peaks failing the minimum-count criterion are shown as grey dots.
 
-![Figure 3](docs/figures/fig03_cint_cback_cpeak.png)
+![Figure 3](.github/docs/figures/fig03_cint_cback_cpeak.png)
 
 ---
 
@@ -429,7 +471,7 @@ Panel (a): C<sub>int</sub> with C<sub>back</sub> overlaid. Panel (b): C<sub>peak
 
 Panel (a): CHAR series with peaks from all three threshold values. Panel (b): mean FRI and 95% confidence limits by zone for each threshold. Panel (c): SNI time series. Panel (d): boxplot of all SNI values. Note: y-axes in panels (b) and (c) are log scales.
 
-![Figure 4](docs/figures/fig04_sensitivity_sni.png)
+![Figure 4](.github/docs/figures/fig04_sensitivity_sni.png)
 
 ---
 
@@ -437,7 +479,7 @@ Panel (a): CHAR series with peaks from all three threshold values. Panel (b): me
 
 Cumulative sum of identified peaks as a function of time. The slope at any point is the instantaneous fire frequency (fires yr⁻¹). Areas with missing values are indicated by grey boxes.
 
-![Figure 5](docs/figures/fig05_cumulative_peaks.png)
+![Figure 5](.github/docs/figures/fig05_cumulative_peaks.png)
 
 ---
 
@@ -445,7 +487,7 @@ Cumulative sum of identified peaks as a function of time. The slope at any point
 
 Histogram of FRIs within each zone (20-yr bins). If the fitted Weibull model passes the goodness-of-fit test (p > 0.10 if n < 30; p > 0.05 if n ≥ 30), model parameters and 95% confidence estimates are listed along with mFRI, confidence estimates, and n.
 
-![Figure 6](docs/figures/fig06_fri_distributions.png)
+![Figure 6](.github/docs/figures/fig06_fri_distributions.png)
 
 ---
 
@@ -453,7 +495,7 @@ Histogram of FRIs within each zone (20-yr bins). If the fitted Weibull model pas
 
 Top panel: peak magnitude as bars with identified peaks as `+` symbols. Middle panel: fire return intervals and smoothed FRI curve. Bottom panel: smoothed fire frequency. In all panels, areas with missing values are indicated by grey boxes.
 
-![Figure 7](docs/figures/fig07_continuous_fire_history.png)
+![Figure 7](.github/docs/figures/fig07_continuous_fire_history.png)
 
 ---
 
@@ -461,7 +503,7 @@ Top panel: peak magnitude as bars with identified peaks as `+` symbols. Middle p
 
 Left panel: cumulative distribution functions (CDFs) of raw CHAR values within each zone. Two-sample KS tests compare zones pairwise; a table of p-values is displayed within the plot. Right panel: box plots of raw CHAR values by zone (10th, 25th, 50th, 75th, and 90th percentiles).
 
-![Figure 8](docs/figures/fig08_zone_comparisons.png)
+![Figure 8](.github/docs/figures/fig08_zone_comparisons.png)
 
 ---
 
@@ -469,7 +511,7 @@ Left panel: cumulative distribution functions (CDFs) of raw CHAR values within e
 
 Panel (a): C<sub>int</sub> with C<sub>back</sub> and C<sub>thresh</sub>. Panel (b): C<sub>peak</sub> and C<sub>thresh</sub> displayed in the ratio domain. Panel (c): C<sub>peak</sub> and C<sub>thresh</sub> displayed in the residual domain. This figure illustrates how the selected threshold would appear under both C<sub>peak</sub> definitions.
 
-![Figure 9](docs/figures/fig09_threshold_display.png)
+![Figure 9](.github/docs/figures/fig09_threshold_display.png)
 
 ---
 
@@ -477,7 +519,7 @@ Panel (a): C<sub>int</sub> with C<sub>back</sub> and C<sub>thresh</sub>. Panel (
 
 Results from multiple analyses using varying smoothing window widths. For a local threshold: (a) KS goodness-of-fit p-values by window width; (b) SNI distributions by window width; (c) sum of (a) and (b), useful for selecting the optimal window when the two measures show opposing trends. For a global threshold: a three-variable plot of peak count (z) as a function of threshold value (x) and smoothing window (y).
 
-![Figure 10](docs/figures/fig10_sensitivity_cback_window.png)
+![Figure 10](.github/docs/figures/fig10_sensitivity_cback_window.png)
 
 ---
 
@@ -485,7 +527,7 @@ Results from multiple analyses using varying smoothing window widths. For a loca
 
 Many features in *CharAnalysis* are based on analytical techniques from the programs CHAPS (Patrick Bartlein, University of Oregon) and Charster (Daniel Gavin, University of Oregon). The resampling algorithm and minimum-count screening were developed directly from features in Charster. Peak magnitude and smoothed fire frequency displays were developed based on CHAPS. *CharAnalysis*, like Charster, uses a Gaussian mixture model originally created by Charles Bouman (Purdue University).
 
-Development of the program has benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, Patrick Bartlein, and Ryan Kelly.
+Development of the program benefited greatly from discussions with and testing by members of the Whitlock Paleoecology Lab at Montana State University, Dan Gavin, Patrick Bartlein, and Ryan Kelly.
 
 **Version 2.0** was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.
 
