@@ -183,7 +183,6 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 - Global variables eliminated, improving reliability when functions are called in non-standard order.
 - Computation separated from visualization, making batch processing more straightforward.
 - Input validation added, providing clear error messages for common misconfigurations.
-- Several bugs corrected (see the repository README for details).
 
 ---
 
