@@ -1,4 +1,4 @@
-## *CharAnalysis*: Diagnostic and analytical tools for peak detection in sediment-charcoal records
+## *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records
 
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026\
 Philip Higuera\
