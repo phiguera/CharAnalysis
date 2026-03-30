@@ -184,6 +184,10 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 - Computation separated from visualization, making batch processing more straightforward.
 - Input validation added, providing clear error messages for common misconfigurations.
 
+> **Note:** Prior to April 2014, *CharAnalysis* was hosted on Google Code
+> (http://code.google.com/p/charanalysis/). Resolved issues from that
+> period are archived there.
+
 ---
 
 ## Part II. Using CharAnalysis
@@ -229,10 +233,6 @@ version comparison script (`z_Compare_CharAnalysis_V1_V2.m`) is located in
    savepath
    ```
 3. You are now ready to use *CharAnalysis*.
-
-> **Note:** Prior to April 2014, *CharAnalysis* was hosted on Google Code
-> (http://code.google.com/p/charanalysis/). Resolved issues from that
-> period are archived there.
 
 ---
 
