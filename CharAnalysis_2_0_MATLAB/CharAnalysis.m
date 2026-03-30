@@ -7,7 +7,7 @@ function [CharAnalysisResults] = CharAnalysis(fileName)
 %             MATLAB (r). (c) 1984 - 2024 The MathWorks, Inc.
 %                       philip.higuera@umontana.edu
 %                      Please read documentation at:
-%                 http://code.google.com/p/charanalysis/
+%                 https://phiguera.github.io/CharAnalysis/
 %    *****************************************************************
 %
 %   CharAnalysis requires an input file in .xls or .csv format. This file
@@ -31,7 +31,7 @@ disp('                  (c) 2004 - 2026, P.E. Higuera                  ')
 disp('         MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.          ')
 disp('                  philip.higuera@umontana.edu                    ')
 disp('                   Please read documentation:                    ')
-disp('             http://code.google.com/p/charanalysis/              ')
+disp('             https://phiguera.github.io/CharAnalysis/            ')
 disp('*****************************************************************')
 disp(' ')
 
