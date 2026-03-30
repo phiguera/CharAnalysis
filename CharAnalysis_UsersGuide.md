@@ -176,6 +176,10 @@ https://doi.org/10.5281/zenodo.19304064
 
 Updates are documented on the GitHub repository. If you encounter problems, please use the Issues tab at https://github.com/phiguera/CharAnalysis/issues. A GitHub account is required to register a new issue. Before posting, search existing issues to see whether your problem has already been addressed.
 
+> **Note:** Prior to April 2014, *CharAnalysis* was hosted on Google Code
+> (http://code.google.com/p/charanalysis/). Resolved issues from that
+> period are archived there.
+
 **Version 2.0** (March 2026) is the first major update to the codebase. The analytical methods are unchanged from Version 1.1. Key changes include:
 
 - No toolbox dependencies — all calls to the Curve Fitting Toolbox `smooth()` function have been replaced with a base-MATLAB implementation (`charLowess.m`), so *CharAnalysis* runs on any MATLAB R2019a+ installation without additional licenses.
@@ -183,10 +187,6 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 - Global variables eliminated, improving reliability when functions are called in non-standard order.
 - Computation separated from visualization, making batch processing more straightforward.
 - Input validation added, providing clear error messages for common misconfigurations.
-
-> **Note:** Prior to April 2014, *CharAnalysis* was hosted on Google Code
-> (http://code.google.com/p/charanalysis/). Resolved issues from that
-> period are archived there.
 
 ---
 
