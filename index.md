@@ -140,8 +140,7 @@ analysis in sediment-charcoal records (Version 2.0). Zenodo.
 ## Methodological Background
 
 The following two papers provide the most thorough background on the rationale
-and assumptions of the analytical methods implemented in *CharAnalysis*, and are
-recommended reading before applying the program:
+and assumptions of the analytical methods implemented in *CharAnalysis*; these are recommended readings before applying the program:
 
 [Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise
 index to quantify the potential for peak detection in sediment-charcoal records.
