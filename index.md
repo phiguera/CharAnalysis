@@ -1,7 +1,7 @@
 # *CharAnalysis*
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
 
-<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="100%" style="display: block; margin: auto;">
+<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="75%" style="display: block; margin: auto; border: 1px solid black;">
 
 *Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
@@ -44,7 +44,7 @@ The entire codebase is distributed and well commented — users are encouraged t
 look under the hood, understand what is going on, and modify the program to suit
 their needs.
 
-<img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%" style="display: block; margin: auto;">
+<img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%" style="display: block; margin: auto; border: 1px solid black;">
 
 *Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
 center of the lake. Sediment cores collected from lakes like this preserve
@@ -69,7 +69,7 @@ explicit parameter choices, informed by diagnostic output from the program.
 The figures below illustrate typical program output for the Code Lake record
 from the south-central Brooks Range, Alaska (Higuera et al. 2009).
 
-<img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%">
+<img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%" style="display: block; margin: auto; border: 1px solid black;">
 
 *Figure 1. Sensitivity of peak identification to alternative threshold values
 (top left), mean fire return intervals by zone for each threshold (top right),
@@ -77,7 +77,7 @@ signal-to-noise index through time (bottom left), and boxplot of all SNI values
 (bottom right). The SNI quantifies the potential for reliable peak detection at each
 point in the record.*
 
-<img src="images/fig07_continuous_fire_history.png" alt="CharAnalysis output: continuous fire history" width="75%">
+<img src="images/fig07_continuous_fire_history.png" alt="CharAnalysis output: continuous fire history" width="75%" style="display: block; margin: auto; border: 1px solid black;">
 
 *Figure 2. Continuous fire history showing peak magnitude (top), fire return
 intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).*
