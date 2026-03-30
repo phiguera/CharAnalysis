@@ -144,6 +144,16 @@ The fire frequency differences are a downstream consequence of the small thresho
 
 The looser tolerances for CH10 relative to Code Lake reflect two documented sources of irreducible numerical difference specific to records with gaps and high-amplitude CHAR values when using a GMM + local threshold combination.
 
+To reproduce the passing CH10 validation, use the following call:
+```matlab
+z_Compare_CharAnalysis_V1_V2('CH10_charParams.csv', ...
+    'CH10_charResults_V_1_1.csv', 'PeakTol', 1, ...
+    'ThreshTol', 0.015, 'FreqTol', 0.200)
+```
+Running the script with default tolerances will produce failures for CH10 — 
+this is expected and documented. See the tolerances table below for guidance 
+on appropriate tolerance settings by analysis type.
+
 ---
 
 ## Bugs Fixed During Round 2 Validation
