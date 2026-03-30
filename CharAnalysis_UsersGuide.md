@@ -392,8 +392,8 @@ Open MATLAB and type `CharAnalysis` into the Command Window. When prompted, ente
 You can also call *CharAnalysis* directly with the filename as an argument, which is useful for processing multiple records:
 
 ```matlab
->> CharAnalysis('site1.csv')
->> CharAnalysis('site2.csv')
+>> CharAnalysis('site1_charParams.csv')
+>> CharAnalysis('site2_charParams.csv')
 ```
 
 To return results to the MATLAB workspace:
