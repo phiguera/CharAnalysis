@@ -77,8 +77,7 @@ Vegetation mediated the impacts of postglacial climate change on fire regimes
 in the south-central Brooks Range, Alaska. *Ecological Monographs*
 79:201–219.](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1)
 
-[Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
-analysis in sediment-charcoal records (Version 2.0).
+[Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records (Version 2.0).
 Zenodo.](https://doi.org/10.5281/zenodo.19304064)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19304064.svg)](https://doi.org/10.5281/zenodo.19304064)
 
