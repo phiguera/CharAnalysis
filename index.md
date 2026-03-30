@@ -1,8 +1,7 @@
 # *CharAnalysis*
 ## Diagnostic and analytical tools for peak detection in sediment-charcoal records
-<div style="text-align: center;">
-<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="100%" style="border: 1px solid black;">
-</div>
+
+<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="75%" style="display: block; margin: auto;">
 
 *Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
@@ -45,9 +44,7 @@ The entire codebase is distributed and well commented — users are encouraged t
 look under the hood, understand what is going on, and modify the program to suit
 their needs.
 
-<div style="text-align: center;">
-<img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%" style="border: 1px solid black;">
-</div>
+<img src="images/photo_flyby_lake_alaska_drone.jpg" alt="Aerial view of Flyby Lake, Alaska, with a coring raft visible on the water" width="75%" style="display: block; margin: auto;">
 
 *Aerial view of Flyby Lake, interior Alaska. A coring raft is visible at the
 center of the lake. Sediment cores collected from lakes like this preserve
