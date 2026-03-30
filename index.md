@@ -52,7 +52,7 @@ millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 <img src="images/SilverLake_ID_ShortCore_2018.jpg" alt="The short core from Silver Lake, Montana" width="30%" style="border: 1px solid black;">
 <img src="images/20191115_CoreSample_0279.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="border: 1px solid black; margin-left: 1%;">
 
-*Left: The upper-most sediment collected from Silver Lake, a 16-m deep subalpine lake in western Montana. The core shows a distinct layer of light-grey tephra, deposited from the 1980 erruption of Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core in the University of Montana's PaleoEcology and Fire Ecology lab. The demarcations at every 0.5 cm are where the core was sliced for continuous sampling (Photo: Univ. of Montana, 2019).*
+*Left: The upper-most sediment collected from Silver Lake, a 16-m deep subalpine lake in western Montana. The core shows a distinct layer of light-grey tephra deposited from the 1980 erruption of Mount St. Helens (Photo: P. Higuera, 2019). Right: Split sediment cores in the University of Montana's PaleoEcology and Fire Ecology lab. The demarcations at every 0.5 cm are where the cores were sliced for continuous sampling (Photo: Univ. of Montana, 2019).*
 
 ---
 
