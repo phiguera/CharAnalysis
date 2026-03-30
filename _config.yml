@@ -1,5 +1,13 @@
 title: <em> CharAnalysis </em>
 description: Diagnostic and analytical tools for peak detection in sediment-charcoal records
+[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+© 2004–2026\
+Philip Higuera  
+Professor, Department of Ecosystem and Conservation Sciences  
+University of Montana, Missoula, MT, USA  
+[philip.higuera@umontana.edu](mailto:philip.higuera@umontana.edu) |
+[Faculty page](https://www.umt.edu/people/phiguera) |
+[GitHub repository](https://github.com/phiguera/CharAnalysis)
 google_analytics: 
 show_downloads: true
 theme: jekyll-theme-slate
