@@ -1,6 +1,6 @@
 # *CharAnalysis* User's Guide
 
-**Diagnostic and Analytical Tools for Peak Analysis in Sediment-Charcoal Records**
+**Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records**
 
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026\
 Philip Higuera\
@@ -168,8 +168,7 @@ https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1
 
 If you used Version 2.0 specifically, please also cite the software:
 
-Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak
-analysis in sediment-charcoal records (Version 2.0). Zenodo.
+Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records (Version 2.0). Zenodo.
 https://doi.org/10.5281/zenodo.19304064
 
 ### Support and Updates
