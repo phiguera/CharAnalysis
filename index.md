@@ -1,7 +1,3 @@
-<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="100%" style="display: block; margin: auto; border: 1px solid black;">
-
-*Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
-
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 © 2004–2026\
 Philip Higuera  
@@ -10,6 +6,10 @@ University of Montana, Missoula, MT, USA
 [philip.higuera@umontana.edu](mailto:philip.higuera@umontana.edu) |
 [Faculty page](https://www.umt.edu/people/phiguera) |
 [GitHub repository](https://github.com/phiguera/CharAnalysis)
+
+<img src="images/photo_chickaree_lake_coring.jpg" alt="Researchers collecting a sediment core from Chickaree Lake, Colorado" width="100%" style="display: block; margin: auto; border: 1px solid black;">
+
+*Collecting a sediment core from Chickaree Lake, Rocky Mountain National Park, Colorado. Photo: G. Carter (2010).*
 
 ---
 
