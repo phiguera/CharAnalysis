@@ -50,8 +50,8 @@ their needs.
 center of the lake. Sediment cores collected from lakes like this preserve
 millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 
-<img src="images/SilverLake_ID_ShortCore_2018.jpg" alt="The short core from Silver Lake, Montana" width="30%">
-<img src="images/20191115_CoreSample_0279.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="margin-left: 1%;">
+<img src="images/SilverLake_ID_ShortCore_2018.jpg" alt="The short core from Silver Lake, Montana" width="30%" style="border: 1px solid black;">
+<img src="images/20191115_CoreSample_0279.jpg" alt="Split sediment core sections in the laboratory" width="66%" style="border: 1px solid black; margin-left: 1%;">
 
 *Left: The upper-most sediment collected from Silver Lake, a 16-m deep subalpine lake in western Montana. The core shows a distinct layer of light-grey tephra, deposited from the 1980 erruption of Mount St. Helens in Washington (Photo: P. Higuera, 2019). Right: Split sediment core in the University of Montana's PaleoEcology and Fire Ecology lab. The demarkations at every 0.5 cm are where the core will be sliced for continuous sampling (Photo: Univ. of Montana, 2019).*
 
@@ -69,7 +69,7 @@ explicit parameter choices, informed by diagnostic output from the program.
 The figures below illustrate typical program output for the Code Lake record
 from the south-central Brooks Range, Alaska (Higuera et al. 2009).
 
-<img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%" style="display: block; margin: auto; border: 1px solid black;">
+<img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%" style="display: block; margin: auto;">
 
 *Figure 1. Sensitivity of peak identification to alternative threshold values
 (top left), mean fire return intervals by zone for each threshold (top right),
@@ -77,7 +77,7 @@ signal-to-noise index through time (bottom left), and boxplot of all SNI values
 (bottom right). The SNI quantifies the potential for reliable peak detection at each
 point in the record.*
 
-<img src="images/fig07_continuous_fire_history.png" alt="CharAnalysis output: continuous fire history" width="75%" style="display: block; margin: auto; border: 1px solid black;">
+<img src="images/fig07_continuous_fire_history.png" alt="CharAnalysis output: continuous fire history" width="75%" style="display: block; margin: auto;">
 
 *Figure 2. Continuous fire history showing peak magnitude (top), fire return
 intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).*
