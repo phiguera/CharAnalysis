@@ -20,12 +20,11 @@ University of Montana, Missoula, MT, USA
 
 *CharAnalysis* is a freely available program for reconstructing local fire
 histories from high-resolution, continuously sampled lake-sediment charcoal
-records. It is designed specifically for macroscopic charcoal records — those
-with contiguous sampling at fine enough resolution to resolve individual fire
-events — and is not appropriate for low-resolution or discontinuously sampled
+records. It is designed specifically for macroscopic charcoal records with contiguous sampling at fine enough resolution to resolve individual fire
+events; it is _not_ appropriate for low-resolution or discontinuously sampled
 records.
 
-For records that meet these criteria, *CharAnalysis* implements a widely applied
+For records that meet the required criteria, *CharAnalysis* implements a widely applied
 approach that decomposes a charcoal record into low- and high-frequency
 components, including the ability to use locally defined thresholds to separate
 fire signal from noise. This approach was first applied in Higuera et al.
