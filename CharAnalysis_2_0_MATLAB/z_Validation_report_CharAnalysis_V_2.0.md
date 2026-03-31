@@ -11,7 +11,7 @@
 | Round | Site ID | Site Name | Location | Ecosystem | threshType | Reference |
 |---|---|---|---|---|---|---|
 | 1 | CO | Code Lake | Alaska, USA | boreal forest | local | Higuera et al. 2009 |
-| 2 | CO | Code Lake | Alaska, USA | boreal forest | global | Higuera et al. 2009 |
+| 2 | CO | Code Lake | Alaska, USA | boreal forest | global | -- |
 | 3 | CH10 | Chickaree Lake | Colorado, USA | subalpine forest | local | Dunnette et al. 2014 |
 | 4 | TL06 | Thunder Lake | Colorado, USA | subalpine forest | local | Higuera et al. 2024 |
 | 5 | RA07 | Raven Lake | Alaska, USA | tundra | local | Higuera et al. 2011 |
