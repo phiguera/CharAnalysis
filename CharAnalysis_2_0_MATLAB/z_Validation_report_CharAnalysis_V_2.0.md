@@ -211,13 +211,13 @@ The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 y
 The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
 
 The params file was corrected to `zoneDiv(end) = 6150` before generating the v1.1 reference for this round. **Users should ensure `zoneDiv(end)` does not exceed the bottom age of the last raw sample.** A warning is now emitted by `CharValidateParams.m` when this condition is detected.
+
 =======
 The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the last raw sample bottom age of 6150 yr BP. This caused v1.1 to silently extrapolate 4 terminal interpolated samples with zero CHAR values, while v2.0 correctly marks them NaN — a difference that propagated into `charBkg` across the entire record via the smoother.
 
 The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
 
 The params file was corrected to `zoneDiv(end) = 6150` before generating the v1.1 reference for this round. This is a user input correction, not a code change. **Users should ensure `zoneDiv(end)` does not extend beyond the bottom age of the last raw sample in their input data.**
->>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 
 ### Bug Fixed During Round 3 Validation
 
