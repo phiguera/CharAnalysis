@@ -8,20 +8,20 @@
 
 ## Validation Datasets
 
-| Round | Site ID | Site Name | Location | Reference |
-|---|---|---|---|---|
-| 1 | CO | Code Lake | Alaska, USA | Higuera et al. 2009 |
-| 2 | CH10 | Chickaree Lake | Colorado, USA | Dunnette et al. 2014 |
-| 3 | TL06 | Thunder Lake | — | — |
-| 4 | RA07 | Raven Lake | — | — |
+| Round | Site ID | Site Name | Location | Ecosystem | Reference |
+|---|---|---|---|---|---|
+| 1 | CO | Code Lake | Alaska, USA | boreal forest | Higuera et al. 2009 |
+| 2 | CH10 | Chickaree Lake | Colorado, USA | subalpine forest | Dunnette et al. 2014 |
+| 3 | TL06 | Thunder Lake | Colorado, USA | subalpine forest | Higuera et al. 2024 |
+| 4 | RA07 | Raven Lake | Alaska, USA | tundra | Higuera et al. 2011 |
 
-Code Lake is the example dataset bundled with CharAnalysis distributions. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, and fire return interval characteristics.
+Code Lake is the example dataset bundled with _CharAnalysis_ distributions. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, ecosystems, and fire regime characteristics.
 
 ---
 
 ## Round 1: Code Lake, Alaska (CO)
 
-**Dataset:** Code Lake, AK — the example dataset bundled with CharAnalysis distributions
+**Dataset:** Code Lake, AK — the example dataset bundled with _CharAnalysis_ distributions
 **Input file:** `CO_charParams.csv` / `CO_charData.csv`
 
 ### Analysis Parameters
@@ -179,9 +179,9 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 
 ---
 
-## Round 3: Thunder Lake (TL06)
+## Round 3: Thunder Lake, Colorado (TL06)
 
-**Dataset:** Thunder Lake — an independent charcoal record used for validation
+**Dataset:** Thunder Lake, CO — an independent charcoal record used for validation
 **Input file:** `TL06_charParams.csv` / `TL06_charData.csv`
 
 ### Analysis Parameters
@@ -274,9 +274,9 @@ TL06 achieves an exact match on all threshold values. This is expected for a gap
 
 ---
 
-## Round 4: Raven Lake (RA07)
+## Round 4: Raven Lake, Alaska (RA07)
 
-**Dataset:** Raven Lake — an independent charcoal record used for validation
+**Dataset:** Raven Lake, AK — an independent charcoal record used for validation
 **Input file:** `RA07_charParams.csv` / `RA07_charData.csv`
 
 ### Analysis Parameters
@@ -347,6 +347,14 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 ---
 
+## Recurring Input Issue: zoneDiv Boundary Overshoot
+
+This issue was observed independently in Round 3 (Thunder Lake) and Round 4 (Raven Lake). In both cases, `zoneDiv(end)` in the params file extended slightly beyond the bottom age of the last raw sample. The v2.0 vectorized proportion matrix correctly assigns NaN to interpolated intervals with no overlapping raw data, whereas v1.1's double loop silently filled them with zero CHAR. The NaN values propagated into `charBkg` via the smoother, producing differences across the entire record.
+
+**Resolution:** Correct `zoneDiv(end)` to be no greater than the bottom age of the last raw sample. As of Round 4, `CharValidateParams.m` emits a warning when this condition is detected, specifying the data boundary and the recommended correction.
+
+---
+
 ## Documented Numerical Tolerances by Analysis Type
 
 The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–4, the following tolerances are appropriate:
@@ -355,14 +363,6 @@ The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance pa
 |---|---|---|---|---|
 | GMM + local, no gaps | 0 | 0.001 | 0.001 | Code Lake, Thunder Lake, and Raven Lake baseline |
 | GMM + local, with gaps | 1 | 0.015 | 0.200 | Chickaree Lake baseline |
-
----
-
-## Recurring Input Issue: zoneDiv Boundary Overshoot
-
-This issue was observed independently in Round 3 (Thunder Lake) and Round 4 (Raven Lake). In both cases, `zoneDiv(end)` in the params file extended slightly beyond the bottom age of the last raw sample. The v2.0 vectorized proportion matrix correctly assigns NaN to interpolated intervals with no overlapping raw data, whereas v1.1's double loop silently filled them with zero CHAR. The NaN values propagated into `charBkg` via the smoother, producing differences across the entire record.
-
-**Resolution:** Correct `zoneDiv(end)` to be no greater than the bottom age of the last raw sample. As of Round 4, `CharValidateParams.m` emits a warning when this condition is detected, specifying the data boundary and the recommended correction.
 
 ---
 
