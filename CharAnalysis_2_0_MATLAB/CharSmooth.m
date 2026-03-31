@@ -28,54 +28,75 @@ function [Charcoal] = CharSmooth(Charcoal, Pretreatment, Smoothing, ...
 %
 %   v2.0 changes vs v1.1
 %     - plotData passed as explicit argument; global removed.
-%     - All smooth() calls (Curve Fitting Toolbox) replaced by charLowess().
-%     - NaN values in accI (from record gaps) are bridged by linear
-%       interpolation before smoothing and restored afterward, preventing
-%       NaN propagation through charLowess into accIS.
+%     - When the Curve Fitting Toolbox is available, smooth() is called
+%       directly on Charcoal.accI (including any NaNs) for methods 1-3
+%       and the Lowess passes in methods 4-5, guaranteeing results
+%       identical to v1.1. charLowess() is used as the fallback when the
+%       toolbox is absent; in that case NaN entries are bridged by linear
+%       interpolation before smoothing and restored afterward.
 %     - hist() call in plot block replaced by charHistCounts().
 %
 %   CharAnalysis v2.0  -  Phase 1 modernisation
 
-%% ?? Local variables ??????????????????????????????????????????????????????
+%% -- Local variables ------------------------------------------------------
 r = Pretreatment.yrInterp;
 s = Smoothing.yr / r;           % window width in data-point units
 
 N = length(Charcoal.accI);
 charAccIS = NaN(N, 5);          % preallocate all five columns
 
-%% ?? Bridge NaN values in accI before smoothing ???????????????????????????
-% NaN entries in Charcoal.accI (from record gaps) propagate through
-% charLowess and expand into large NaN blocks in accIS. Bridge them with
-% linear interpolation for smoothing purposes only, then restore NaN
-% positions afterward so gap locations remain correctly marked.
+%% -- Curve Fitting Toolbox check ------------------------------------------
+% When the toolbox is available, smooth() is called directly on the raw
+% accI series (including any NaNs from record gaps), exactly as v1.1 did.
+% When the toolbox is absent, charLowess() is used instead; it requires
+% NaN-free input, so NaN entries are bridged and restored around the call.
+v      = ver;
+hasCFT = any(strcmp({v.Name}, 'Curve Fitting Toolbox'));
+
+%% -- NaN bridging (charLowess path only) ----------------------------------
+% Only needed when hasCFT is false. smooth() handles NaNs internally;
+% charLowess() does not.
 nanMask    = isnan(Charcoal.accI);
 accI_clean = Charcoal.accI;
-if any(nanMask)
+if ~hasCFT && any(nanMask)
     xAll = (1:N)';
     accI_clean(nanMask) = interp1(xAll(~nanMask), ...
                                    Charcoal.accI(~nanMask), ...
                                    xAll(nanMask), 'linear', 'extrap');
 end
 
-%% ?? Method 1: Lowess ?????????????????????????????????????????????????????
+%% -- Method 1: Lowess -----------------------------------------------------
 % Locally-weighted scatter-plot smooth using linear polynomial fitting.
 % Replaces: smooth(Charcoal.accI, s, 'lowess')
-charAccIS(:,1) = charLowess(accI_clean, s, 'lowess');
+if hasCFT
+    charAccIS(:,1) = smooth(Charcoal.accI, s, 'lowess');
+else
+    charAccIS(:,1) = charLowess(accI_clean, s, 'lowess');
+end
 
-%% ?? Method 2: Robust Lowess ??????????????????????????????????????????????
+%% -- Method 2: Robust Lowess ----------------------------------------------
 % Same as method 1 but with iterative bisquare re-weighting to suppress
 % the influence of outliers on the fitted curve.
 % Replaces: smooth(Charcoal.accI, s, 'rlowess')
-charAccIS(:,2) = charLowess(accI_clean, s, 'rlowess');
+if hasCFT
+    charAccIS(:,2) = smooth(Charcoal.accI, s, 'rlowess');
+else
+    charAccIS(:,2) = charLowess(accI_clean, s, 'rlowess');
+end
 
-%% ?? Method 3: Moving average ?????????????????????????????????????????????
+%% -- Method 3: Moving average ---------------------------------------------
 % Each output sample is the arithmetic mean of accI values within the
 % window. At the record boundaries the window shrinks symmetrically.
 % Replaces: smooth(Charcoal.accI, s, 'moving')
-charAccIS(:,3) = charLowess(accI_clean, s, 'moving');
+if hasCFT
+    charAccIS(:,3) = smooth(Charcoal.accI, s, 'moving');
+else
+    charAccIS(:,3) = charLowess(accI_clean, s, 'moving');
+end
 
-%% ?? Method 4: Running median + Lowess ???????????????????????????????????
+%% -- Method 4: Running median + Lowess ------------------------------------
 % Step 1: assign each sample the median accI value within the window.
+%         Uses accI_clean so the loop is always NaN-free.
 % Step 2: smooth the resulting series with Lowess.
 hw4 = round(s / 2);
 for i = 1:N
@@ -88,13 +109,18 @@ for i = 1:N
     end
     charAccIS(i, 4) = median(win);
 end
-charAccIS(:,4) = charLowess(charAccIS(:,4), s, 'lowess');
+if hasCFT
+    charAccIS(:,4) = smooth(charAccIS(:,4), s, 'lowess');
+else
+    charAccIS(:,4) = charLowess(charAccIS(:,4), s, 'lowess');
+end
 
-%% ?? Method 5: Running mode + Lowess ?????????????????????????????????????
+%% -- Method 5: Running mode + Lowess --------------------------------------
 % Step 1: divide accI values within the window into 100 equally-spaced
 %         bins; assign each sample the centre of the most-populated bin.
 %         If multiple bins share the maximum count, their centres are
 %         averaged (median of modal centres).
+%         Uses accI_clean so the loop is always NaN-free.
 % Step 2: smooth the resulting series with Lowess.
 hw5  = round(s / 2);
 nBin = 100;
@@ -110,14 +136,18 @@ for i = 1:N
     modal_centres     = x_mode(n_mode == max(n_mode));
     charAccIS(i, 5)   = median(modal_centres);
 end
-charAccIS(:,5) = charLowess(charAccIS(:,5), s, 'lowess');
+if hasCFT
+    charAccIS(:,5) = smooth(charAccIS(:,5), s, 'lowess');
+else
+    charAccIS(:,5) = charLowess(charAccIS(:,5), s, 'lowess');
+end
 
-%% ?? Restore NaN positions in smoothed output ?????????????????????????????
-% Gap locations that were bridged for smoothing are marked NaN again so
-% downstream functions can identify them correctly.
-charAccIS(nanMask, :) = NaN;
+%% -- Restore NaN positions (charLowess path only) -------------------------
+if ~hasCFT && any(nanMask)
+    charAccIS(nanMask, :) = NaN;
+end
 
-%% ?? Plot (Figure 1, subplot 2) ???????????????????????????????????????????
+%% -- Plot (Figure 1, subplot 2) -------------------------------------------
 % Only drawn when plotData == 1 and Results.allFigures == 1.
 % Subplot 1 is drawn by CharPretreatment; both live in Figure 1.
 if plotData == 1 && Results.allFigures == 1
@@ -146,7 +176,7 @@ if plotData == 1 && Results.allFigures == 1
 
 end
 
-%% ?? Store selected method ????????????????????????????????????????????????
+%% -- Store selected method ------------------------------------------------
 Charcoal.accIS = charAccIS(:, Smoothing.method);
 
 end

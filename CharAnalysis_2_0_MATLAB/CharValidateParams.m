@@ -22,20 +22,23 @@ function CharValidateParams(charData, Pretreatment, Smoothing, ...
 %     4. zoneDiv has at least 2 values
 %     5. zoneDiv is strictly ascending
 %     6. yrInterp is non-negative (0 = auto)
+%     7. zoneDiv(end) does not exceed the bottom age of the last raw sample
+%        (warning only -- v2.0 marks overrun samples NaN, but results will
+%        differ from v1.1 which silently filled them with zero CHAR)
 %
 %   Smoothing
-%     7. Smoothing window (yr) is shorter than the record length
-%     8. Smoothing method is in the range 1–5
+%     8. Smoothing window (yr) is shorter than the record length
+%     9. Smoothing method is in the range 1-5
 %
 %   PeakAnalysis
-%     9.  threshType is 1 or 2
-%     10. threshMethod is 1, 2, or 3
-%     11. Locally defined threshold cannot be user-defined
+%     10. threshType is 1 or 2
+%     11. threshMethod is 1, 2, or 3
+%     12. Locally defined threshold cannot be user-defined
 %         (threshMethod == 1 && threshType == 2)
-%     12. threshValues all in (0, 1) when threshMethod > 1
-%     13. cPeak is 1 (residuals) or 2 (ratios)
-%     14. minCountP is in [0, 1]
-%     15. peakFrequ is positive
+%     13. threshValues all in (0, 1) when threshMethod > 1
+%     14. cPeak is 1 (residuals) or 2 (ratios)
+%     15. minCountP is in [0, 1]
+%     16. peakFrequ is positive
 %
 %   CharAnalysis v2.0
 
@@ -73,7 +76,22 @@ if Pretreatment.yrInterp < 0
     error('CharValidateParams: yrInterp must be >= 0 (0 = use median sample resolution).')
 end
 
-%% ── 7. Smoothing window shorter than record ──────────────────────────────
+%% ── 7. zoneDiv(end) within data extent (warning) ────────────────────────
+% If zoneDiv(end) exceeds the bottom age of the last raw sample, the
+% vectorized proportion matrix in CharPretreatment will find no overlapping
+% raw data for those terminal intervals and mark them NaN. This causes
+% charBkg to differ from v1.1, which silently filled them with zero CHAR.
+% Set zoneDiv(end) to no greater than the bottom age of the last raw sample.
+lastAgeBotInData = charData(end, 4);
+if Pretreatment.zoneDiv(end) > lastAgeBotInData
+    warning(['CharValidateParams: zoneDiv(end) (%g yr BP) exceeds the ' ...
+             'bottom age of the last raw sample (%g yr BP). ' ...
+             'Terminal interpolated samples beyond the data will be ' ...
+             'set to NaN. Set zoneDiv(end) <= %g to avoid this.'], ...
+        Pretreatment.zoneDiv(end), lastAgeBotInData, lastAgeBotInData)
+end
+
+%% ── 8. Smoothing window shorter than record ──────────────────────────────
 recordLength = max(Pretreatment.zoneDiv) - min(Pretreatment.zoneDiv);
 smoothYr     = Smoothing.yr(end);   % Use the longest window specified.
 if smoothYr >= recordLength
@@ -81,30 +99,30 @@ if smoothYr >= recordLength
         smoothYr, recordLength)
 end
 
-%% ── 8. Smoothing method in range ─────────────────────────────────────────
+%% ── 9. Smoothing method in range ─────────────────────────────────────────
 if ~ismember(Smoothing.method, 1:5)
     error('CharValidateParams: smoothing method must be 1–5. Got %d.', ...
         Smoothing.method)
 end
 
-%% ── 9. threshType valid ──────────────────────────────────────────────────
+%% ── 10. threshType valid ──────────────────────────────────────────────────
 if ~ismember(PeakAnalysis.threshType, [1 2])
     error('CharValidateParams: threshType must be 1 (global) or 2 (local). Got %d.', ...
         PeakAnalysis.threshType)
 end
 
-%% ── 10. threshMethod valid ───────────────────────────────────────────────
+%% ── 11. threshMethod valid ───────────────────────────────────────────────
 if ~ismember(PeakAnalysis.threshMethod, [1 2 3])
     error('CharValidateParams: threshMethod must be 1, 2, or 3. Got %d.', ...
         PeakAnalysis.threshMethod)
 end
 
-%% ── 11. Local threshold cannot be user-defined ───────────────────────────
+%% ── 12. Local threshold cannot be user-defined ───────────────────────────
 if PeakAnalysis.threshMethod == 1 && PeakAnalysis.threshType == 2
     error('CharValidateParams: a locally defined threshold (threshType = 2) cannot be user-defined (threshMethod = 1). Change input parameters.')
 end
 
-%% ── 12. threshValues in (0,1) when threshMethod > 1 ─────────────────────
+%% ── 13. threshValues in (0,1) when threshMethod > 1 ─────────────────────
 if PeakAnalysis.threshMethod > 1
     tv = PeakAnalysis.threshValues(1:4);
     if any(tv <= 0) || any(tv >= 1)
@@ -113,19 +131,19 @@ if PeakAnalysis.threshMethod > 1
     end
 end
 
-%% ── 13. cPeak valid ──────────────────────────────────────────────────────
+%% ── 14. cPeak valid ──────────────────────────────────────────────────────
 if ~ismember(PeakAnalysis.cPeak, [1 2])
     error('CharValidateParams: cPeak must be 1 (residuals) or 2 (ratios). Got %d.', ...
         PeakAnalysis.cPeak)
 end
 
-%% ── 14. minCountP in [0,1] ───────────────────────────────────────────────
+%% ── 15. minCountP in [0,1] ───────────────────────────────────────────────
 if PeakAnalysis.minCountP < 0 || PeakAnalysis.minCountP > 1
     error('CharValidateParams: minCountP must be in [0, 1]. Got %g.', ...
         PeakAnalysis.minCountP)
 end
 
-%% ── 15. peakFrequ positive ───────────────────────────────────────────────
+%% ── 16. peakFrequ positive ───────────────────────────────────────────────
 if PeakAnalysis.peakFrequ <= 0
     error('CharValidateParams: peakFrequ must be positive. Got %g.', ...
         PeakAnalysis.peakFrequ)
