@@ -179,7 +179,15 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 
 ---
 
+<<<<<<< HEAD
 ## Round 3: Thunder Lake, Colorado (TL06)
+=======
+## Round 3: Thunder Lake (TL06)
+
+**Dataset:** Thunder Lake — an independent charcoal record used for validation
+=======
+## Round 3: TL06 (Thunder Lake)
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
 
 **Dataset:** Thunder Lake, CO — an independent charcoal record used for validation
 **Input file:** `TL06_charParams.csv` / `TL06_charData.csv`
@@ -203,6 +211,16 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 ### Input Correction Identified During Validation
 
 The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the bottom age of the last raw sample (6150 yr BP). This caused v2.0 to mark 4 terminal interpolated samples NaN, while v1.1 silently filled them with zero CHAR. The NaN values affected `charBkg` across the entire record via the smoother, producing threshold differences everywhere.
+<<<<<<< HEAD
+=======
+
+The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
+
+The params file was corrected to `zoneDiv(end) = 6150` before generating the v1.1 reference for this round. **Users should ensure `zoneDiv(end)` does not exceed the bottom age of the last raw sample.** A warning is now emitted by `CharValidateParams.m` when this condition is detected.
+
+=======
+The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the last raw sample bottom age of 6150 yr BP. This caused v1.1 to silently extrapolate 4 terminal interpolated samples with zero CHAR values, while v2.0 correctly marks them NaN — a difference that propagated into `charBkg` across the entire record via the smoother.
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
 
 The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
 
@@ -274,9 +292,15 @@ TL06 achieves an exact match on all threshold values. This is expected for a gap
 
 ---
 
+<<<<<<< HEAD
 ## Round 4: Raven Lake, Alaska (RA07)
 
 **Dataset:** Raven Lake, AK — an independent charcoal record used for validation
+=======
+## Round 4: Raven Lake (RA07)
+
+**Dataset:** Raven Lake — an independent charcoal record used for validation
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
 **Input file:** `RA07_charParams.csv` / `RA07_charData.csv`
 
 ### Analysis Parameters
@@ -347,14 +371,8 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 ---
 
-## Recurring Input Issue: zoneDiv Boundary Overshoot
-
-This issue was observed independently in Round 3 (Thunder Lake) and Round 4 (Raven Lake). In both cases, `zoneDiv(end)` in the params file extended slightly beyond the bottom age of the last raw sample. The v2.0 vectorized proportion matrix correctly assigns NaN to interpolated intervals with no overlapping raw data, whereas v1.1's double loop silently filled them with zero CHAR. The NaN values propagated into `charBkg` via the smoother, producing differences across the entire record.
-
-**Resolution:** Correct `zoneDiv(end)` to be no greater than the bottom age of the last raw sample. As of Round 4, `CharValidateParams.m` emits a warning when this condition is detected, specifying the data boundary and the recommended correction.
-
----
-
+<<<<<<< HEAD
+=======
 ## Documented Numerical Tolerances by Analysis Type
 
 The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–4, the following tolerances are appropriate:
@@ -366,9 +384,47 @@ The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance pa
 
 ---
 
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
+## Recurring Input Issue: zoneDiv Boundary Overshoot
+
+This issue was observed independently in Round 3 (Thunder Lake) and Round 4 (Raven Lake). In both cases, `zoneDiv(end)` in the params file extended slightly beyond the bottom age of the last raw sample. The v2.0 vectorized proportion matrix correctly assigns NaN to interpolated intervals with no overlapping raw data, whereas v1.1's double loop silently filled them with zero CHAR. The NaN values propagated into `charBkg` via the smoother, producing differences across the entire record.
+
+**Resolution:** Correct `zoneDiv(end)` to be no greater than the bottom age of the last raw sample. As of Round 4, `CharValidateParams.m` emits a warning when this condition is detected, specifying the data boundary and the recommended correction.
+<<<<<<< HEAD
+
+---
+
+=======
+=======
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
+## Documented Numerical Tolerances by Analysis Type
+
+The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–4, the following tolerances are appropriate:
+
+| Analysis type | PeakTol | ThreshTol | FreqTol | Notes |
+|---|---|---|---|---|
+<<<<<<< HEAD
+| GMM + local, no gaps | 0 | 0.001 | 0.001 | Code Lake, Thunder Lake, and Raven Lake baseline |
+| GMM + local, with gaps | 1 | 0.015 | 0.200 | Chickaree Lake baseline |
+=======
+| GMM + local, no gaps | 0 | 0.001 | 0.001 | Code Lake and TL06 baseline |
+| GMM + local, with gaps | 1 | 0.015 | 0.200 | CH10 baseline |
+>>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
+
+---
+
 ## Bugs Fixed in v2.0 (Complete List)
 
+<<<<<<< HEAD
 The following bugs were identified and corrected across Rounds 1–4. All fixes were confirmed to produce results consistent with v1.1.
+=======
+<<<<<<< HEAD
+The following bugs were identified and corrected across Rounds 1–4. All fixes were confirmed to produce results consistent with v1.1.
+=======
+The following bugs were identified and corrected across Rounds 1–3. All fixes were confirmed to produce results consistent with v1.1.
+>>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
 
 | Bug | Location | Description |
 |---|---|---|
@@ -389,7 +445,16 @@ The following bugs were identified and corrected across Rounds 1–4. All fixes 
 
 ## Next Steps
 
+<<<<<<< HEAD
 - Round 5: Test the `bkgSens = 1` sensitivity analysis path
 - Update `dev` branch README with Round 4 validation status
+=======
+<<<<<<< HEAD
+- Round 5: Test the `bkgSens = 1` sensitivity analysis path
+- Update `dev` branch README with Round 4 validation status
+=======
+- Round 4: Test the `bkgSens = 1` sensitivity analysis path
+- Update `dev` branch README with Round 3 validation status
+>>>>>>> 09f7bcf5e74768f915cb8e53d17a43551e867305
 - Merge `dev` branch to `main` after `bkgSens` validation passes
 - Continue testing additional datasets to broaden coverage (global threshold, methods 3–5, log transform)
