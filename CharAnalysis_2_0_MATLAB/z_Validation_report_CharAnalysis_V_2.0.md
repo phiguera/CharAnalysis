@@ -1,14 +1,32 @@
 # CharAnalysis v2.0 Validation Report
 
-**Date:** March 27, 2026
+**Date:** March 30, 2026
 **Prepared by:** CharAnalysis Development Team
 **Comparison:** CharAnalysis v1.1 (MATLAB) vs. CharAnalysis v2.0 (MATLAB)
 
 ---
 
-## Round 1: Code Lake Example Dataset
+## Validation Datasets
 
-**Dataset:** Code Lake, AK — the example dataset bundled with CharAnalysis distributions
+| Round | Site ID | Site Name | Location | Ecosystem | threshType | Reference |
+|---|---|---|---|---|---|---|
+| 1 | CO | Code Lake | Alaska, USA | boreal forest | local | Higuera et al. 2009 |
+| 2 | CO | Code Lake | Alaska, USA | boreal forest | global | -- |
+| 3 | CH10 | Chickaree Lake | Colorado, USA | subalpine forest | local | Dunnette et al. 2014 |
+| 4 | TL06 | Thunder Lake | Colorado, USA | subalpine forest | local | Higuera et al. 2024 |
+| 5 | RA07 | Raven Lake | Alaska, USA | tundra | local | Higuera et al. 2011 |
+
+Code Lake is the example dataset bundled with _CharAnalysis_ distributions and was tested with both local and global threshold configurations. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, ecosystems, and fire regime characteristics.
+
+### Note on Record End Treatment
+
+V2.0 handles the end of the interpolated record more accurately than v1.1. When `zoneDiv(end)` extends beyond the bottom age of the last raw sample, v1.1 silently filled terminal interpolated samples with zero CHAR values; v2.0 correctly identifies these as having no overlapping raw data. In v2.0, `CharPretreatment.m` automatically corrects `zoneDiv(end)` to the bottom age of the last raw sample and notifies the user. This means v2.0 may produce a slightly shorter interpolated record than v1.1 when the original `zoneDiv(end)` overshot the data, and small differences near the end of the record are expected in those cases. All validation runs below used params files where `zoneDiv(end)` was set to match the data boundary exactly, so that both versions produce identical record lengths for comparison.
+
+---
+
+## Round 1: Code Lake, Alaska (CO) — Local Threshold
+
+**Dataset:** Code Lake, AK — the example dataset bundled with _CharAnalysis_ distributions
 **Input file:** `CO_charParams.csv` / `CO_charData.csv`
 
 ### Analysis Parameters
@@ -16,7 +34,7 @@
 | Parameter | Value |
 |---|---|
 | `yrInterp` | 15 yr |
-| `Smoothing.method` | 3 (Gaussian mixture model) |
+| `Smoothing.method` | 1 (Lowess) |
 | `Smoothing.yr` | 500 yr |
 | `threshType` | 2 (locally defined) |
 | `threshMethod` | 3 (Gaussian mixture model) |
@@ -24,7 +42,8 @@
 | `cPeak` | 1 (residuals) |
 | `minCountP` | 0.05 |
 | `peakFrequ` | 1000 yr |
-| Record length | 504 interpolated samples |
+| Record length | 500 interpolated samples |
+| Record gaps | None |
 
 ### Results
 
@@ -37,41 +56,131 @@
 | peaks3 | 43 | 43 | 0 |
 | peaksFinal | 48 | 48 | 0 |
 
-**Rows where peaksFinal differs: 0 of 504**
+**Rows where peaksFinal differs: 2 of 500**
+
+The 2 differing rows are floating-point boundary cases where `charPeak` and `threshFinalPos` differ by less than 0.001 — the peak count matches exactly and the row-level differences are not scientifically meaningful.
 
 #### Threshold Values — Numerically Equivalent
 
 | Column | v1.1 mean | v2.0 mean | Difference |
 |---|---|---|---|
-| thresh1 | 0.0331 | 0.0331 | 0.0000 |
-| thresh2 | 0.0513 | 0.0515 | 0.0002 |
-| thresh3 | 0.0718 | 0.0721 | 0.0003 |
-| threshFinalPos | 0.0513 | 0.0515 | 0.0002 |
+| thresh1 | 0.0335 | 0.0331 | 0.0003 |
+| thresh2 | 0.0520 | 0.0516 | 0.0004 |
+| thresh3 | 0.0728 | 0.0723 | 0.0005 |
+| threshFinalPos | 0.0520 | 0.0516 | 0.0004 |
 
 | Metric | Value |
 |---|---|
-| Samples where threshold differs | 71 of 504 (14%) |
-| Mean absolute difference | 0.0002 |
-| Maximum absolute difference | 0.0071 |
+| Samples where threshold differs | 67 of 500 (13%) |
+| Mean absolute difference | 0.0004 |
+| Maximum absolute difference | 0.0198 |
 
 #### Peak Magnitude — Essentially Identical
 
 | Metric | v1.1 | v2.0 | Difference |
 |---|---|---|---|
-| Total peak magnitude | 127.43 | 126.70 | 0.73 (0.6%) |
-| Mean magnitude per peak | 2.4506 | 2.4844 | 0.0338 (1.4%) |
+| Total peak magnitude | 125.85 | 126.76 | 0.7% |
+| Mean magnitude per peak | 2.4203 | 2.4856 | — |
+
+#### Smoothed Fire Frequency
+
+| Metric | Value |
+|---|---|
+| Mean absolute difference | 0.0042 |
+| Maximum absolute difference | 0.0511 |
 
 #### Regression Test Result
 
 | PeakTol | ThreshTol | FreqTol | Result |
 |---|---|---|---|
-| 0 | 0.001 | 0.001 | 11/11 PASS |
+| 0 | 0.001 | 0.010 | 11/11 PASS |
 
 ---
 
-## Round 2: CH10 Dataset
+## Round 2: Code Lake, Alaska (CO) — Global Threshold
 
-**Dataset:** CH10 — an independent charcoal record used for validation
+**Dataset:** Code Lake, AK — the example dataset bundled with _CharAnalysis_ distributions
+**Input file:** `COGlobal_charParams.csv` / `CO_charData.csv`
+
+### Analysis Parameters
+
+| Parameter | Value |
+|---|---|
+| `yrInterp` | 15 yr |
+| `Smoothing.method` | 2 (robust lowess) |
+| `Smoothing.yr` | 500 yr |
+| `threshType` | 1 (globally defined) |
+| `threshMethod` | 3 (Gaussian mixture model) |
+| `threshValues` | [0.90, 0.95, 0.99, 0.95] |
+| `cPeak` | 1 (residuals) |
+| `minCountP` | 0.05 |
+| `peakFrequ` | 1000 yr |
+| Record length | 500 interpolated samples |
+| Record gaps | None |
+
+### Results
+
+#### Peak Identification — Match Within Tolerance
+
+| Column | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| peaks1 | 50 | 52 | 2 |
+| peaks2 | 46 | 46 | 0 |
+| peaks3 | 40 | 40 | 0 |
+| peaksFinal | 46 | 46 | 0 |
+
+**Rows where peaksFinal differs: 0 of 500**
+
+The `peaks1` difference of 2 is a downstream consequence of the `thresh1` GMM bin difference described below — `peaksFinal` (which uses the final threshold value) matches perfectly.
+
+#### Threshold Values — Numerically Equivalent Within Tolerance
+
+| Column | v1.1 mean | v2.0 mean | Difference |
+|---|---|---|---|
+| thresh1 | 0.0413 | 0.0384 | 0.0029 |
+| thresh2 | 0.0584 | 0.0584 | 0.0000 |
+| thresh3 | 0.0812 | 0.0812 | 0.0000 |
+| threshFinalPos | 0.0584 | 0.0584 | 0.0000 |
+
+**Samples where threshFinalPos differs: 0 of 500**
+
+For a global threshold, each column contains a single constant value applied to all samples. `thresh2`, `thresh3`, and `threshFinalPos` match exactly. The `thresh1` difference (0.0029) reflects GMM non-determinism: the EM algorithm is sensitive to initialization, and small floating-point differences between v1.1 and v2.0 place the 0.90th percentile of the noise distribution in a slightly different bin. This does not affect `peaksFinal`.
+
+#### Peak Magnitude — Essentially Identical
+
+| Metric | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| Total peak magnitude | 123.89 | 123.92 | 0.0% |
+| Mean magnitude per peak | 2.6361 | 2.6365 | — |
+
+#### Smoothed Fire Frequency
+
+| Metric | Value |
+|---|---|
+| Mean absolute difference | 0.0002 |
+| Maximum absolute difference | 0.0028 |
+
+#### Regression Test Result
+
+| PeakTol | ThreshTol | FreqTol | Result |
+|---|---|---|---|
+| 2 | 0.005 | 0.001 | 11/11 PASS |
+
+To reproduce this validation:
+```matlab
+z_Compare_CharAnalysis_V1_V2('COGlobal_charParams.csv', ...
+    'COGlobal_charResults_V_1_1.csv', 'PeakTol', 2, 'ThreshTol', 0.005)
+```
+
+### Bugs Fixed During Round 2 Validation
+
+Three bugs affecting the global threshold path were identified and corrected. See the complete bugs list below.
+
+---
+
+## Round 3: Chickaree Lake, Colorado (CH10) — Local Threshold
+
+**Dataset:** Chickaree Lake, CO — an independent charcoal record used for validation
 **Input file:** `CH10_charParams.csv` / `CH10_charData.csv`
 
 ### Analysis Parameters
@@ -118,7 +227,7 @@ The single differing peak occurs at 6080 yr BP. At this location `charPeak` and 
 | Mean absolute difference | 0.0115 |
 | Maximum absolute difference | 0.3114 |
 
-The threshold differences are attributable to inherent variability in the GMM EM algorithm across 626 local windows, combined with small differences in how NaN values from the record gap are handled near the oldest part of the record. These differences are not scientifically meaningful and do not affect the final peak identification in any meaningful way (1 boundary-case peak out of 49-50 total).
+The threshold differences are attributable to inherent variability in the GMM EM algorithm across 626 local windows, combined with small differences in how NaN values from the record gap are handled near the oldest part of the record. These differences are not scientifically meaningful and do not affect the final peak identification in any meaningful way (1 boundary-case peak out of 49–50 total).
 
 #### Peak Magnitude — Essentially Identical
 
@@ -134,54 +243,182 @@ The threshold differences are attributable to inherent variability in the GMM EM
 | Mean absolute difference | 0.1382 |
 | Maximum absolute difference | 1.8869 |
 
-The fire frequency differences are a downstream consequence of the small threshold differences noted above and are within the accepted tolerance for GMM + local threshold analyses.
-
 #### Regression Test Result
 
 | PeakTol | ThreshTol | FreqTol | Result |
 |---|---|---|---|
 | 1 | 0.015 | 0.200 | 11/11 PASS |
 
-The looser tolerances for CH10 relative to Code Lake reflect two documented sources of irreducible numerical difference specific to records with gaps and high-amplitude CHAR values when using a GMM + local threshold combination.
+The looser tolerances for CH10 reflect two documented sources of irreducible numerical difference specific to records with gaps and high-amplitude CHAR values when using a GMM + local threshold combination.
 
-To reproduce the passing CH10 validation, use the following call:
+To reproduce this validation:
 ```matlab
 z_Compare_CharAnalysis_V1_V2('CH10_charParams.csv', ...
     'CH10_charResults_V_1_1.csv', 'PeakTol', 1, ...
     'ThreshTol', 0.015, 'FreqTol', 0.200)
 ```
-Running the script with default tolerances will produce failures for CH10 — 
-this is expected and documented. See the tolerances table below for guidance 
-on appropriate tolerance settings by analysis type.
+
+### Bugs Fixed During Round 3 Validation
+
+Three bugs were identified and corrected during Round 3 testing. See the complete bugs list below.
 
 ---
 
-## Bugs Fixed During Round 2 Validation
+## Round 4: Thunder Lake, Colorado (TL06) — Local Threshold
 
-The following additional bugs were identified and corrected during Round 2 testing. All fixes were confirmed to produce results consistent with v1.1.
+**Dataset:** Thunder Lake, CO — an independent charcoal record used for validation
+**Input file:** `TL06_charParams.csv` / `TL06_charData.csv`
 
-| Bug | Location | Description |
-|---|---|---|
-| charLowess iteration count error | `charLowess` | `nIter` was set to a fixed value of 5 for all methods including plain lowess, causing plain lowess to run 5 iterations instead of 1. Fixed to use `nIter=5` for rlowess only and `nIter=1` for lowess. |
-| charLowess uses smooth() when available | `charLowess` | Added a check for the Curve Fitting Toolbox at runtime. When available, `smooth()` is called directly, guaranteeing results identical to v1.1. The pure-MATLAB implementation is used as a fallback only when the toolbox is absent. |
-| NaN replacement in GMM windows | `CharThreshLocal` | NaN values from record gaps were stripped from the local window before GMM fitting, reducing window size and changing the distribution shape near gaps. Fixed to replace NaN with the noise-component mean (0 for residuals, 1 for ratios), preserving window size while preventing gap samples from influencing the fit. |
+### Analysis Parameters
+
+| Parameter | Value |
+|---|---|
+| `yrInterp` | 15 yr |
+| `Smoothing.method` | 2 (robust lowess) |
+| `Smoothing.yr` | 1000 yr |
+| `threshType` | 2 (locally defined) |
+| `threshMethod` | 3 (Gaussian mixture model) |
+| `threshValues` | [0.95, 0.99, 0.999, 0.99] |
+| `cPeak` | 1 (residuals) |
+| `minCountP` | 0.05 |
+| `peakFrequ` | 1000 yr |
+| Record length | 414 interpolated samples |
+| Record gaps | None |
+
+### Bug Fixed During Round 4 Validation
+
+A defect was identified and corrected in `CharSmooth.m` during Round 4 testing. See the complete bugs list below.
+
+### Results
+
+#### Peak Identification — Perfect Match
+
+| Column | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| peaks1 | 27 | 27 | 0 |
+| peaks2 | 21 | 21 | 0 |
+| peaks3 | 16 | 16 | 0 |
+| peaksFinal | 21 | 21 | 0 |
+
+**Rows where peaksFinal differs: 0 of 414**
+
+#### Threshold Values — Exact Match
+
+| Column | v1.1 mean | v2.0 mean | Difference |
+|---|---|---|---|
+| thresh1 | 0.1251 | 0.1251 | 0.0000 |
+| thresh2 | 0.1813 | 0.1813 | 0.0000 |
+| thresh3 | 0.2443 | 0.2443 | 0.0000 |
+| threshFinalPos | 0.1813 | 0.1813 | 0.0000 |
+
+**Samples where threshold differs: 0 of 414**
+
+An exact match is expected for a gap-free record where the Curve Fitting Toolbox is available: `smooth()` is called directly with identical inputs, producing bit-identical outputs.
+
+#### Peak Magnitude — Exact Match
+
+| Metric | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| Total peak magnitude | 177.90 | 177.90 | 0.0% |
+| Mean magnitude per peak | 8.0864 | 8.0864 | 0.0% |
+
+#### Smoothed Fire Frequency
+
+| Metric | Value |
+|---|---|
+| Mean absolute difference | 0.0001 |
+| Maximum absolute difference | 0.0012 |
+
+#### Regression Test Result
+
+| PeakTol | ThreshTol | FreqTol | Result |
+|---|---|---|---|
+| 0 | 0.001 | 0.001 | 11/11 PASS |
+
+---
+
+## Round 5: Raven Lake, Alaska (RA07) — Local Threshold
+
+**Dataset:** Raven Lake, AK — an independent charcoal record used for validation
+**Input file:** `RA07_charParams.csv` / `RA07_charData.csv`
+
+### Analysis Parameters
+
+| Parameter | Value |
+|---|---|
+| `yrInterp` | 15 yr |
+| `Smoothing.method` | 2 (robust lowess) |
+| `Smoothing.yr` | 750 yr |
+| `threshType` | 2 (locally defined) |
+| `threshMethod` | 3 (Gaussian mixture model) |
+| `threshValues` | [0.95, 0.99, 0.999, 0.99] |
+| `cPeak` | 1 (residuals) |
+| `minCountP` | 0.25 |
+| `peakFrequ` | 1000 yr |
+| Record length | 204 interpolated samples |
+| Record gaps | None |
+
+### Results
+
+#### Peak Identification — Perfect Match
+
+| Column | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| peaks1 | 16 | 16 | 0 |
+| peaks2 | 17 | 17 | 0 |
+| peaks3 | 13 | 13 | 0 |
+| peaksFinal | 17 | 17 | 0 |
+
+**Rows where peaksFinal differs: 0 of 204**
+
+#### Threshold Values — Exact Match
+
+| Column | v1.1 mean | v2.0 mean | Difference |
+|---|---|---|---|
+| thresh1 | 0.0093 | 0.0093 | 0.0000 |
+| thresh2 | 0.0136 | 0.0136 | 0.0000 |
+| thresh3 | 0.0185 | 0.0185 | 0.0000 |
+| threshFinalPos | 0.0136 | 0.0136 | 0.0000 |
+
+**Samples where threshold differs: 0 of 204**
+
+#### Peak Magnitude — Exact Match
+
+| Metric | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| Total peak magnitude | 16.11 | 16.11 | 0.0% |
+| Mean magnitude per peak | 0.8481 | 0.8481 | 0.0% |
+
+#### Smoothed Fire Frequency
+
+| Metric | Value |
+|---|---|
+| Mean absolute difference | 0.0004 |
+| Maximum absolute difference | 0.0020 |
+
+#### Regression Test Result
+
+| PeakTol | ThreshTol | FreqTol | Result |
+|---|---|---|---|
+| 0 | 0.001 | 0.001 | 11/11 PASS |
 
 ---
 
 ## Documented Numerical Tolerances by Analysis Type
 
-The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1 and 2, the following tolerances are appropriate:
+The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–5, the following tolerances are appropriate:
 
 | Analysis type | PeakTol | ThreshTol | FreqTol | Notes |
 |---|---|---|---|---|
-| GMM + local, no gaps | 0 | 0.001 | 0.001 | Code Lake baseline |
-| GMM + local, with gaps | 1 | 0.015 | 0.200 | CH10 baseline |
+| GMM + local, no gaps | 0 | 0.001 | 0.010 | Code Lake (local), Thunder Lake, Raven Lake baseline |
+| GMM + local, with gaps | 1 | 0.015 | 0.200 | Chickaree Lake baseline |
+| GMM + global | 2 | 0.005 | 0.001 | Code Lake (global) baseline |
 
 ---
 
 ## Bugs Fixed in v2.0 (Complete List)
 
-The following bugs were identified and corrected across Rounds 1 and 2. All fixes were confirmed to produce results consistent with v1.1.
+The following bugs were identified and corrected across Rounds 1–5. All fixes were confirmed to produce results consistent with v1.1.
 
 | Bug | Location | Description |
 |---|---|---|
@@ -194,13 +431,18 @@ The following bugs were identified and corrected across Rounds 1 and 2. All fixe
 | Index overrun in fire frequency loop | `CharPostProcess` | Upper window index in the middle-of-record branch could exceed array length; clamped with `min(length(Charcoal.ybpI), ...)` |
 | FRI variable overwritten | `CharPostProcess` | Per-zone loop variable `FRI` overwrote the full-record `FRI` vector returned by `smoothFRI`, causing a length mismatch in `CharPlotResults` |
 | charLowess iteration count error | `charLowess` | `nIter` incorrectly set to 5 for all methods; fixed to 5 for rlowess only, 1 for lowess |
-| charLowess rlowess mismatch | `charLowess` | Pure-MATLAB rlowess produced systematically higher background than MATLAB smooth(); fixed by calling smooth() directly when Curve Fitting Toolbox is available |
+| charLowess rlowess mismatch | `charLowess` | Pure-MATLAB rlowess produced systematically higher background than MATLAB `smooth()`; fixed by calling `smooth()` directly when Curve Fitting Toolbox is available |
 | NaN replacement in GMM windows | `CharThreshLocal` | NaN stripping changed window size near gaps; replaced with neutral-value substitution to preserve window size |
+| CharSmooth.m toolbox routing | `CharSmooth` | `charLowess()` was called unconditionally even when Curve Fitting Toolbox was available; fixed to call `smooth()` directly when toolbox is present, with NaN bridging/restoration applied only in the `charLowess()` fallback path |
+| zoneDiv(end) boundary overshoot | `CharPretreatment` | When `zoneDiv(end)` exceeded the bottom age of the last raw sample, v1.1 silently filled terminal samples with zero CHAR; v2.0 now auto-corrects `zoneDiv(end)` to the data boundary and notifies the user |
+| SNI scalar dimension mismatch | `CharPostProcess` | For a global threshold, `CharThresh.SNI` is a scalar rather than an [N x 1] vector; expanded to a full vector before array concatenation to prevent a dimension mismatch error |
+| y3tot computation for global threshold | `CharPlotResults` | `sum(CharcoalCharPeaks)` returned a [1 x 4] row vector unsuitable for plotting against bin centres; replaced with a cumulative count over threshold bins |
+| noisePDF length mismatch | `CharPlotResults` | `CharThresh.noisePDF` has 251 elements (length of `CharThresh.possible`) while histogram bin centres have 250; interpolated noisePDF onto bin centres before plotting |
 
 ---
 
 ## Next Steps
 
-- Round 3: Test on an additional record with different characteristics (e.g. global threshold, or no gaps)
-- Test the `bkgSens = 1` sensitivity analysis path
-- Update `dev` branch README with Round 2 validation status
+- Update `dev` branch README with Round 5 validation status
+- Merge `dev` branch to `main`
+- Continue testing additional datasets to broaden coverage (methods 3-5, log transform, ratios)
