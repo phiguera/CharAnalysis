@@ -23,7 +23,9 @@ function [Charcoal, Pretreatment, gapIn] = ...
 %                      cmI, countI, volI, conI,
 %                      accI, ybpI                  (resampled series)
 %                      acc                         (raw CHAR)
-%     Pretreatment : returned with yrInterp updated if it was 0 (auto)
+%     Pretreatment : returned with yrInterp updated if it was 0 (auto),
+%                    and zoneDiv(end) corrected if it exceeded the bottom
+%                    age of the last raw sample
 %     gapIn        : [nGaps x 2] index matrix for missing-value gaps,
 %                    or NaN(0,1) if there are no gaps
 %
@@ -32,20 +34,25 @@ function [Charcoal, Pretreatment, gapIn] = ...
 %     - nGaps defined unconditionally before the gap-interpolation block
 %       so the plot section at the end never crashes when there are no
 %       missing values (was an undefined-variable bug in v1.1).
+%     - Auto-correction of zoneDiv(end): if zoneDiv(end) exceeds the
+%       bottom age of the last raw sample, it is silently corrected to
+%       that value and the user is notified. This prevents terminal NaN
+%       values in accI that would otherwise propagate into charBkg and
+%       potentially hang the GMM in CharThreshGlobal.
 %     - Double for-loop building propMatrix replaced by fully vectorised
-%       broadcasting — four logical masks cover the four overlap cases.
+%       broadcasting -- four logical masks cover the four overlap cases.
 %       Produces bit-identical results to the loop within floating-point
 %       tolerance (~1e-14); benchmark before deploying on very large records.
 %
 %   CharAnalysis v2.0  -  Phase 1 modernisation
 
-%% ── LOCAL VARIABLES ───────────────────────────────────────────────────────
+%% -- Local variables ------------------------------------------------------
 zoneDiv     = Pretreatment.zoneDiv;
 yrInterp    = Pretreatment.yrInterp;
 transform   = Pretreatment.transform;
 figPosition = [0.1343  0.2383  0.8648  0.6943];
 
-%% ── TRIM RECORD TO zoneDiv BOUNDS ────────────────────────────────────────
+%% -- Trim record to zoneDiv bounds ----------------------------------------
 if length(zoneDiv) > 1
     ybpStop  = zoneDiv(1);
     ybpStart = zoneDiv(end);
@@ -53,7 +60,24 @@ if length(zoneDiv) > 1
                          charData(:,4) <= ybpStart, : );
 end
 
-%% ── SCREEN FOR MISSING VALUES (sample volume <= 0) ───────────────────────
+%% -- Auto-correct zoneDiv(end) if it exceeds the data boundary ------------
+% If zoneDiv(end) extends beyond the bottom age of the last raw sample,
+% the vectorized proportion matrix will find no overlapping raw data for
+% those terminal interpolated intervals and assign NaN to accI. These NaNs
+% propagate into charBkg and can hang the GMM in CharThreshGlobal.
+% Correct zoneDiv(end) automatically and notify the user.
+lastAgeBotInData = charData(end, 4);
+if Pretreatment.zoneDiv(end) > lastAgeBotInData
+    disp(['NOTE: zoneDiv(end) (' num2str(Pretreatment.zoneDiv(end)) ...
+          ' yr BP) exceeds the bottom age of the last'])
+    disp(['      raw sample (' num2str(lastAgeBotInData) ...
+          ' yr BP). zoneDiv(end) corrected to ' ...
+          num2str(lastAgeBotInData) ' yr BP.'])
+    Pretreatment.zoneDiv(end) = lastAgeBotInData;
+    zoneDiv = Pretreatment.zoneDiv;
+end
+
+%% -- Screen for missing values (sample volume <= 0) -----------------------
 %
 %   nGaps is defined here unconditionally so the plot block at the bottom
 %   of the function is always safe, even when nMissingValues == 0.
@@ -117,21 +141,21 @@ if ~isempty(remainingGap)
     disp('      missing rows with -999 to interpolate over it instead.')
 end
 
-%% ── RETRIEVE VARIABLES FROM DATA MATRIX ──────────────────────────────────
+%% -- Retrieve variables from data matrix ----------------------------------
 Charcoal.cm    = charData(:,1);
 Charcoal.count = charData(:,6);
 Charcoal.vol   = charData(:,5);
 Charcoal.con   = Charcoal.count ./ Charcoal.vol;
 Charcoal.ybp   = charData(:,3);
 
-%% ── SEDIMENT ACCUMULATION RATE ───────────────────────────────────────────
+%% -- Sediment accumulation rate -------------------------------------------
 sedAcc = zeros(length(Charcoal.cm), 1);
 for i = 1:length(Charcoal.ybp)-1
     sedAcc(i) = ( Charcoal.cm(i+1)  - Charcoal.cm(i) ) / ...
                 ( Charcoal.ybp(i+1) - Charcoal.ybp(i) );
 end
 
-%% ── AUTO yrInterp IF NOT USER-DEFINED ────────────────────────────────────
+%% -- Auto yrInterp if not user-defined ------------------------------------
 if Pretreatment.yrInterp == 0
     yrInterp              = round(median(diff(charData(:,3))));
     Pretreatment.yrInterp = yrInterp;
@@ -140,7 +164,7 @@ if Pretreatment.yrInterp == 0
           num2str(Pretreatment.yrInterp) ' years.'])
 end
 
-%% ── BUILD RESAMPLED AGE VECTOR ───────────────────────────────────────────
+%% -- Build resampled age vector -------------------------------------------
 Charcoal.ybpI = ( Pretreatment.zoneDiv(1) : Pretreatment.yrInterp : ...
                    Pretreatment.zoneDiv(end) )';
 
@@ -148,7 +172,7 @@ ageTop = charData(:,3);
 ageBot = charData(:,4);
 N_rs   = length(Charcoal.ybpI);
 
-%% ── VECTORISED PROPORTION MATRIX ─────────────────────────────────────────
+%% -- Vectorised proportion matrix -----------------------------------------
 %
 %   v1.1 used a double for-loop (up to ~500 000 iterations for a typical
 %   record) to fill propMatrix(i,j), the fraction of raw sample j that
@@ -191,7 +215,7 @@ propMatrix = caseA .* (rsAgeBot - aT)              + ...
 
 propMatrix = propMatrix ./ Pretreatment.yrInterp;   % [N_rs x N_raw]
 
-%% ── DERIVE RESAMPLED VALUES ───────────────────────────────────────────────
+%% -- Derive resampled values ----------------------------------------------
 Charcoal.countI = NaN(N_rs, 1);
 Charcoal.volI   = NaN(N_rs, 1);
 Charcoal.conI   = NaN(N_rs, 1);
@@ -210,11 +234,11 @@ end
 % Resampled depths via linear interpolation (unchanged from v1.1)
 Charcoal.cmI = interp1(Charcoal.ybp, Charcoal.cm, Charcoal.ybpI);
 
-%% ── CHARCOAL ACCUMULATION RATES ──────────────────────────────────────────
+%% -- Charcoal accumulation rates ------------------------------------------
 Charcoal.acc  = ( Charcoal.con  .* sedAcc )';   % raw CHAR
 Charcoal.accI = ( Charcoal.conI .* sedAccI );   % resampled CHAR
 
-%% ── TRANSFORM IF SELECTED ────────────────────────────────────────────────
+%% -- Transform if selected ------------------------------------------------
 if transform == 1
     Charcoal.accI = log10(Charcoal.accI + 1);
 end
@@ -222,7 +246,7 @@ if transform == 2
     Charcoal.accI = log(Charcoal.accI + 1);
 end
 
-%% ── PLOT RAW AND RESAMPLED SERIES (FIGURE 1, SUBPLOT 1) ─────────────────
+%% -- Plot raw and resampled series (Figure 1, subplot 1) ------------------
 %
 %   Only drawn when plotData == 1 and Results.allFigures == 1.
 %   nGaps is always defined at this point (v2.0 bug fix).

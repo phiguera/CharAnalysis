@@ -12,7 +12,7 @@ Pretreatment,zoneDiv,-51,cal. yr BP,"Years defining beginning and end of record 
 Smoothing,method,4,index,"How do you want to estimate low-frequency CHAR (aka Cbackground)? 1 == Lowess smoother;  2 == Lowess smoother, robust to outliers;  3 == moving average;  4 == moving median;  5 == moving mode.",,
 ,yr,500,yr,Years to smooth record over for estimating Cbackground.,,
 Peak Analysis,cPeak,1,index,How do you want to calculate high-frequency CHAR (aka Cpeak)? 1 == residuals (Cpeak = Cinterpolated - Cbackground);  2 == ratios (Cpeak = Cinterpolated / Cbackground).,,
-,threshType,1,index,What type of threshold do you want to use? 1 == Globally defined; 2 == Locally defined.,,
+,threshType,2,index,What type of threshold do you want to use? 1 == Globally defined; 2 == Locally defined.,,
 ,threshMethod,3,index,"How do you want to determine the threshold values for peak identification? 1 == user defines threshold values in threshValues (below), 2 == base threshold values on a percentile cut-off of a noise distribution, modeled with a 0- or 1-mean Gaussian (for cPeak method = 1 or 2, respectively); 3 == same as 2, but noise distribution is determined by a Gaussian mixture model.",,
 ,threshValues,0.95,variable,"What threshold values do you want to evaluate? If threshMethod == 1, these values are in Cpeak units (i.e. either a residual or ratio value). If threshMethod == 2-3, these values are percentiles of the noise distribution (e.g. 0.95). In both cases, the last value (row 20) will be used for peak plotting and peak analysis.",,
 ,,0.99,,,,

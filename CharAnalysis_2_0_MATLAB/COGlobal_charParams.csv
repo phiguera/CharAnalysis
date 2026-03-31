@@ -1,7 +1,7 @@
 Stage,Variable,Parameters,Units,Description and Options,,Parameter Log: use these columns to store parameters from previous analyses:
 Pretreatment,zoneDiv,-51,cal. yr BP,"Years defining beginning and end of record and any zone divisions. Zone divisions are used for plotting and for analyzing fire return intervals. You must input at least two values, the beginning and end of your record, in ascending order (i.e. youngest age on top). You may leave the spaces you don't use blank. ",,
 ,,5500,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
-,,7500,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
+,,7444,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
 ,,-9999,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
 ,,-9999,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
 ,,-9999,,*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*,,
