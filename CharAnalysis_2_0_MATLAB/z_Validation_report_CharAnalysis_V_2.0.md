@@ -179,7 +179,6 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 
 ---
 
-<<<<<<< HEAD
 ## Round 3: Thunder Lake (TL06)
 
 **Dataset:** Thunder Lake — an independent charcoal record used for validation
@@ -187,7 +186,6 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 ## Round 3: TL06 (Thunder Lake)
 
 **Dataset:** TL06 — Thunder Lake, an independent charcoal record used for validation
->>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 **Input file:** `TL06_charParams.csv` / `TL06_charData.csv`
 
 ### Analysis Parameters
@@ -208,7 +206,6 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 
 ### Input Correction Identified During Validation
 
-<<<<<<< HEAD
 The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the bottom age of the last raw sample (6150 yr BP). This caused v2.0 to mark 4 terminal interpolated samples NaN, while v1.1 silently filled them with zero CHAR. The NaN values affected `charBkg` across the entire record via the smoother, producing threshold differences everywhere.
 
 The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
@@ -288,7 +285,6 @@ TL06 achieves an exact match on all threshold values. This is expected for a gap
 
 ---
 
-<<<<<<< HEAD
 ## Round 4: Raven Lake (RA07)
 
 **Dataset:** Raven Lake — an independent charcoal record used for validation
@@ -424,6 +420,5 @@ The following bugs were identified and corrected across Rounds 1–3. All fixes 
 =======
 - Round 4: Test the `bkgSens = 1` sensitivity analysis path
 - Update `dev` branch README with Round 3 validation status
->>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 - Merge `dev` branch to `main` after `bkgSens` validation passes
 - Continue testing additional datasets to broaden coverage (global threshold, methods 3–5, log transform)
