@@ -43,7 +43,7 @@ The current User's Guide is available as
 [CharAnalysis_UsersGuide.md](CharAnalysis_UsersGuide.md). It covers installation,
 data input, parameter selection, and a full description of all analytical choices
 and program output. The original guide (v0.9, January 2009) is retained for reference as
-[ARCHIVED_UsersGuide_v_0.9_2009.pdf](ARCHIVED_UsersGuide_v_0.9_2009.pdf)..
+[ARCHIVED_UsersGuide_v_0.9_2009.pdf](ARCHIVED_UsersGuide_v_0.9_2009.pdf).
 
 Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
