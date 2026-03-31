@@ -12,8 +12,8 @@
 |---|---|---|---|---|
 | 1 | CO | Code Lake | Alaska, USA | Higuera et al. 2009 |
 | 2 | CH10 | Chickaree Lake | Colorado, USA | Dunnette et al. 2014 |
-| 3 | TL06 | Thunder Lake | â€” | â€” |
-| 4 | RA07 | Raven Lake | â€” | â€” |
+| 3 | TL06 | Thunder Lake | Colorado, USA | Higuera et al. 2014 |
+| 4 | RA07 | Raven Lake | Alaska, USA | Higuera et al. 2011 |
 
 Code Lake is the example dataset bundled with CharAnalysis distributions. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, and fire return interval characteristics.
 
