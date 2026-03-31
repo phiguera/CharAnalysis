@@ -12,8 +12,8 @@
 |---|---|---|---|---|
 | 1 | CO | Code Lake | Alaska, USA | Higuera et al. 2009 |
 | 2 | CH10 | Chickaree Lake | Colorado, USA | Dunnette et al. 2014 |
-| 3 | TL06 | Thunder Lake | Colorado, USA | Higuera et al. 2014 |
-| 4 | RA07 | Raven Lake | Alaska, USA | Higuera et al. 2011 |
+| 3 | TL06 | Thunder Lake | — | — |
+| 4 | RA07 | Raven Lake | — | — |
 
 Code Lake is the example dataset bundled with CharAnalysis distributions. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, and fire return interval characteristics.
 
@@ -21,7 +21,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 ## Round 1: Code Lake, Alaska (CO)
 
-**Dataset:** Code Lake, AK â€” the example dataset bundled with CharAnalysis distributions
+**Dataset:** Code Lake, AK — the example dataset bundled with CharAnalysis distributions
 **Input file:** `CO_charParams.csv` / `CO_charData.csv`
 
 ### Analysis Parameters
@@ -41,7 +41,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 ### Results
 
-#### Peak Identification â€” Perfect Match
+#### Peak Identification — Perfect Match
 
 | Column | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -52,7 +52,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 **Rows where peaksFinal differs: 0 of 504**
 
-#### Threshold Values â€” Numerically Equivalent
+#### Threshold Values — Numerically Equivalent
 
 | Column | v1.1 mean | v2.0 mean | Difference |
 |---|---|---|---|
@@ -67,7 +67,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 | Mean absolute difference | 0.0002 |
 | Maximum absolute difference | 0.0071 |
 
-#### Peak Magnitude â€” Essentially Identical
+#### Peak Magnitude — Essentially Identical
 
 | Metric | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -84,7 +84,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 ## Round 2: Chickaree Lake, Colorado (CH10)
 
-**Dataset:** Chickaree Lake, CO â€” an independent charcoal record used for validation
+**Dataset:** Chickaree Lake, CO — an independent charcoal record used for validation
 **Input file:** `CH10_charParams.csv` / `CH10_charData.csv`
 
 ### Analysis Parameters
@@ -103,7 +103,7 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 ### Results
 
-#### Peak Identification â€” Match Within Tolerance
+#### Peak Identification — Match Within Tolerance
 
 | Column | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -114,9 +114,9 @@ Code Lake is the example dataset bundled with CharAnalysis distributions. Chicka
 
 **Rows where peaksFinal differs: 1 of 626**
 
-The single differing peak occurs at 6080 yr BP. At this location `charPeak` and `threshFinalPos` are identical to four decimal places (0.0199 and 0.1489/0.1490 respectively) â€” a floating-point boundary case where a difference of 0.0001 in the smoothed threshold determines peak identification. This is not a scientifically meaningful difference.
+The single differing peak occurs at 6080 yr BP. At this location `charPeak` and `threshFinalPos` are identical to four decimal places (0.0199 and 0.1489/0.1490 respectively) — a floating-point boundary case where a difference of 0.0001 in the smoothed threshold determines peak identification. This is not a scientifically meaningful difference.
 
-#### Threshold Values â€” Numerically Equivalent Within Tolerance
+#### Threshold Values — Numerically Equivalent Within Tolerance
 
 | Column | v1.1 mean | v2.0 mean | Difference |
 |---|---|---|---|
@@ -131,9 +131,9 @@ The single differing peak occurs at 6080 yr BP. At this location `charPeak` and 
 | Mean absolute difference | 0.0115 |
 | Maximum absolute difference | 0.3114 |
 
-The threshold differences are attributable to inherent variability in the GMM EM algorithm across 626 local windows, combined with small differences in how NaN values from the record gap are handled near the oldest part of the record. These differences are not scientifically meaningful and do not affect the final peak identification in any meaningful way (1 boundary-case peak out of 49â€“50 total).
+The threshold differences are attributable to inherent variability in the GMM EM algorithm across 626 local windows, combined with small differences in how NaN values from the record gap are handled near the oldest part of the record. These differences are not scientifically meaningful and do not affect the final peak identification in any meaningful way (1 boundary-case peak out of 49–50 total).
 
-#### Peak Magnitude â€” Essentially Identical
+#### Peak Magnitude — Essentially Identical
 
 | Metric | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -161,7 +161,7 @@ z_Compare_CharAnalysis_V1_V2('CH10_charParams.csv', ...
     'CH10_charResults_V_1_1.csv', 'PeakTol', 1, ...
     'ThreshTol', 0.015, 'FreqTol', 0.200)
 ```
-Running the script with default tolerances will produce failures for CH10 â€”
+Running the script with default tolerances will produce failures for CH10 —
 this is expected and documented. See the tolerances table below for guidance
 on appropriate tolerance settings by analysis type.
 
@@ -182,11 +182,11 @@ The following bugs were identified and corrected during Round 2 testing. All fix
 <<<<<<< HEAD
 ## Round 3: Thunder Lake (TL06)
 
-**Dataset:** Thunder Lake â€” an independent charcoal record used for validation
+**Dataset:** Thunder Lake — an independent charcoal record used for validation
 =======
 ## Round 3: TL06 (Thunder Lake)
 
-**Dataset:** TL06 â€” Thunder Lake, an independent charcoal record used for validation
+**Dataset:** TL06 — Thunder Lake, an independent charcoal record used for validation
 >>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 **Input file:** `TL06_charParams.csv` / `TL06_charData.csv`
 
@@ -215,7 +215,7 @@ The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned z
 
 The params file was corrected to `zoneDiv(end) = 6150` before generating the v1.1 reference for this round. **Users should ensure `zoneDiv(end)` does not exceed the bottom age of the last raw sample.** A warning is now emitted by `CharValidateParams.m` when this condition is detected.
 =======
-The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the last raw sample bottom age of 6150 yr BP. This caused v1.1 to silently extrapolate 4 terminal interpolated samples with zero CHAR values, while v2.0 correctly marks them NaN â€” a difference that propagated into `charBkg` across the entire record via the smoother.
+The original `TL06_charParams.csv` had `zoneDiv(end) = 6200`, which extends 48 yr beyond the last raw sample bottom age of 6150 yr BP. This caused v1.1 to silently extrapolate 4 terminal interpolated samples with zero CHAR values, while v2.0 correctly marks them NaN — a difference that propagated into `charBkg` across the entire record via the smoother.
 
 The root cause is a v1.1 bug: the double loop in `CharPretreatment.m` assigned zero to samples with no overlapping raw data, whereas the v2.0 vectorized proportion matrix correctly leaves them as NaN. V2.0's behavior is more accurate.
 
@@ -228,7 +228,7 @@ During Round 3 validation, a defect was identified and corrected in `CharSmooth.
 
 ### Results
 
-#### Peak Identification â€” Perfect Match
+#### Peak Identification — Perfect Match
 
 | Column | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -239,7 +239,7 @@ During Round 3 validation, a defect was identified and corrected in `CharSmooth.
 
 **Rows where peaksFinal differs: 0 of 414**
 
-#### Threshold Values â€” Exact Match
+#### Threshold Values — Exact Match
 
 | Column | v1.1 mean | v2.0 mean | Difference |
 |---|---|---|---|
@@ -252,7 +252,7 @@ During Round 3 validation, a defect was identified and corrected in `CharSmooth.
 
 TL06 achieves an exact match on all threshold values. This is expected for a gap-free record where the Curve Fitting Toolbox is available: `smooth()` is called directly with identical inputs, producing bit-identical outputs.
 
-#### Peak Magnitude â€” Exact Match
+#### Peak Magnitude — Exact Match
 
 | Metric | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -276,13 +276,13 @@ TL06 achieves an exact match on all threshold values. This is expected for a gap
 
 ## Bug Fixed During Round 3 Validation
 
-### CharSmooth.m â€” Curve Fitting Toolbox routing
+### CharSmooth.m — Curve Fitting Toolbox routing
 
 **Location:** `CharSmooth.m`
 
-**Description:** The original v2.0 `CharSmooth.m` unconditionally called `charLowess()` for all five smoothing methods, even when the Curve Fitting Toolbox was available. This was incorrect for records with NaN gaps: `charLowess()` requires NaN-free input and uses linear interpolation to bridge gaps before smoothing, whereas MATLAB's `smooth()` handles NaNs internally by excluding them from the local regression window â€” exactly as v1.1 did. Passing gap-bridged data to `smooth()` produces different results from passing the raw data (including NaNs), because the bridged values alter the weighted regression across the entire record, not just near the gap.
+**Description:** The original v2.0 `CharSmooth.m` unconditionally called `charLowess()` for all five smoothing methods, even when the Curve Fitting Toolbox was available. This was incorrect for records with NaN gaps: `charLowess()` requires NaN-free input and uses linear interpolation to bridge gaps before smoothing, whereas MATLAB's `smooth()` handles NaNs internally by excluding them from the local regression window — exactly as v1.1 did. Passing gap-bridged data to `smooth()` produces different results from passing the raw data (including NaNs), because the bridged values alter the weighted regression across the entire record, not just near the gap.
 
-**Fix:** Added a Curve Fitting Toolbox check at runtime in `CharSmooth.m`. When the toolbox is available, `smooth()` is called directly on `Charcoal.accI` (including NaNs) for methods 1â€“3 and for the Lowess passes in methods 4â€“5 â€” identical to v1.1 behavior. The NaN bridging and restoration logic is retained but guarded by `~hasCFT`, so it applies only when `charLowess()` is used as the fallback.
+**Fix:** Added a Curve Fitting Toolbox check at runtime in `CharSmooth.m`. When the toolbox is available, `smooth()` is called directly on `Charcoal.accI` (including NaNs) for methods 1–3 and for the Lowess passes in methods 4–5 — identical to v1.1 behavior. The NaN bridging and restoration logic is retained but guarded by `~hasCFT`, so it applies only when `charLowess()` is used as the fallback.
 
 **Impact:** On records without NaN gaps (e.g., Code Lake), this fix has no effect. On records with NaN gaps and the Curve Fitting Toolbox available (e.g., TL06), this fix produces `charBkg` values identical to v1.1. The fix was confirmed by TL06 achieving a 0.0000 threshold difference after it was applied.
 
@@ -291,7 +291,7 @@ TL06 achieves an exact match on all threshold values. This is expected for a gap
 <<<<<<< HEAD
 ## Round 4: Raven Lake (RA07)
 
-**Dataset:** Raven Lake â€” an independent charcoal record used for validation
+**Dataset:** Raven Lake — an independent charcoal record used for validation
 **Input file:** `RA07_charParams.csv` / `RA07_charData.csv`
 
 ### Analysis Parameters
@@ -318,7 +318,7 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 ### Results
 
-#### Peak Identification â€” Perfect Match
+#### Peak Identification — Perfect Match
 
 | Column | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -329,7 +329,7 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 **Rows where peaksFinal differs: 0 of 204**
 
-#### Threshold Values â€” Exact Match
+#### Threshold Values — Exact Match
 
 | Column | v1.1 mean | v2.0 mean | Difference |
 |---|---|---|---|
@@ -340,7 +340,7 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 **Samples where threshold differs: 0 of 204**
 
-#### Peak Magnitude â€” Exact Match
+#### Peak Magnitude — Exact Match
 
 | Metric | v1.1 | v2.0 | Difference |
 |---|---|---|---|
@@ -364,7 +364,7 @@ The params file was corrected to `zoneDiv(end) = 3000` before generating the v1.
 
 ## Documented Numerical Tolerances by Analysis Type
 
-The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1â€“4, the following tolerances are appropriate:
+The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–4, the following tolerances are appropriate:
 
 | Analysis type | PeakTol | ThreshTol | FreqTol | Notes |
 |---|---|---|---|---|
@@ -381,7 +381,7 @@ This issue was observed independently in Round 3 (Thunder Lake) and Round 4 (Rav
 =======
 ## Documented Numerical Tolerances by Analysis Type
 
-The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1â€“3, the following tolerances are appropriate:
+The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–3, the following tolerances are appropriate:
 
 | Analysis type | PeakTol | ThreshTol | FreqTol | Notes |
 |---|---|---|---|---|
@@ -394,9 +394,9 @@ The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance pa
 ## Bugs Fixed in v2.0 (Complete List)
 
 <<<<<<< HEAD
-The following bugs were identified and corrected across Rounds 1â€“4. All fixes were confirmed to produce results consistent with v1.1.
+The following bugs were identified and corrected across Rounds 1–4. All fixes were confirmed to produce results consistent with v1.1.
 =======
-The following bugs were identified and corrected across Rounds 1â€“3. All fixes were confirmed to produce results consistent with v1.1.
+The following bugs were identified and corrected across Rounds 1–3. All fixes were confirmed to produce results consistent with v1.1.
 >>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 
 | Bug | Location | Description |
@@ -426,4 +426,4 @@ The following bugs were identified and corrected across Rounds 1â€“3. All f
 - Update `dev` branch README with Round 3 validation status
 >>>>>>> ff3da168a479a21e19b0feea5df3ed230dd883a7
 - Merge `dev` branch to `main` after `bkgSens` validation passes
-- Continue testing additional datasets to broaden coverage (global threshold, methods 3â€“5, log transform)
+- Continue testing additional datasets to broaden coverage (global threshold, methods 3–5, log transform)
