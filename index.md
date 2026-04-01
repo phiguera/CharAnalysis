@@ -53,7 +53,7 @@ millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 
 ---
 
-## What does it do?
+## How does it work?
 
 *CharAnalysis* takes a raw sediment-charcoal record and guides the user through
 five analytical steps: interpolating the record to equal time intervals,
