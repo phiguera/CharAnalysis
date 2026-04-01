@@ -1,4 +1,4 @@
-function [CharAnalysisResults] = CharAnalysis(fileName, runMode, figSelection, saveFigs)
+function [CharAnalysisResults] = CharAnalysis(fileName, runMode, figSelection)
 % CharAnalysis   Analyse charcoal time series based on selected parameters.
 %
 %    *****************************************************************
@@ -42,9 +42,6 @@ end
 if nargin < 3
     figSelection = [];
 end
-if nargin < 4
-    saveFigs = [];
-end
 runMode = lower(strtrim(runMode));
 if ~ismember(runMode, {'standard', 'modular'})
     error('CharAnalysis: runMode must be ''standard'' or ''modular''.')
@@ -74,11 +71,6 @@ addpath(fullfile(baseDir, 'src'));
 
 warning('off', 'all')
 clear charData
-
-%% Strip any surrounding single quotes entered interactively
-if length(fileName) > 1 && fileName(1) == '''' && fileName(end) == ''''
-    fileName = fileName(2:end-1);
-end
 
 %% Handle directory-name input
 if (~min(fileName(end-2:end) == 'xls') && ...
@@ -168,7 +160,7 @@ CharAnalysisResults.gapIn        = gapIn;
 CharAnalysisResults.site         = site;
 
 if strcmp(runMode, 'modular')
-    CharFigureMenu(CharAnalysisResults, figSelection, saveFigs);
+    CharFigureMenu(CharAnalysisResults, figSelection);
 else
     CharPlotResults(CharAnalysisResults);
 end

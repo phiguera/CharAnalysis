@@ -49,22 +49,38 @@ Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
 ## Version 2.0 (March 2026)
 
-Version 2.0 is the first major update to *CharAnalysis*, addressing two areas of
-improvement:
+Version 2.0 is the first major update to *CharAnalysis*, addressing five areas of improvement:
 
-1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner
-loops, and removed deprecated function calls for compatibility with MATLAB R2019a
-and higher. No toolbox dependencies: all calls to the Curve Fitting Toolbox
-`smooth()` function have been replaced with a base-MATLAB implementation
-(`charLowess.m`).
-2. **Architecture Improvements** — separated computational logic from
-visualization, introduced formal parameter objects, and added robust input
-validation with clear error messages for common misconfigurations.
+1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner loops, and removed deprecated function calls for compatibility with MATLAB R2019a and higher.
+2. **Architecture Improvements** — separated computational logic from visualization, introduced formal parameter objects, and added robust input validation.
+3. **Chronological Uncertainty** — integrated methods for incorporating chronological uncertainty into the characterization of fire events.
+4. **Regional Synthesis** — added support for synthesizing peak identification across multiple records at regional scales.
+5. **R Translation** — established a roadmap for a native R implementation using modern packages including `mclust` and `ggplot2`, to be quantitatively compared with the `tapas` R package (https://github.com/wfinsinger/tapas).
 
-*Version 2.0 was developed with the assistance of Claude, an AI assistant by
-Anthropic. Claude assisted with code modernization, bug fixes, architecture
-redesign, and documentation. All code was reviewed and validated by the author
-against Version 1.1 reference outputs.*
+**Modular figure interface (post-2.0 update)**
+
+The codebase has been restructured to support flexible, modular access to output figures. All `.m` files except `CharAnalysis.m` now reside in a `src/` subfolder, which is added to the MATLAB path automatically at startup. Each output figure (Figures 3–9) is implemented as a standalone function that can be called independently using the results struct returned by `CharAnalysis`:
+```matlab
+% Standard run — all figures, existing behavior unchanged
+CharAnalysis('mysite.csv')
+
+% Return results to workspace for further use
+results = CharAnalysis('mysite.csv')
+
+% Call any individual figure directly
+CharPlotFig7_ContinuousFireHistory(results)
+
+% Interactive figure menu — select figures from a command-window prompt
+CharAnalysis('mysite.csv', 'modular')
+
+% Programmatic figure selection — generate figures 3 and 7 only
+CharAnalysis('mysite.csv', 'modular', [3 7])
+
+% Programmatic selection with automatic save
+CharAnalysis('mysite.csv', 'modular', [3 7], true)
+```
+
+*Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
 ## Citation
 
