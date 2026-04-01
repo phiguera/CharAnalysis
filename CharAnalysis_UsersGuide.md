@@ -186,6 +186,7 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 - Global variables eliminated, improving reliability when functions are called in non-standard order.
 - Computation separated from visualization, making batch processing more straightforward.
 - Input validation added, providing clear error messages for common misconfigurations.
+- Modular figure interface added — each output figure (Figures 3–9) is implemented as a standalone function callable independently from the MATLAB workspace. A new `'modular'` run mode provides interactive and programmatic figure selection. See Section 3.1 for details.
 
 ---
 
@@ -396,10 +397,49 @@ You can also call *CharAnalysis* directly with the filename as an argument, whic
 ```
 
 To return results to the MATLAB workspace:
-
 ```matlab
 >> results = CharAnalysis('mysite_charParams.csv')
 ```
+
+#### 3.1b Modular figure selection
+
+The `'modular'` run mode allows individual output figures to be selected interactively or programmatically, without changing the parameter file or the standard workflow. All analytical results and data saving are identical to the standard run — only figure generation differs.
+
+**Interactive menu** — after the analysis completes, a command-window menu prompts the user to select which figures to generate:
+```matlab
+>> CharAnalysis('mysite_charParams.csv', 'modular')
+```
+
+**Programmatic selection** — pass a vector of figure numbers as a third argument to bypass the interactive menu. This is useful for batch processing or scripted workflows:
+```matlab
+>> CharAnalysis('mysite_charParams.csv', 'modular', [3 7])
+```
+
+**Programmatic selection with automatic save** — pass `true` as a fourth argument to save figures without a prompt:
+```matlab
+>> CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
+```
+
+**Calling individual figures directly** — after any run, individual figure functions can be called from the workspace using the results struct:
+```matlab
+>> results = CharAnalysis('mysite_charParams.csv');
+>> CharPlotFig7_ContinuousFireHistory(results)
+>> CharPlotFig3_CintCbackCpeak(results)
+```
+
+The figures available through the modular interface are:
+
+| Figure | Function | Contents |
+|--------|----------|----------|
+| 3 | `CharPlotFig3_CintCbackCpeak` | C<sub>int</sub>, C<sub>back</sub>, and C<sub>peak</sub> |
+| 4 | `CharPlotFig4_ThresholdSNI` | Sensitivity to alternative thresholds and SNI |
+| 5 | `CharPlotFig5_CumulativePeaks` | Cumulative peaks through time |
+| 6 | `CharPlotFig6_FRIDistributions` | FRI distributions by zone |
+| 7 | `CharPlotFig7_ContinuousFireHistory` | Continuous fire history |
+| 8 | `CharPlotFig8_ZoneComparisons` | Between-zone comparisons |
+| 9 | `CharPlotFig9_ThresholdDetails` | Alternative threshold displays |
+
+Figures 1, 2, and 10 are not part of the modular interface. Figures 1 and 2 are generated during pretreatment and threshold determination and are controlled by the `allFigures` parameter. Figure 10 is produced only when `sensitivity = 1`.
 
 ---
 
@@ -411,6 +451,7 @@ To return results to the MATLAB workspace:
 | `Unable to find file` error when saving results | The output file does not exist in the current directory. Set `saveData = 0` and `saveFigures = 0` to skip saving (required for MATLAB Online). |
 | Unexpected peak counts vs. Version 1.1 | Verify parameter settings match between versions. Use `z_Compare_CharAnalysis_V1_V2.m` to compare outputs numerically. |
 | Figures appear very large in MATLAB Online | This is a display scaling issue. Drag figure window corners to resize, or use browser zoom (Ctrl/Cmd −) to reduce the interface size. |
+| `Unrecognized field name` error when calling a figure function directly | The results struct was returned by an older version of `CharAnalysis.m`. Re-run `CharAnalysis` to generate a fresh results struct that includes the `Post`, `gapIn`, and `site` fields required by the figure functions. |
 
 ---
 

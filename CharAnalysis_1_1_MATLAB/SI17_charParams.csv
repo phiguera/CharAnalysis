@@ -23,4 +23,4 @@ Peak Analysis Results,peakFrequ,1000,yr,Years to smooth fire frequency and fire 
 ,Cbackground sensitivity,0,index,Do you want to evaluate the sensitivity of your results to varying smoothing windows? 0 == no; 1 == yes.,,
 ,saveFigures,0,index,Do you want to save the plots as .tiff and .pdf files? 0 == no; 1 == yes.,,
 ,saveData,1,index,Do you want to save the output data by appending it to this file? 0 == no; 1 == yes.,,
-,allFigures,1,index,Do you want to display all (diagnostic) figures or only figures related to peak analysis results? 0 == no; 1 == yes.,,
+,allFigures,0,index,Do you want to display all (diagnostic) figures or only figures related to peak analysis results? 0 == no; 1 == yes.,,

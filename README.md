@@ -49,22 +49,33 @@ Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
 ## Version 2.0 (March 2026)
 
-Version 2.0 is the first major update to *CharAnalysis*, addressing two areas of
-improvement:
+**Version 2.0 is the first major update to *CharAnalysis* in over a decade,** addressing two areas of improvement, with four additional areas planned (see [ROADMAP.md](ROADMAP.md)):
 
-1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner
-loops, and removed deprecated function calls for compatibility with MATLAB R2019a
-and higher. No toolbox dependencies: all calls to the Curve Fitting Toolbox
-`smooth()` function have been replaced with a base-MATLAB implementation
-(`charLowess.m`).
-2. **Architecture Improvements** — separated computational logic from
-visualization, introduced formal parameter objects, and added robust input
-validation with clear error messages for common misconfigurations.
+1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner loops, and removed deprecated function calls for compatibility with MATLAB R2019a and higher.
+2. **Modular Figure Interface** — restructured the codebase so that each output figure (Figures 3–9) is implemented as a standalone function callable independently using the results struct returned by `CharAnalysis`. All `.m` files except `CharAnalysis.m` now reside in a `src/` subfolder, added to the MATLAB path automatically at startup. A new `'modular'` run mode supports interactive and programmatic figure selection:
+```matlab
+% Standard run — all figures, existing behavior unchanged
+CharAnalysis('mysite.csv')
 
-*Version 2.0 was developed with the assistance of Claude, an AI assistant by
-Anthropic. Claude assisted with code modernization, bug fixes, architecture
-redesign, and documentation. All code was reviewed and validated by the author
-against Version 1.1 reference outputs.*
+% Return results to workspace for further use
+results = CharAnalysis('mysite.csv')
+
+% Call any individual figure directly
+CharPlotFig7_ContinuousFireHistory(results)
+
+% Interactive figure menu — select figures from a command-window prompt
+CharAnalysis('mysite.csv', 'modular')
+
+% Programmatic figure selection — generate figures 3 and 7 only
+CharAnalysis('mysite.csv', 'modular', [3 7])
+
+% Programmatic selection with automatic save
+CharAnalysis('mysite.csv', 'modular', [3 7], true)
+```
+
+The modular architecture also lays the groundwork for the planned R translation by cleanly separating computation from visualization.
+
+*Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
 ## Citation
 

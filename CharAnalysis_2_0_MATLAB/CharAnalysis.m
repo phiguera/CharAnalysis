@@ -1,4 +1,4 @@
-function [CharAnalysisResults] = CharAnalysis(fileName)
+function [CharAnalysisResults] = CharAnalysis(fileName, runMode, figSelection, saveFigs)
 % CharAnalysis   Analyse charcoal time series based on selected parameters.
 %
 %    *****************************************************************
@@ -35,6 +35,21 @@ disp('             https://phiguera.github.io/CharAnalysis/            ')
 disp('*****************************************************************')
 disp(' ')
 
+%% Default runMode and figSelection
+if nargin < 2
+    runMode = 'standard';
+end
+if nargin < 3
+    figSelection = [];
+end
+if nargin < 4
+    saveFigs = [];
+end
+runMode = lower(strtrim(runMode));
+if ~ismember(runMode, {'standard', 'modular'})
+    error('CharAnalysis: runMode must be ''standard'' or ''modular''.')
+end
+
 %% Prompt for file name if not supplied
 if nargin == 0
     disp('  CharAnalysis requires an input file in .xls or .csv format.    ')
@@ -53,8 +68,17 @@ if nargin == 0
     fileName = input('\n Input the file name OR the full path to the site directory,\n bounded with single quotations and including the file\n extension (if file name): ', 's');
 end
 
+% Add src/ subfolder to path so all program functions are accessible.
+baseDir = fileparts(mfilename('fullpath'));
+addpath(fullfile(baseDir, 'src'));
+
 warning('off', 'all')
 clear charData
+
+%% Strip any surrounding single quotes entered interactively
+if length(fileName) > 1 && fileName(1) == '''' && fileName(end) == ''''
+    fileName = fileName(2:end-1);
+end
 
 %% Handle directory-name input
 if (~min(fileName(end-2:end) == 'xls') && ...
@@ -132,8 +156,22 @@ end
 [Charcoal, Post] = CharPostProcess(Charcoal, Pretreatment, ...
     PeakAnalysis, CharThresh, Smoothing, Results, fileName, gapIn, site);
 
-CharPlotResults(Charcoal, Pretreatment, PeakAnalysis, ...
-    CharThresh, Smoothing, site, Results, gapIn, Post);
+%% Assemble results struct (used by plotting functions and returned to workspace)
+CharAnalysisResults.Charcoal     = Charcoal;
+CharAnalysisResults.CharThresh   = CharThresh;
+CharAnalysisResults.Pretreatment = Pretreatment;
+CharAnalysisResults.Smoothing    = Smoothing;
+CharAnalysisResults.PeakAnalysis = PeakAnalysis;
+CharAnalysisResults.Results      = Results;
+CharAnalysisResults.Post         = Post;
+CharAnalysisResults.gapIn        = gapIn;
+CharAnalysisResults.site         = site;
+
+if strcmp(runMode, 'modular')
+    CharFigureMenu(CharAnalysisResults, figSelection, saveFigs);
+else
+    CharPlotResults(CharAnalysisResults);
+end
 
 disp('      ...CharAnalysis finished.')
 
@@ -149,14 +187,6 @@ if Results.save == 1
     disp(' ')
 end
 
-%% Assemble workspace return struct
-CharAnalysisResults.Charcoal     = Charcoal;
-CharAnalysisResults.CharThresh   = CharThresh;
-CharAnalysisResults.Pretreatment = Pretreatment;
-CharAnalysisResults.Smoothing    = Smoothing;
-CharAnalysisResults.PeakAnalysis = PeakAnalysis;
-CharAnalysisResults.Results      = Results;
-
 %% (7) Background sensitivity analysis (optional)
 if PeakAnalysis.bkgSens == 1
     disp('(7) Running C_background sensitivity analysis:')
@@ -165,15 +195,17 @@ if PeakAnalysis.bkgSens == 1
     disp('C_background sensitivity analysis finished.')
 end
 
-%% Bring all figures to the front in order
-if PeakAnalysis.bkgSens == 1
-    figIn = 1:10;
-else
-    figIn = 1:9;
-end
-if Results.allFigures ~= 1
-    figIn(ismember(figIn, [1, 2, 9])) = [];
-end
-for i = 1:length(figIn)
-    figure(figIn(i))
+%% Bring all figures to the front in order (standard path only)
+if strcmp(runMode, 'standard')
+    if PeakAnalysis.bkgSens == 1
+        figIn = 1:10;
+    else
+        figIn = 1:9;
+    end
+    if Results.allFigures ~= 1
+        figIn(ismember(figIn, [1, 2, 9])) = [];
+    end
+    for i = 1:length(figIn)
+        figure(figIn(i))
+    end
 end
