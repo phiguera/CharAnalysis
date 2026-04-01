@@ -49,17 +49,10 @@ Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
 ## Version 2.0 (March 2026)
 
-Version 2.0 is the first major update to *CharAnalysis*, addressing five areas of improvement:
+Version 2.0 is the first major update to *CharAnalysis*, addressing two areas of improvement, with four additional areas planned (see [ROADMAP.md](ROADMAP.md)):
 
 1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner loops, and removed deprecated function calls for compatibility with MATLAB R2019a and higher.
-2. **Architecture Improvements** — separated computational logic from visualization, introduced formal parameter objects, and added robust input validation.
-3. **Chronological Uncertainty** — integrated methods for incorporating chronological uncertainty into the characterization of fire events.
-4. **Regional Synthesis** — added support for synthesizing peak identification across multiple records at regional scales.
-5. **R Translation** — established a roadmap for a native R implementation using modern packages including `mclust` and `ggplot2`, to be quantitatively compared with the `tapas` R package (https://github.com/wfinsinger/tapas).
-
-**Modular figure interface (post-2.0 update)**
-
-The codebase has been restructured to support flexible, modular access to output figures. All `.m` files except `CharAnalysis.m` now reside in a `src/` subfolder, which is added to the MATLAB path automatically at startup. Each output figure (Figures 3–9) is implemented as a standalone function that can be called independently using the results struct returned by `CharAnalysis`:
+2. **Modular Figure Interface** — restructured the codebase so that each output figure (Figures 3–9) is implemented as a standalone function callable independently using the results struct returned by `CharAnalysis`. All `.m` files except `CharAnalysis.m` now reside in a `src/` subfolder, added to the MATLAB path automatically at startup. A new `'modular'` run mode supports interactive and programmatic figure selection:
 ```matlab
 % Standard run — all figures, existing behavior unchanged
 CharAnalysis('mysite.csv')
@@ -79,6 +72,8 @@ CharAnalysis('mysite.csv', 'modular', [3 7])
 % Programmatic selection with automatic save
 CharAnalysis('mysite.csv', 'modular', [3 7], true)
 ```
+
+The modular architecture also lays the groundwork for the planned R translation by cleanly separating computation from visualization.
 
 *Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
