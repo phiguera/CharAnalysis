@@ -66,11 +66,11 @@ CharPlotFig7_ContinuousFireHistory(results)
 % Interactive figure menu — select figures from a command-window prompt
 CharAnalysis('mysite.csv', 'modular')
 
-% Programmatic figure selection — generate figures 3 and 7 only
-CharAnalysis('mysite.csv', 'modular', [3 7])
-
 % Programmatic selection with automatic save
 CharAnalysis('mysite.csv', 'modular', [3 7], true)
+
+% Run analysis and save data only, no figures generated
+CharAnalysis('mysite.csv', 'resultsOnly')
 ```
 
 The modular architecture also lays the groundwork for the planned R translation by cleanly separating computation from visualization.

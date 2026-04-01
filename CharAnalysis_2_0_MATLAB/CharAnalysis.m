@@ -45,9 +45,9 @@ end
 if nargin < 4
     saveFigs = [];
 end
-runMode = lower(strtrim(runMode));
-if ~ismember(runMode, {'standard', 'modular'})
-    error('CharAnalysis: runMode must be ''standard'' or ''modular''.')
+runMode = strtrim(runMode);
+if ~ismember(runMode, {'standard', 'modular', 'resultsOnly'})
+    error('CharAnalysis: runMode must be ''standard'', ''modular'', or ''resultsOnly''.')
 end
 
 %% Prompt for file name if not supplied
@@ -102,7 +102,7 @@ disp('(1b) Validating input parameters...')
 CharValidateParams(charData, Pretreatment, Smoothing, PeakAnalysis, Results);
 
 %% Run-wide flags (set once, used by multiple downstream functions)
-plotData  = 1;   % Draw diagnostic figures (Figures 1 and 2) on main run.
+plotData  = ~strcmp(runMode, 'resultsOnly');   % Suppress figs 1 and 2 in resultsOnly mode.
 bkgSensIn = 0;   % Normal run - not inside the sensitivity loop.
 
 %% (2) Pretreatment
@@ -169,6 +169,10 @@ CharAnalysisResults.site         = site;
 
 if strcmp(runMode, 'modular')
     CharFigureMenu(CharAnalysisResults, figSelection, saveFigs);
+elseif strcmp(runMode, 'resultsOnly')
+    % Data already saved by CharPostProcess if Results.save == 1.
+    % No figures generated.
+    disp('      ...results only, no figures generated.')
 else
     CharPlotResults(CharAnalysisResults);
 end

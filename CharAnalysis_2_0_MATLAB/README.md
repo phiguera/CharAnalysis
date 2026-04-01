@@ -35,7 +35,10 @@ CharAnalysis('mysite_charParams.csv', 'modular')
 CharAnalysis('mysite_charParams.csv', 'modular', [3 7])
 
 % Programmatic selection with automatic save
-CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
+CharAnalysis('mysite.csv', 'modular', [3 7], true)
+
+% Run analysis and save data only, no figures generated
+CharAnalysis('mysite.csv', 'resultsOnly')
 ```
 
 See Section 3.1 of the User's Guide for full details on the modular figure interface.

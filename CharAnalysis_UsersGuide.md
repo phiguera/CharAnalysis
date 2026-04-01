@@ -420,6 +420,11 @@ The `'modular'` run mode allows individual output figures to be selected interac
 >> CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
 ```
 
+**Results only** — run the full analysis and save data (if `saveData = 1`) without generating any figures:
+```matlab
+>> CharAnalysis('mysite_charParams.csv', 'resultsOnly')
+```
+
 **Calling individual figures directly** — after any run, individual figure functions can be called from the workspace using the results struct:
 ```matlab
 >> results = CharAnalysis('mysite_charParams.csv');
