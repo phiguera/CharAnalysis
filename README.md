@@ -49,7 +49,7 @@ Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
 ## Version 2.0 (March 2026)
 
-Version 2.0 is the first major update to *CharAnalysis*, addressing two areas of improvement, with four additional areas planned (see [ROADMAP.md](ROADMAP.md)):
+**Version 2.0 is the first major update to *CharAnalysis* in over a decade,** addressing two areas of improvement, with four additional areas planned (see [ROADMAP.md](ROADMAP.md)):
 
 1. **MATLAB Modernization** — eliminated legacy code patterns, vectorized inner loops, and removed deprecated function calls for compatibility with MATLAB R2019a and higher.
 2. **Modular Figure Interface** — restructured the codebase so that each output figure (Figures 3–9) is implemented as a standalone function callable independently using the results struct returned by `CharAnalysis`. All `.m` files except `CharAnalysis.m` now reside in a `src/` subfolder, added to the MATLAB path automatically at startup. A new `'modular'` run mode supports interactive and programmatic figure selection:
