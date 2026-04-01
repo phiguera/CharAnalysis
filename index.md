@@ -58,12 +58,11 @@ millennia of charcoal deposited from past fires (Photo: L. Lad, 2024).*
 *CharAnalysis* takes a raw sediment-charcoal record and guides the user through
 five analytical steps: interpolating the record to equal time intervals,
 smoothing to estimate background charcoal accumulation, isolating the
-high-frequency peak component, applying a threshold to identify fire events, and
+high-frequency peak component, applying a threshold to identify peaks that are interpreted as fire events, and
 screening peaks using a minimum-count criterion. At each step the analyst makes
 explicit parameter choices, informed by diagnostic output from the program.
 
-The figures below illustrate typical program output for the Code Lake record
-from the south-central Brooks Range, Alaska (Higuera et al. 2009).
+The figures below illustrate the first two (of up to 10) output figures, using the Code Lake record from the south-central Brooks Range, Alaska (Higuera et al. 2009).
 
 <img src="images/fig04_sensitivity_sni.png" alt="CharAnalysis output: sensitivity to alternative thresholds" width="75%" style="display: block; margin: auto;">
 
