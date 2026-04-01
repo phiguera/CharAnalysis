@@ -17,11 +17,36 @@ and the [main README](https://github.com/phiguera/CharAnalysis/blob/master/READM
    [`DataTemplates_and_Examples/`](https://github.com/phiguera/CharAnalysis/tree/master/DataTemplates_and_Examples)
    to set up input files for your own data.
 
+## Calling Conventions
+```matlab
+% Standard run — all figures, existing behavior
+CharAnalysis('mysite_charParams.csv')
+
+% Return results to the MATLAB workspace
+results = CharAnalysis('mysite_charParams.csv')
+
+% Call any individual figure directly
+CharPlotFig7_ContinuousFireHistory(results)
+
+% Interactive figure menu
+CharAnalysis('mysite_charParams.csv', 'modular')
+
+% Programmatic figure selection (e.g. Figures 3 and 7 only)
+CharAnalysis('mysite_charParams.csv', 'modular', [3 7])
+
+% Programmatic selection with automatic save
+CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
+```
+
+See Section 3.1 of the User's Guide for full details on the modular figure interface.
+
 ## Directory Contents
 
+**Entry point**
+- `CharAnalysis.m` — main entry point; the only `.m` file at this level. Run this to start the program. All supporting functions are in `src/`.
+
 **Source code**
-- `CharAnalysis.m` — main entry point; run this to start the program
-- All other `.m` files — supporting functions called by `CharAnalysis.m`
+- `src/` — all supporting `.m` files, including analytical functions, figure functions, and helper utilities. Added to the MATLAB path automatically when `CharAnalysis.m` runs; no manual path configuration of this subfolder is needed.
 
 **Version comparison and validation**
 - `z_Compare_CharAnalysis_V1_V2.m` — script for comparing V2.0 outputs against
