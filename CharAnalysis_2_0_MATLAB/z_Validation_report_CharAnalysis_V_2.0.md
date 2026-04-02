@@ -13,10 +13,11 @@
 | 1 | CO | Code Lake | Alaska, USA | boreal forest | local | Higuera et al. 2009 |
 | 2 | CO | Code Lake | Alaska, USA | boreal forest | global | -- |
 | 3 | CH10 | Chickaree Lake | Colorado, USA | subalpine forest | local | Dunnette et al. 2014 |
-| 4 | TL06 | Thunder Lake | Colorado, USA | subalpine forest | local | Higuera et al. 2024 |
+| 4 | TL06 | Thunder Lake | Colorado, USA | subalpine forest | local | Higuera et al. 2014 |
 | 5 | RA07 | Raven Lake | Alaska, USA | tundra | local | Higuera et al. 2011 |
+| 6 | SI17 | Silver Lake | Montana, USA | subalpine forest | local | Clark-Wolf 2023 |
 
-Code Lake is the example dataset bundled with _CharAnalysis_ distributions and was tested with both local and global threshold configurations. Chickaree Lake, Thunder Lake, and Raven Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, ecosystems, and fire regime characteristics.
+Code Lake is the example dataset bundled with _CharAnalysis_ distributions and was tested with both local and global threshold configurations. Chickaree Lake, Thunder Lake, Raven Lake, and Silver Lake are independent records used to validate v2.0 across a range of record lengths, sampling resolutions, ecosystems, and fire regime characteristics.
 
 ### Note on Record End Treatment
 
@@ -404,13 +405,77 @@ An exact match is expected for a gap-free record where the Curve Fitting Toolbox
 
 ---
 
+## Round 6: Silver Lake, Montana (SI17) — Local Threshold
+
+**Dataset:** Silver Lake, MT — an independent charcoal record used for validation
+**Input file:** `SI17_charParams.csv` / `SI17_charData.csv`
+**Date run:** 2026-04-02
+
+### Analysis Parameters
+
+| Parameter | Value |
+|---|---|
+| `threshType` | 2 (locally defined) |
+| `threshMethod` | 3 (Gaussian mixture model) |
+| Record length | 484 interpolated samples |
+| Record gaps | None |
+| Site context | Subalpine forest, Montana |
+
+### Results
+
+#### Peak Identification — Perfect Match
+
+| Column | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| peaks1 | 44 | 44 | 0 |
+| peaks2 | 31 | 31 | 0 |
+| peaks3 | 22 | 22 | 0 |
+| peaksFinal | 31 | 31 | 0 |
+
+**Rows where peaksFinal differs: 0 of 484**
+
+#### Threshold Values — Exact Match
+
+| Column | v1.1 mean | v2.0 mean | Difference |
+|---|---|---|---|
+| thresh1 | 0.8973 | 0.8973 | 0.0000 |
+| thresh2 | 1.3136 | 1.3136 | 0.0000 |
+| thresh3 | 1.7802 | 1.7802 | 0.0000 |
+| threshFinalPos | 1.3136 | 1.3136 | 0.0000 |
+
+**Samples where threshFinalPos differs: 0 of 484** (mean absolute difference = 0.0000; max = 0.0000)
+
+#### Peak Magnitude — Exact Match
+
+| Metric | v1.1 | v2.0 | Difference |
+|---|---|---|---|
+| Total peak magnitude | 1205.32 | 1205.32 | 0.0% |
+| Mean magnitude per peak | 38.8812 | 38.8812 | 0.0% |
+
+#### Smoothed Fire Frequency
+
+| Metric | Value |
+|---|---|
+| Mean absolute difference | 0.0000 |
+| Maximum absolute difference | 0.0000 |
+
+#### Regression Test Result
+
+| PeakTol | ThreshTol | FreqTol | Result |
+|---|---|---|---|
+| 0 | 0.001 | 0.001 | 11/11 PASS |
+
+Silver Lake produced zero differences across all 484 samples and all output variables — the cleanest result in the validation suite. As a gap-free record with the Curve Fitting Toolbox available, `smooth()` is called directly with identical inputs in both versions, producing bit-identical smoothing and GMM outputs throughout.
+
+---
+
 ## Documented Numerical Tolerances by Analysis Type
 
-The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–5, the following tolerances are appropriate:
+The regression test script `z_Compare_CharAnalysis_V1_V2.m` accepts tolerance parameters that should be set according to the analysis configuration. Based on Rounds 1–6, the following tolerances are appropriate:
 
 | Analysis type | PeakTol | ThreshTol | FreqTol | Notes |
 |---|---|---|---|---|
-| GMM + local, no gaps | 0 | 0.001 | 0.010 | Code Lake (local), Thunder Lake, Raven Lake baseline |
+| GMM + local, no gaps | 0 | 0.001 | 0.010 | Code Lake (local), Thunder Lake, Raven Lake, Silver Lake baseline |
 | GMM + local, with gaps | 1 | 0.015 | 0.200 | Chickaree Lake baseline |
 | GMM + global | 2 | 0.005 | 0.001 | Code Lake (global) baseline |
 
@@ -442,7 +507,4 @@ The following bugs were identified and corrected across Rounds 1–5. All fixes 
 ---
 
 ## Next Steps
-
-- Update `dev` branch README with Round 5 validation status
-- Merge `dev` branch to `main`
-- Continue testing additional datasets to broaden coverage (methods 3-5, log transform, ratios)
+- Continue testing additional datasets to broaden coverage (methods 3–5, log transform, ratios)
