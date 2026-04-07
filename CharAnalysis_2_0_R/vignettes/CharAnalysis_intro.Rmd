@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 
 **CharAnalysis** reconstructs local fire histories from lake-sediment charcoal records. Charcoal preserved in lake sediments is a direct proxy for past fire activity: individual fire events near a lake deposit pulses of charcoal that appear as peaks above a slowly varying background signal. CharAnalysis formalises this peak-detection logic as a reproducible, quantitative workflow.
 
-This R package is a direct translation of CharAnalysis v2.0 (MATLAB), validated against reference outputs on five benchmark datasets. Analytical methods are described in Higuera et al. (2010).
+This R package is a direct translation of CharAnalysis v2.0 (MATLAB), validated against reference outputs on the Code Lake benchmark dataset. Analytical methods are described in Higuera et al. (2009).
 
 The full workflow proceeds in five steps:
 
@@ -45,7 +45,7 @@ The full workflow proceeds in five steps:
 ```{r install, eval = FALSE}
 # Install from GitHub (requires devtools)
 devtools::install_github("phiguera/CharAnalysis",
-                         subdir = "CharAnalysis_R")
+                         subdir = "CharAnalysis_2_0_R")
 
 # Suggested packages for figures
 install.packages(c("ggplot2", "patchwork", "ggtext"))
@@ -281,12 +281,14 @@ This R package is a direct translation of CharAnalysis v2.0 (MATLAB). Outputs ar
 
 ## Citation
 
-If you use CharAnalysis in published research, please cite:
+If you use CharAnalysis in published research, please cite Higuera et al. (2009), the first study to apply the core analytical tools implemented in the program. If you used Version 2.0 specifically, please also cite the software:
 
-> Higuera, P.E., Gavin, D.G., Bartlein, P.J., and Hallett, D.J. (2010). Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. *International Journal of Wildland Fire*, 19(8), 996–1014. https://doi.org/10.1071/WF09134
+> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
+
+> Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo. https://doi.org/10.5281/zenodo.19304064
 
 ---
 
 ## References
 
-Higuera, P.E., Gavin, D.G., Bartlein, P.J., and Hallett, D.J. (2010). Peak detection in sediment-charcoal records: impacts of alternative data analysis methods on fire-history interpretations. *International Journal of Wildland Fire*, 19(8), 996–1014.
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1

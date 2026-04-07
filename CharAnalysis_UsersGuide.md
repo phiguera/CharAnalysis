@@ -43,6 +43,8 @@ https://phiguera.github.io/CharAnalysis
 
 *CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
 
+*CharAnalysis* is available in both **MATLAB** (Version 2.0; the reference implementation) and **R** (Version 2.0; a direct translation). This guide is written primarily for the MATLAB version. R users should consult the R package vignette (`CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd`) for R-specific installation, usage, and a description of known numerical differences between the two implementations.
+
 The following two papers provide the most thorough background for the analyses
 employed in *CharAnalysis*, including the assumptions inherent in charcoal peak
 identification using a local threshold:
@@ -168,7 +170,7 @@ https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1
 
 If you used Version 2.0 specifically, please also cite the software:
 
-Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records (Version 2.0). Zenodo.
+Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo.
 https://doi.org/10.5281/zenodo.19304064
 
 ### Support and Updates
@@ -194,13 +196,29 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 
 ### 1. Download and Installation
 
-There are three ways to access *CharAnalysis*, suited to different users and needs.
+There are four ways to access *CharAnalysis*, suited to different users and needs.
 
 ---
 
-#### Option 1: Download and Run Locally in MATLAB *(recommended)*
+#### Option 1: Install and Run in R
 
-This is the recommended option for researchers conducting analyses on their own data.
+Install the R package directly from GitHub using `devtools`. Requires R 4.0 or
+higher. Output figures require `ggplot2`, `patchwork`, and `ggtext`.
+
+```r
+# install.packages("devtools")
+devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
+```
+
+See the R package vignette (`CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd`)
+for a full worked example, parameter descriptions, output descriptions, and a
+summary of known numerical differences from the MATLAB implementation.
+
+---
+
+#### Option 2: Download and Run Locally in MATLAB
+
+This is the recommended option for MATLAB users conducting analyses on their own data.
 
 **Requirements**
 - MATLAB R2019a or higher. No additional toolboxes are required.
@@ -236,7 +254,7 @@ version comparison script (`z_Compare_CharAnalysis_V1_V2.m`) is located in
 
 ---
 
-#### Option 2: Standalone Windows Application (Version 1.1)
+#### Option 3: Standalone Windows Application (Version 1.1)
 
 A standalone Windows executable (`.exe`) is available for users without a MATLAB license. This version is based on **Version 1.1** and predates the Version 2.0 update. Download and installation instructions are available at:
 
@@ -249,7 +267,7 @@ https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/re
 
 ---
 
-#### Option 3: Try It Online via MATLAB Online
+#### Option 4: Try It Online via MATLAB Online
 
 Not sure if *CharAnalysis* is the right tool for your research? You can run the program instantly in your web browser on the bundled Code Lake example dataset — no installation required. Click the badge below or visit the GitHub repository page.
 
@@ -258,7 +276,7 @@ Not sure if *CharAnalysis* is the right tool for your research? You can run the 
 Clicking this link clones the repository to your MATLAB Drive and opens *CharAnalysis* ready to run. A free MathWorks account is required. University users can log in with their institutional email address for full access.
 
 > **Note:** MATLAB Online is best suited for evaluating *CharAnalysis* on
-> the bundled example dataset. For analysis of your own data, Option 1
+> the bundled example dataset. For analysis of your own data, Option 2
 > (local MATLAB) is recommended — uploading data files and editing
 > parameter files is more straightforward in the desktop environment.
 > When running online, set `saveData = 0` and `saveFigures = 0` in the

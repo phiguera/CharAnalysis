@@ -1,5 +1,5 @@
 # CharAnalysis R Translation — Project Brief
-*Prepared for Claude Cowork | April 2026*
+*Prepared for Claude Cowork | April 2026 — Updated April 2026 to reflect as-built implementation*
 
 ## 1. Project Overview
 
@@ -122,7 +122,7 @@ Compare the following columns from the MATLAB V2.0 CSV output against R output o
 ```r
 # Example validation pattern — apply to each of the five reference datasets
 matlab_out <- read.csv("CodeLake_V2_local_MATLAB.csv")
-r_out      <- char_run("CodeLake_charParams.csv")
+r_out      <- CharAnalysis("CodeLake_charParams.csv")
 
 stopifnot(max(abs(r_out$ageTop_i - matlab_out$ageTop_i)) < 1e-10)
 stopifnot(max(abs(r_out$charAcc_i - matlab_out$charAcc_i)) < 1e-10)
@@ -195,36 +195,37 @@ R functions to implement:
 
 - `char_write_results()` — Write the output data table to CSV (columns matching the MATLAB `CharResults` output exactly, same column names and order).
 - **Figure functions** — Build `ggplot2` equivalents for each of the nine standard output figures. Implement as standalone functions analogous to the MATLAB modular figure interface (`CharPlotFig3.m` through `CharPlotFig9.m`). Focus on information content, not pixel-level reproduction of MATLAB figure aesthetics. Use `patchwork` for multi-panel layouts and `ggplot2::sec_axis()` for dual y-axes.
-- `char_run()` — Top-level wrapper that calls the full pipeline and returns a named list of all outputs (equivalent to the MATLAB `results` struct).
+- `CharAnalysis()` — Top-level wrapper that calls the full pipeline and returns a named list of all outputs (equivalent to the MATLAB `results` struct). Call `CharWriteResults()` separately to save the output CSV.
 
-**Package structure (suggested):**
+**Package structure (as built):**
 
 ```
 R/
-  char_parameters.R
-  char_pretreatment.R
-  char_smooth.R
-  char_thresh_global.R
-  char_thresh_local.R
-  char_peak_id.R
-  char_post_process.R
-  char_write_results.R
-  char_plot_fig3.R  ...  char_plot_fig9.R
-  char_run.R
-  utils_lowess.R
-data/
-  CodeLake_charData.csv
-  CodeLake_charParams.csv
-  (other example datasets)
+  CharParameters.R
+  CharPretreatment.R
+  CharSmooth.R
+  CharThreshGlobal.R
+  CharThreshLocal.R
+  CharPeakID.R
+  CharPostProcess.R
+  CharWriteResults.R
+  CharPlotResults.R       (all five figure functions + char_plot_all wrapper)
+  CharAnalysis.R          (top-level pipeline wrapper)
+  charLowess.R
+  CharValidateParams.R
+  GaussianMixture.R       (direct port of MATLAB EM; see Section 6.2)
 tests/
   test_phase1.R
   test_phase2.R
   test_phase3.R
+  test_phase4.R
 vignettes/
   CharAnalysis_intro.Rmd
+DESCRIPTION
+NAMESPACE
 ```
 
-R packages needed: `ggplot2`, `patchwork`, `readxl`, `openxlsx`.
+R packages needed: `ggplot2`, `patchwork`, `ggtext`, `MASS`, `zoo`, `stats` (base).
 
 **Validation at Phase 4:** Re-run the full Phase 1–3 validation suite through `char_run()` to confirm end-to-end equivalence has not regressed.
 
@@ -238,9 +239,9 @@ These are the most important implementation decisions. Address each one explicit
 
 MATLAB's `charLowess.m` (V2.0) accepts `span` as either a fraction of data length (if < 1) or a number of points (if ≥ 1). R's `lowess()` accepts `f` as a fraction only. Write a wrapper that converts: `f = span / length(y)` when `span >= 1`, and `f = span` when `span < 1`. Validate the wrapper on all five reference datasets before integrating it into `char_smooth()`.
 
-### 6.2 Gaussian mixture model — mclust vs. bundled EM
+### 6.2 Gaussian mixture model — direct port of MATLAB EM
 
-The MATLAB codebase bundles a custom EM implementation with MDL-based order selection. Replace this with `mclust::Mclust(G = 2, modelNames = "E")` (equal variance, two components). For the forced G = 2 case (which is how CharAnalysis uses it), the difference between MDL and BIC order selection does not apply. However, GMM solutions near record gaps (low-data windows) may differ slightly between the two implementations. The Chickaree Lake (CH10) dataset exercises this case; the allowed tolerance for threshold values on CH10 is relaxed to ± 0.015 (see Phase 2 validation targets above).
+The MATLAB codebase bundles a custom EM implementation with MDL-based order selection (`GaussianMixture.m` and eight sub-function files). Rather than replacing this with `mclust`, the R implementation directly ports the MATLAB EM algorithm in `GaussianMixture.R` (and companion files `EStep.R`, `MStep.R`, `EMIterate.R`, `MDLReduceOrder.R`, `ClusterNormalize.R`, `initMixture.R`, `SplitClasses.R`, `GMClassLikelihood.R`). This produces numerically close agreement with MATLAB on the CO reference dataset. Floating-point divergence in low-data windows (e.g., Chickaree Lake CH10) may still occur and is expected; the allowed tolerance for threshold values on CH10 is relaxed to ± 0.015 (see Phase 2 validation targets above). No `mclust` dependency is needed.
 
 ### 6.3 Weibull parameterization order
 
@@ -256,7 +257,7 @@ MATLAB's `bootstrp(1000, 'mean', FRI)` maps to `boot::boot(FRI, function(x, i) m
 
 ### 6.6 Anderson-Darling test in smoothFRI
 
-MATLAB calls a custom `AnDarksamtest()` bundled with the distribution. Replace with `kSamples::ad.test(list(x1, x2), method = "asymptotic")`.
+MATLAB calls a custom `AnDarksamtest()` bundled with the distribution. The R implementation uses `ks.test()` (base R) for two-sample comparisons between zones, which avoids an additional package dependency. If Anderson-Darling tests are needed in a future revision, `kSamples::ad.test(list(x1, x2), method = "asymptotic")` is the appropriate replacement.
 
 ---
 
@@ -277,6 +278,8 @@ Raven_RA07_MATLAB_V2.csv
 ```
 
 ### 7.2 Validation script structure
+
+*Note: As of the initial dev-branch release, only the CO (Code Lake, local threshold) dataset has been fully validated through Phase 4. The validation script described below has not yet been written. Creating `tests/validate_all.R` and validating the remaining four reference datasets (CodeLake global, CH10, TL06, RA07) is a planned post-merge task.*
 
 Create a single validation script (`tests/validate_all.R`) that runs all five reference datasets through the R implementation and compares against the MATLAB reference CSVs. The script should:
 
@@ -323,29 +326,30 @@ The R translation should be developed in the same repository, in a new subfolder
 
 ## 9. R Package Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `readxl` / `readr` | Read Excel and CSV input files |
-| `openxlsx` | Write Excel output files |
-| `zoo` | Rolling statistics: `rollmean`, `rollmedian`, `rollapply` |
-| `mclust` | Gaussian mixture models (replaces bundled MATLAB EM) |
-| `MASS` | `fitdistr()` for Weibull parameter estimation |
-| `boot` | Bootstrap confidence intervals |
-| `kSamples` | `ad.test()` for Anderson-Darling test |
-| `stats` | `ks.test()`, `qnorm`, `pnorm`, `dnorm`, `lowess` |
-| `ggplot2` | All output figures |
-| `patchwork` | Multi-panel figure layout |
+| Package | Status | Purpose |
+|---------|--------|---------|
+| `MASS` | Required | `fitdistr()` for Weibull parameter estimation |
+| `zoo` | Required | `rollmean`, `rollmedian`, `rollapply` in `CharSmooth.R` |
+| `stats` | Required (base) | `ks.test()`, `lowess()`, `qnorm`, `pnorm`, `dnorm` |
+| `graphics` | Required (base) | Legacy plotting fallback |
+| `utils` | Required (base) | `read.csv()`, `write.table()` |
+| `ggplot2` (≥ 3.4.0) | Suggested | All output figures via `CharPlotResults.R` |
+| `patchwork` | Suggested | Multi-panel figure layout |
+| `ggtext` | Suggested | HTML/markdown subscripts in figure panel titles |
+| `readxl` | Suggested | Read Excel parameter files (if `.xls`/`.xlsx` input) |
+
+*Packages listed in earlier drafts (`mclust`, `boot`, `kSamples`, `openxlsx`) are **not** used in the as-built implementation.*
 
 ---
 
 ## 10. Summary of Deliverables by Phase
 
-| Phase | Deliverable | Validation |
-|-------|-------------|------------|
-| 1 | `char_parameters()`, `char_pretreatment()` | Interpolated CHAR columns, all 5 datasets |
-| 2 | `char_smooth()`, `char_thresh_global()`, `char_thresh_local()`, `utils_lowess.R` | C_back, C_peak, threshold columns, all 5 datasets |
-| 3 | `char_peak_id()`, `char_post_process()` | Peak flags, FRI metrics, Weibull parameters, all 5 datasets |
-| 4 | `char_write_results()`, figure functions, `char_run()`, vignette | End-to-end regression suite passes, all 5 datasets |
+| Phase | Deliverable | Validation status |
+|-------|-------------|-------------------|
+| 1 | `CharParameters()`, `CharPretreatment()` | CO dataset ✓ — remaining 4 datasets pending |
+| 2 | `CharSmooth()`, `CharThreshGlobal()`, `CharThreshLocal()`, `charLowess.R` | CO dataset ✓ — remaining 4 datasets pending |
+| 3 | `CharPeakID()`, `CharPostProcess()` | CO dataset ✓ — remaining 4 datasets pending |
+| 4 | `CharWriteResults()`, `CharPlotResults.R`, `CharAnalysis()`, vignette, DESCRIPTION, NAMESPACE | CO dataset ✓ — `validate_all.R` and full 5-dataset regression suite pending |
 
 ---
 
