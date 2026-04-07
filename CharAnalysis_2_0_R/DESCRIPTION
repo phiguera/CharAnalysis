@@ -1,0 +1,42 @@
+Package: CharAnalysis
+Type: Package
+Title: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records
+Version: 2.0.0
+Date: 2026-04-07
+Authors@R: person("Philip", "Higuera",
+    email   = "philip.higuera@umontana.edu",
+    role    = c("aut", "cre"),
+    comment = c(ORCID = "0000-0003-1278-4095"))
+Description: R implementation of CharAnalysis v2.0, a program for
+    reconstructing local fire histories from lake-sediment charcoal records.
+    The package decomposes a charcoal accumulation rate (CHAR) time series
+    into low-frequency background (C_background) and high-frequency peak
+    (C_peak) components, identifies charcoal peaks that likely represent
+    fire events using either a global or local sliding-window threshold,
+    applies a minimum-count significance screen, and summarises fire-history
+    metrics including fire-return intervals, Weibull statistics, and smoothed
+    fire frequency. Analytical methods and outputs are quantitatively
+    equivalent to the MATLAB v2.0 implementation on validated reference
+    datasets. See Higuera et al. (2010) <doi:10.1890/09-0300.1> for the
+    underlying methodology.
+License: GPL-3
+URL: https://github.com/phiguera/CharAnalysis
+BugReports: https://github.com/phiguera/CharAnalysis/issues
+Depends:
+    R (>= 4.0.0)
+Imports:
+    MASS,
+    graphics,
+    stats,
+    utils
+Suggests:
+    ggplot2 (>= 3.4.0),
+    patchwork,
+    ggtext,
+    zoo,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: false
+RoxygenNote: 7.3.2
