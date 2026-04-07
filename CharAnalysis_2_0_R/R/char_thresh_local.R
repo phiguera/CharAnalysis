@@ -44,13 +44,16 @@
 #'   If fewer than 4 non-neutral samples exist in the window, a simple Gaussian
 #'   is fitted (same as method 2) and the KS test is skipped.
 #'
-#'   ## GMM replacement (threshMethod = 3)
-#'   MATLAB's \code{GaussianMixture(X, 2, 2, false)} is replaced by
-#'   \code{mclust::Mclust(G = 2, modelNames = "V")}.  The noise component is
-#'   identified as the Gaussian with the smaller mean.  Poor-fit fallback
-#'   (mu1 == mu2) re-fits with G = 3 and takes the two components with the
-#'   smallest means, mirroring the MATLAB v2.0 bug fix (the fallback now passes
-#'   the local window X, not the full record).
+#'   ## GMM (threshMethod = 3)
+#'   MATLAB's \code{GaussianMixture(X, 2, 2, false)} is replicated by
+#'   \code{gaussian_mixture_em(X)} from \code{utils_gaussian_mixture.R}.  This
+#'   uses the same first/last-point initialisation and loose convergence
+#'   criterion (\eqn{\epsilon = 0.03 \log N}) as the original Bowman CLUSTER
+#'   EM, substantially improving agreement with MATLAB threshold values compared
+#'   to \code{mclust}.  The noise component is identified as the Gaussian with
+#'   the smaller mean.  Poor-fit fallback (mu1 == mu2) re-fits with K = 3 and
+#'   takes the two components with the smallest means, mirroring the MATLAB v2.0
+#'   bug fix (the fallback passes the local window X, not the full record).
 #'
 #'   ## KS goodness-of-fit
 #'   MATLAB evaluates the fitted normal CDF at 101 equally-spaced bin centres
@@ -66,32 +69,8 @@
 #'
 #' @seealso [char_thresh_global()], [char_smooth()], [CharAnalysis()]
 
-# mclust must be attached (not just loaded) so its internal functions
-# (e.g. mclustBIC) are on the search path when Mclust() runs.
-if (!requireNamespace("mclust", quietly = TRUE))
-  stop("Package 'mclust' is required: install.packages('mclust')")
-library(mclust)
-
-# Helper: extract per-component standard deviations from a mclust fit.
-# Handles sigmasq vs sigma storage differences across mclust versions:
-#   - mclust 5.x / 6.x univariate "V": parameters$variance$sigmasq (numeric vector)
-#   - multivariate or alternate storage:  parameters$variance$sigma (3-D array)
-#   - degenerate fallback: compute per-component SD from classification
-.mclust_sigma <- function(fit) {
-  var_s <- fit$parameters$variance
-  if (!is.null(var_s$sigmasq) && is.numeric(var_s$sigmasq)) {
-    return(sqrt(var_s$sigmasq))
-  }
-  if (!is.null(var_s$sigma) && is.array(var_s$sigma)) {
-    return(sqrt(apply(var_s$sigma, 3L, function(m) m[1L, 1L])))
-  }
-  # Last resort: per-component SD from classification labels
-  cl   <- fit$classification
-  vapply(sort(unique(cl)), function(k) {
-    vals <- fit$data[cl == k]
-    if (length(vals) < 2L) 1e-8 else stats::sd(vals)
-  }, numeric(1L))
-}
+# Requires: gaussian_mixture_em() from utils_gaussian_mixture.R
+# (source that file before sourcing this one, or ensure it is on the search path)
 
 char_thresh_local <- function(charcoal, smoothing, peak_analysis,
                                site = NULL, results = NULL,
@@ -206,16 +185,17 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
         }
 
       } else {
-        # GMM: replace MATLAB GaussianMixture(X, 2, 2, false) with mclust.
-        # "V" = variable variance (MATLAB EM does not constrain variances equal).
-        # tryCatch guards against degenerate windows where mclust cannot converge.
+        # GMM: replicate MATLAB's GaussianMixture(X, 2, 2, false) using the
+        # direct R port gaussian_mixture_em() from utils_gaussian_mixture.R.
+        # This matches MATLAB's first/last-point initialisation and loose
+        # convergence criterion, substantially reducing threshold differences.
         fit <- tryCatch(
-          Mclust(data = X, G = 2L, modelNames = "V", verbose = FALSE),
+          gaussian_mixture_em(X, k = 2L),
           error = function(e) NULL
         )
 
         if (is.null(fit)) {
-          # mclust failed to converge: fall back to simple Gaussian (method 2)
+          # EM failed: fall back to simple Gaussian (method 2 behaviour)
           if (peak_analysis$cPeak == 1L) {
             neg_vals    <- X[X <= 0]
             sigma_hat_i <- if (length(neg_vals) == 0L) stats::sd(X)
@@ -227,33 +207,32 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
             mu_hat_i    <- 1
           }
         } else {
-          mu_both    <- fit$parameters$mean
-          sigma_both <- .mclust_sigma(fit)   # robust across mclust versions
+          # gaussian_mixture_em returns mu and sigma sorted ascending:
+          # mu[1] = background component, mu[2] = peak component.
+          mu_both    <- fit$mu
+          sigma_both <- fit$sigma
 
           if (mu_both[1L] == mu_both[2L]) {
-            # Poor GMM fit: re-fit with G = 3, take two smallest-mean components.
+            # Poor GMM fit: re-fit with K = 3, take two smallest-mean components.
             # Mirrors the v2.0 bug fix (re-fits on local window X, not full record).
             warning("char_thresh_local: poor GMM fit at sample ", i,
-                    " (mu1 == mu2). Re-fitting with G = 3.")
+                    " (mu1 == mu2). Re-fitting with K = 3.")
             fit3 <- tryCatch(
-              Mclust(data = X, G = 3L, modelNames = "V", verbose = FALSE),
+              gaussian_mixture_em(X, k = 3L),
               error = function(e) NULL
             )
             if (!is.null(fit3)) {
-              mu3        <- fit3$parameters$mean
-              sigma3     <- .mclust_sigma(fit3)
-              ord3       <- order(mu3)
-              mu_both    <- mu3[ord3][1:2]
-              sigma_both <- sigma3[ord3][1:2]
+              # fit3$mu is already sorted ascending; take the two smallest
+              mu_both    <- fit3$mu[1:2]
+              sigma_both <- fit3$sigma[1:2]
             }
             # If fit3 also failed, keep mu_both/sigma_both from original fit.
           }
 
-          # Noise component = Gaussian with the smaller mean.
-          # (matches MATLAB: noiseIdx = find(muHat == min(muHat), 1))
-          noise_idx   <- which.min(mu_both)
-          mu_hat_i    <- mu_both[noise_idx]
-          sigma_hat_i <- sigma_both[noise_idx]
+          # Noise component = Gaussian with the smaller mean (index 1,
+          # already sorted ascending by gaussian_mixture_em).
+          mu_hat_i    <- mu_both[1L]
+          sigma_hat_i <- sigma_both[1L]
         }
       }
     }

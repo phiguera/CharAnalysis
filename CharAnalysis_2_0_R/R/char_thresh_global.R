@@ -39,15 +39,13 @@
 #'   For ratios (\code{cPeak = 2}): noise is one-mean; values are shifted to
 #'   zero, mirrored, shifted back, and sigma estimated from the pooled set.
 #'
-#'   ## GMM replacement (threshMethod = 3)
-#'   The MATLAB codebase bundles a custom EM implementation
-#'   (\code{GaussianMixture.m}).  This is replaced by
-#'   \code{mclust::Mclust(G = 2, modelNames = "V")} (two-component,
-#'   variable-variance univariate GMM), which is the closest R equivalent.
-#'   \code{"V"} is used rather than \code{"E"} because the MATLAB EM does not
-#'   constrain the two component variances to be equal.
-#'   The noise component is identified as the Gaussian with the smaller mean
-#'   (matching MATLAB's \code{noiseIdx = find(mu == min(mu), 1)}).
+#'   ## GMM (threshMethod = 3)
+#'   MATLAB's \code{GaussianMixture(X, 2, 2, false)} is replicated by
+#'   \code{gaussian_mixture_em(X)} from \code{utils_gaussian_mixture.R}, using
+#'   the same first/last-point initialisation and loose convergence criterion as
+#'   the original Bowman CLUSTER EM.  The noise component is identified as the
+#'   Gaussian with the smaller mean (matching MATLAB's
+#'   \code{noiseIdx = find(mu == min(mu), 1)}).
 #'
 #'   ## Bin-lookup for threshold values
 #'   Percentile thresholds are mapped to the nearest bin in
@@ -57,28 +55,8 @@
 #'
 #' @seealso [char_thresh_local()], [char_smooth()], [CharAnalysis()]
 
-# mclust must be attached (not just loaded) so its internal functions
-# (e.g. mclustBIC) are on the search path when Mclust() runs.
-if (!requireNamespace("mclust", quietly = TRUE))
-  stop("Package 'mclust' is required: install.packages('mclust')")
-library(mclust)
-
-# Helper: extract per-component standard deviations from a mclust fit.
-# Handles sigmasq vs sigma storage differences across mclust versions.
-.mclust_sigma <- function(fit) {
-  var_s <- fit$parameters$variance
-  if (!is.null(var_s$sigmasq) && is.numeric(var_s$sigmasq)) {
-    return(sqrt(var_s$sigmasq))
-  }
-  if (!is.null(var_s$sigma) && is.array(var_s$sigma)) {
-    return(sqrt(apply(var_s$sigma, 3L, function(m) m[1L, 1L])))
-  }
-  cl <- fit$classification
-  vapply(sort(unique(cl)), function(k) {
-    vals <- fit$data[cl == k]
-    if (length(vals) < 2L) 1e-8 else stats::sd(vals)
-  }, numeric(1L))
-}
+# Requires: gaussian_mixture_em() from utils_gaussian_mixture.R
+# (source that file before sourcing this one, or ensure it is on the search path)
 
 char_thresh_global <- function(charcoal, pretreatment, peak_analysis,
                                 site = NULL, results = NULL,
@@ -145,16 +123,16 @@ char_thresh_global <- function(charcoal, pretreatment, peak_analysis,
 
     if (peak_analysis$threshMethod == 3L) {
 
-      # GMM: replace MATLAB's custom EM with Mclust(G=2, "V").
-      # "V" = variable variance (MATLAB EM does not constrain variances equal).
+      # GMM: replicate MATLAB's GaussianMixture(X, 2, 2, false) using the
+      # direct R port gaussian_mixture_em() from utils_gaussian_mixture.R.
       gmm_data <- charcoal$peak[!is.na(charcoal$peak)]
       fit      <- tryCatch(
-        Mclust(data = gmm_data, G = 2L, modelNames = "V", verbose = FALSE),
+        gaussian_mixture_em(gmm_data, k = 2L),
         error = function(e) NULL
       )
 
       if (is.null(fit)) {
-        # mclust failed: fall back to simple Gaussian (method 2 behaviour)
+        # EM failed: fall back to simple Gaussian (method 2 behaviour)
         if (peak_analysis$cPeak == 1L) {
           neg_vals  <- gmm_data[gmm_data <= 0]
           sigma_hat <- stats::sd(c(neg_vals, abs(neg_vals)))
@@ -165,31 +143,27 @@ char_thresh_global <- function(charcoal, pretreatment, peak_analysis,
           mu_hat    <- 1
         }
       } else {
-        # Extract means and standard deviations (robust across mclust versions)
-        mu_both    <- fit$parameters$mean
-        sigma_both <- .mclust_sigma(fit)
+        # gaussian_mixture_em returns mu and sigma sorted ascending
+        mu_both    <- fit$mu
+        sigma_both <- fit$sigma
 
         if (mu_both[1L] == mu_both[2L]) {
-          # Poor GMM fit — warn and attempt three-component fit, take lower two
+          # Poor GMM fit — re-fit with K = 3, take two smallest-mean components
           warning("char_thresh_global: poor GMM fit (mu1 == mu2). ",
-                  "Re-fitting with G = 3.")
+                  "Re-fitting with K = 3.")
           fit3 <- tryCatch(
-            Mclust(data = gmm_data, G = 3L, modelNames = "V", verbose = FALSE),
+            gaussian_mixture_em(gmm_data, k = 3L),
             error = function(e) NULL
           )
           if (!is.null(fit3)) {
-            mu3        <- fit3$parameters$mean
-            sigma3     <- .mclust_sigma(fit3)
-            ord3       <- order(mu3)
-            mu_both    <- mu3[ord3][1:2]
-            sigma_both <- sigma3[ord3][1:2]
+            mu_both    <- fit3$mu[1:2]
+            sigma_both <- fit3$sigma[1:2]
           }
         }
 
-        # Noise component = the Gaussian with the smaller mean
-        noise_idx <- which.min(mu_both)
-        mu_hat    <- mu_both[noise_idx]
-        sigma_hat <- sigma_both[noise_idx]
+        # Noise component = Gaussian with the smaller mean (index 1, sorted)
+        mu_hat    <- mu_both[1L]
+        sigma_hat <- sigma_both[1L]
       }
 
       char_thresh$noise_pdf <- stats::dnorm(pos_thresh_bins, mu_hat, sigma_hat)

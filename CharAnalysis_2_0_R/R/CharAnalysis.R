@@ -3,19 +3,18 @@
 #' Top-level wrapper that calls each analytical stage in sequence and returns
 #' all intermediate and final results as a single named list.
 #'
-#' Phases 1 and 2 (parameter reading, pretreatment, smoothing, C_peak
-#' computation, and threshold determination) are implemented.  Phase 3
-#' (peak identification, post-processing) and Phase 4 (output, figures)
-#' will be added in subsequent phases.
-#'
 #' @param file_name Path to the \code{*_charParams.csv} (or \code{.xlsx})
 #'   parameter file.
 #'
-#' @return Named list with the following elements (Phases 1–2):
+#' @return Named list with the following elements:
 #'   \describe{
 #'     \item{charcoal}{List of raw and resampled series.  After Phase 2:
-#'       also includes \code{accIS} (smoothed background) and \code{peak}
-#'       (C_peak, either residuals or ratios).}
+#'       includes \code{accIS} (smoothed background) and \code{peak}
+#'       (C_peak, either residuals or ratios).  After Phase 3: also includes
+#'       \code{charPeaks} (\eqn{[N \times T]} binary peak matrix),
+#'       \code{charPeaksThresh}, \code{peaksTotal}, and \code{threshFRI}.
+#'       After Phase 4: also includes \code{peakInsig},
+#'       \code{peakMagnitude}, \code{smoothedFireFrequ}, \code{peaksFrequ}.}
 #'     \item{pretreatment}{Pretreatment parameter list (possibly updated by
 #'       [char_pretreatment()] — e.g. \code{yrInterp} auto-set,
 #'       \code{zoneDiv} end-value corrected).}
@@ -26,21 +25,30 @@
 #'     \item{gap_in}{Integer matrix (nGaps x 2) of missing-value gap indices.}
 #'     \item{char_thresh}{Threshold list returned by [char_thresh_global()] or
 #'       [char_thresh_local()].  Contains \code{pos}, \code{neg}, \code{SNI},
-#'       and \code{GOF}.}
+#'       \code{GOF}, and (after Phase 3) \code{minCountP} — the
+#'       \eqn{[N \times T]} matrix of Shuie-Bain p-values.}
+#'     \item{post}{Post-processing list from [char_post_process()]: FRI
+#'       series, smoothed FRI curve, per-zone Weibull statistics, and the
+#'       assembled \code{char_results} output matrix (\eqn{N \times 33}).}
+#'     \item{char_results}{Numeric matrix (\eqn{N \times 33}) matching the
+#'       MATLAB \code{charResults} output exactly (alias of
+#'       \code{post$char_results}).}
 #'   }
-#'   Phases 3–4 will add \code{post}, etc.
 #'
 #' @seealso [char_parameters()], [char_validate_params()],
 #'   [char_pretreatment()], [char_smooth()], [char_thresh_global()],
-#'   [char_thresh_local()]
+#'   [char_thresh_local()], [char_peak_id()], [char_post_process()]
 #'
 #' @examples
 #' \dontrun{
 #'   out <- CharAnalysis("CO_charParams.csv")
-#'   head(data.frame(ageTop_i = out$charcoal$ybpI,
+#'   # Phase 2 outputs
+#'   head(data.frame(ageTop_i  = out$charcoal$ybpI,
 #'                   charAcc_i = out$charcoal$accI,
 #'                   charBkg_i = out$charcoal$accIS,
 #'                   charPeak_i = out$charcoal$peak))
+#'   # Phase 3 outputs
+#'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])
 #' }
 CharAnalysis <- function(file_name) {
 
@@ -121,6 +129,38 @@ CharAnalysis <- function(file_name) {
   }
   message("      ...done.")
 
+  # (5) Identify peaks ----------------------------------------------------------
+  # Mirrors CharAnalysis.m step (5): CharPeakID()
+  message("(5) Identifying peaks and applying minimum-count screening...")
+  peak_result <- char_peak_id(charcoal,
+                               pre$pretreatment,
+                               params$peak_analysis,
+                               char_thresh)
+  charcoal    <- peak_result$charcoal
+  char_thresh <- peak_result$char_thresh
+  message("      ...done.")
+
+  # (6) Post-processing: FRIs, fire frequency, Weibull statistics --------------
+  # Mirrors CharAnalysis.m step (6): CharPostProcess()
+  message("(6) Post-processing: fire-return intervals, Weibull statistics...")
+  post_result  <- char_post_process(charcoal,
+                                     pre$pretreatment,
+                                     params$peak_analysis,
+                                     char_thresh,
+                                     params$smoothing)
+  charcoal     <- post_result$charcoal
+  post         <- post_result$post
+  char_results <- post_result$char_results
+  message("      ...done.")
+
+  # (7) Write results CSV -------------------------------------------------------
+  # In the R package, CSV output is explicit: call char_write_results() directly
+  # after CharAnalysis() returns.  The saveData flag from the parameter file is
+  # stored in results$save and can be inspected by the caller, but no file is
+  # written automatically here (prevents accidental overwrites of reference data).
+  message("(7) Pipeline complete.  Call char_write_results(out$char_results, ",
+          "out$site) to save output CSV.")
+
   # Assemble and return ---------------------------------------------------------
   list(
     charcoal      = charcoal,
@@ -130,6 +170,8 @@ CharAnalysis <- function(file_name) {
     results       = params$results,
     site          = params$site,
     gap_in        = pre$gap_in,
-    char_thresh   = char_thresh
+    char_thresh   = char_thresh,
+    post          = post,
+    char_results  = char_results
   )
 }

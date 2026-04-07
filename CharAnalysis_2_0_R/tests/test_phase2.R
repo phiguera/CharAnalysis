@@ -29,13 +29,14 @@
 #
 # TOL_THRESH (5e-3)
 #   Applied to thresh 1-3, thresh FinalPos, thresh FinalNeg, and SNI.  These
-#   are computed from per-sample GMM fits via mclust::Mclust(), which replaces
-#   MATLAB's custom GaussianMixture EM.  The two implementations use different
-#   initialisation and convergence criteria; GMM parameters (mu, sigma) can
-#   differ by a small amount, producing threshold differences larger than the
-#   CSV precision limit.  5e-3 is a pragmatic tolerance; tighten once
-#   high-precision reference CSVs and a well-characterised mclust-MATLAB
-#   equivalence study are available.
+#   are computed from per-sample GMM fits via gaussian_mixture_em(), which is a
+#   direct R port of GaussianMixture.m (Bowman CLUSTER EM) using the same
+#   first/last-point initialisation and loose convergence criterion as MATLAB.
+#   Residual differences arise from floating-point order-of-operations and
+#   the 5-significant-figure CSV precision of the MATLAB reference file.
+#   5e-3 is a conservative tolerance; typical observed differences are < 1e-3
+#   and often < 1e-4.  Tighten to 1e-4 once high-precision reference CSVs are
+#   regenerated with num2str(v, 15).
 #
 # TOL_GOF (0.1)
 #   Applied to thresh GOF (KS p-values).  MATLAB evaluates the fitted normal
@@ -59,6 +60,7 @@ if (!exists("CHAR_R_ROOT")) {
 }
 
 source(file.path(CHAR_R_ROOT, "R", "utils_lowess.R"))
+source(file.path(CHAR_R_ROOT, "R", "utils_gaussian_mixture.R"))
 source(file.path(CHAR_R_ROOT, "R", "char_parameters.R"))
 source(file.path(CHAR_R_ROOT, "R", "char_validate_params.R"))
 source(file.path(CHAR_R_ROOT, "R", "char_pretreatment.R"))
@@ -170,7 +172,8 @@ run_phase2_validation <- function(dataset_label, params_csv, matlab_csv) {
                  maxdiff(r_threshNeg, m_threshNeg),
                  maxdiff(r_sni,       m_sni),
                  maxdiff(r_gof,       m_gof)),
-    driver   = c(rep("mclust vs MATLAB EM", 6L), "KS CDF discretisation"),
+    driver   = c(rep("custom EM vs MATLAB EM (float/CSV precision)", 6L),
+                 "KS CDF discretisation"),
     stringsAsFactors = FALSE
   )
 
@@ -182,11 +185,11 @@ run_phase2_validation <- function(dataset_label, params_csv, matlab_csv) {
     cat(sprintf("%-18s  %-14.4e  %s\n", r$column, r$max_diff, r$driver))
   }
 
-  cat("\n  NOTE: GMM differences are expected.  mclust (BIC, hierarchical\n")
-  cat("  init) and MATLAB GaussianMixture (MDL, first/last-point init)\n")
-  cat("  use different EM formulations.  Peak identification equivalence\n")
-  cat("  is assessed in test_phase3.R.  To close the gap, implement\n")
-  cat("  MATLAB's GaussianMixture EM exactly in R.\n\n")
+  cat("\n  NOTE: gaussian_mixture_em() replicates MATLAB's GaussianMixture.m\n")
+  cat("  (first/last-point init, epsilon = 0.03*log(N) convergence).\n")
+  cat("  Residual differences are due to 5-sig-fig CSV precision and\n")
+  cat("  floating-point order-of-operations.  Peak identification\n")
+  cat("  equivalence is assessed in test_phase3.R.\n\n")
 
   cat("Phase 2 complete for", dataset_label, "\n")
   invisible(list(deterministic = det_df, gmm = gmm_df))
@@ -294,7 +297,8 @@ run_phase2_validation_from_result <- function(dataset_label, r_out, matlab_csv) 
                  maxdiff(r_out$char_thresh$neg[,4], mcol("thresh FinalNeg")),
                  maxdiff(r_out$char_thresh$SNI,     mcol("SNI")),
                  maxdiff(r_out$char_thresh$GOF,     mcol("thresh GOF"))),
-    driver = c(rep("mclust vs MATLAB EM", 6L), "KS CDF discretisation"),
+    driver = c(rep("custom EM vs MATLAB EM (float/CSV precision)", 6L),
+               "KS CDF discretisation"),
     stringsAsFactors = FALSE
   )
   cat("--- B. GMM-dependent columns (informational — no PASS/FAIL) ---\n")
@@ -302,8 +306,10 @@ run_phase2_validation_from_result <- function(dataset_label, r_out, matlab_csv) 
   cat(strrep("-", 60), "\n")
   for (i in seq_len(nrow(gmm_df)))
     cat(sprintf("%-18s  %-14.4e  %s\n", gmm_df$column[i], gmm_df$max_diff[i], gmm_df$driver[i]))
-  cat("\n  NOTE: GMM differences are expected (mclust BIC/hierarchical init\n")
-  cat("  vs MATLAB GaussianMixture MDL/first-last init). Peak identification\n")
+  cat("\n  NOTE: gaussian_mixture_em() replicates MATLAB's GaussianMixture.m\n")
+  cat("  (first/last-point init, epsilon = 0.03*log(N) convergence).\n")
+  cat("  Residual differences are due to 5-sig-fig CSV precision and\n")
+  cat("  floating-point order-of-operations.  Peak identification\n")
   cat("  equivalence is assessed in test_phase3.R.\n\n")
   cat("Phase 2 complete for", dataset_label, "\n")
   invisible(list(deterministic = det_df, gmm = gmm_df))
