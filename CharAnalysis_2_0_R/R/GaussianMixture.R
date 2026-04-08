@@ -1,4 +1,4 @@
-#' Gaussian Mixture EM — direct R port of GaussianMixture.m (Bowman CLUSTER)
+#' Gaussian Mixture EM -- direct R port of GaussianMixture.m (Bowman CLUSTER)
 #'
 #' Fits a K-component univariate Gaussian mixture using the same EM algorithm
 #' bundled with CharAnalysis v1.1 and v2.0 (Bowman CLUSTER implementation).
@@ -47,14 +47,14 @@ gaussian_mixture_em <- function(x, k = 2L) {
   k <- as.integer(k)
 
   # ---- Convergence threshold -------------------------------------------------
-  # MATLAB uses epsilon = 0.01 * Lc * log(N) ≈ 0.03*log(N) (Lc=3 for M=1),
+  # MATLAB uses epsilon = 0.01 * Lc * log(N) ~= 0.03*log(N) (Lc=3 for M=1),
   # which is deliberately loose (Bowman CLUSTER convention).  In practice this
   # loose criterion causes MATLAB's EM to freeze earlier than a tight criterion
   # would, and floating-point differences between R and MATLAB compound over
   # iterations, landing at systematically different local solutions.
   # Using tight convergence (1e-6) forces both implementations toward the true
   # MLE, which in testing produces thresholds closer to MATLAB's output.
-  eps <- 1e-6                      # tight convergence — find true MLE
+  eps <- 1e-6                      # tight convergence -- find true MLE
 
   # ---- initMixture -----------------------------------------------------------
   # Population variance: MATLAB computes R = (N-1)/N * cov(pixels)
@@ -131,7 +131,7 @@ gaussian_mixture_em <- function(x, k = 2L) {
   sum(log(ss) + llmax)
 }
 
-# Posterior responsibilities p(z_n = k | x_n) — [N x K] matrix.
+# Posterior responsibilities p(z_n = k | x_n) -- [N x K] matrix.
 .gm_responsibilities <- function(x, mu, r, pb) {
   n <- length(x)
   k <- length(mu)

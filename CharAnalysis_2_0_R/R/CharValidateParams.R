@@ -32,7 +32,7 @@ char_validate_params <- function(char_data, pretreatment, smoothing,
   # 2. No NA ages ------------------------------------------------------------
   if (anyNA(char_data[, 3L]) || anyNA(char_data[, 4L])) {
     stop("char_validate_params: char_data contains NA values in the age ",
-         "columns (cols 3–4). All sample ages must be specified.")
+         "columns (cols 3-4). All sample ages must be specified.")
   }
 
   # 3. Ages monotonically non-decreasing ------------------------------------
@@ -69,9 +69,9 @@ char_validate_params <- function(char_data, pretreatment, smoothing,
          " yr) must be shorter than the record length (", record_len, " yr).")
   }
 
-  # 8. Smoothing method in range 1–5 ----------------------------------------
+  # 8. Smoothing method in range 1-5 ----------------------------------------
   if (!smoothing$method %in% 1:5) {
-    stop("char_validate_params: smoothing method must be 1–5. Got ",
+    stop("char_validate_params: smoothing method must be 1-5. Got ",
          smoothing$method, ".")
   }
 

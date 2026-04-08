@@ -16,7 +16,7 @@
 #'       After Phase 4: also includes \code{peakInsig},
 #'       \code{peakMagnitude}, \code{smoothedFireFrequ}, \code{peaksFrequ}.}
 #'     \item{pretreatment}{Pretreatment parameter list (possibly updated by
-#'       [char_pretreatment()] — e.g. \code{yrInterp} auto-set,
+#'       [char_pretreatment()] -- e.g. \code{yrInterp} auto-set,
 #'       \code{zoneDiv} end-value corrected).}
 #'     \item{smoothing}{Smoothing parameter list.}
 #'     \item{peak_analysis}{Peak-analysis parameter list.}
@@ -25,7 +25,7 @@
 #'     \item{gap_in}{Integer matrix (nGaps x 2) of missing-value gap indices.}
 #'     \item{char_thresh}{Threshold list returned by [char_thresh_global()] or
 #'       [char_thresh_local()].  Contains \code{pos}, \code{neg}, \code{SNI},
-#'       \code{GOF}, and (after Phase 3) \code{minCountP} — the
+#'       \code{GOF}, and (after Phase 3) \code{minCountP} -- the
 #'       \eqn{[N \times T]} matrix of Shuie-Bain p-values.}
 #'     \item{post}{Post-processing list from [char_post_process()]: FRI
 #'       series, smoothed FRI curve, per-zone Weibull statistics, and the
@@ -84,6 +84,16 @@ CharAnalysis <- function(file_name) {
                            params$results,
                            plot_data = 0L)
 
+  # Figure 1 (allFigures only): C_raw / C_resampled / C_background options.
+  # Mirrors MATLAB CharPretreatment.m subplot 1 + CharSmooth.m subplot 2.
+  if (isTRUE(params$results$allFigures == 1L)) {
+    mini_out <- list(charcoal     = charcoal,
+                     pretreatment = pre$pretreatment,
+                     smoothing    = params$smoothing,
+                     site         = params$site)
+    CharPlotFig1(mini_out)
+  }
+
   # Guard: cannot compute ratio C_peak when background contains a zero.
   # Mirrors CharAnalysis.m lines 119-121.
   if (!is.null(charcoal$accIS) &&
@@ -95,8 +105,8 @@ CharAnalysis <- function(file_name) {
   }
 
   # (3b) Compute peak CHAR (C_peak) --------------------------------------------
-  # cPeak == 1 → residuals (accI - accIS)
-  # cPeak == 2 → ratios    (accI / accIS)
+  # cPeak == 1 -> residuals (accI - accIS)
+  # cPeak == 2 -> ratios    (accI / accIS)
   # Mirrors CharAnalysis.m lines 124-128.
   if (params$peak_analysis$cPeak == 1L) {
     charcoal$peak <- charcoal$accI - charcoal$accIS   # residuals
@@ -129,6 +139,18 @@ CharAnalysis <- function(file_name) {
   }
   message("      ...done.")
 
+  # Figure 2 (allFigures only): threshold determination diagnostics.
+  # Mirrors MATLAB CharThreshGlobal.m (single panel) or
+  # CharThreshLocal.m (5x5 grid of local window distributions).
+  if (isTRUE(params$results$allFigures == 1L)) {
+    mini_out2 <- list(charcoal      = charcoal,
+                      char_thresh   = char_thresh,
+                      peak_analysis = params$peak_analysis,
+                      pretreatment  = pre$pretreatment,
+                      site          = params$site)
+    CharPlotFig2(mini_out2)
+  }
+
   # (5) Identify peaks ----------------------------------------------------------
   # Mirrors CharAnalysis.m step (5): CharPeakID()
   message("(5) Identifying peaks and applying minimum-count screening...")
@@ -154,12 +176,21 @@ CharAnalysis <- function(file_name) {
   message("      ...done.")
 
   # (7) Write results CSV -------------------------------------------------------
-  # In the R package, CSV output is explicit: call char_write_results() directly
+  # In the R package, CSV output is explicit: call CharWriteResults() directly
   # after CharAnalysis() returns.  The saveData flag from the parameter file is
   # stored in results$save and can be inspected by the caller, but no file is
   # written automatically here (prevents accidental overwrites of reference data).
-  message("(7) Pipeline complete.  Call char_write_results(out$char_results, ",
-          "out$site) to save output CSV.")
+  message("(7) Analysis complete.")
+  message("    Save CSV:     CharWriteResults(out$char_results, out$site)")
+  message("    All figures:  CharPlotAll(out)  [Figs 1-2 only when allFigures = 1]")
+  message("    One figure:   CharPlotFig1(out)          # Fig 1: C_raw, C_interp, C_back options")
+  message("                  CharPlotFig2(out)          # Fig 2: threshold diagnostics")
+  message("                  CharPlotChar(out)          # Fig 3: peak analysis")
+  message("                  CharPlotFig4(out)          # Fig 4: threshold sensitivity and SNI")
+  message("                  CharPlotCumulative(out)    # Fig 5: cumulative peaks")
+  message("                  CharPlotFRIDist(out)       # Fig 6: FRI distributions")
+  message("                  CharPlotFireHistory(out)   # Fig 7: continuous fire history")
+  message("                  CharPlotZones(out)         # Fig 8: CHAR zone comparisons")
 
   # Assemble and return ---------------------------------------------------------
   list(

@@ -61,14 +61,14 @@
 #'   MATLAB's blank-cell convention.  This applies to:
 #'   \itemize{
 #'     \item \code{smFRIs} rows beyond the smoothed-FRI coverage window;
-#'     \item zone-statistics columns (24–33) for rows beyond the last zone;
+#'     \item zone-statistics columns (24-33) for rows beyond the last zone;
 #'     \item any column not computed for a given run configuration.
 #'   }
 #'
 #'   ## CI column convention
 #'   MATLAB stores bootstrap CIs as \code{[quantile(2.5\%), quantile(97.5\%)]}
 #'   in the columns labelled \code{uCI} / \code{lCI} respectively (i.e.
-#'   \code{uCI} = lower bound, \code{lCI} = upper bound — MATLAB's own
+#'   \code{uCI} = lower bound, \code{lCI} = upper bound -- MATLAB's own
 #'   labelling is inverted).  The R output follows the same convention so that
 #'   column indices are identical to the MATLAB reference file.
 #'
@@ -80,7 +80,7 @@
 #'   char_write_results(out$char_results, out$site,
 #'                      out_dir = "Results")
 #' }
-char_write_results <- function(char_results,
+CharWriteResults <- function(CharResults,
                                 site,
                                 out_dir = ".",
                                 digits  = 7L) {
@@ -135,10 +135,10 @@ char_write_results <- function(char_results,
 
   # ---- Format numeric matrix -------------------------------------------------
   # Convert each column to character, respecting the digits argument.
-  # NA  → "" (blank cell, matching MATLAB blank-cell convention).
+  # NA  -> "" (blank cell, matching MATLAB blank-cell convention).
   # Integer-valued columns (peaks, peakInsig) are written without decimals.
 
-  integer_cols <- 16:20   # peaks 1–Final, peakInsig — always 0/1 integers
+  integer_cols <- 16:20   # peaks 1-Final, peakInsig -- always 0/1 integers
 
   fmt_val <- function(x, is_int = FALSE) {
     if (is.na(x))   return("")

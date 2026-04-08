@@ -8,16 +8,19 @@ export(CharAnalysis)
 export(CharWriteResults)
 
 # Figures
-export(char_plot_char)
-export(char_plot_cumulative)
-export(char_plot_fire_history)
-export(char_plot_fri_dist)
-export(char_plot_zones)
-export(char_plot_all)
+export(CharPlotFig1)
+export(CharPlotFig2)
+export(CharPlotChar)
+export(CharPlotFig4)
+export(CharPlotCumulative)
+export(CharPlotFireHistory)
+export(CharPlotFRIDist)
+export(CharPlotZones)
+export(CharPlotAll)
 
 # Imports from recommended packages
 importFrom(MASS, fitdistr)
 importFrom(graphics, hist)
-importFrom(stats, approx, dnorm, ks.test, lowess, pnorm, pweibull,
+importFrom(stats, approx, dnorm, ks.test, lowess, median, pnorm, pweibull,
            qnorm, quantile, sd, var)
 importFrom(utils, write.table)

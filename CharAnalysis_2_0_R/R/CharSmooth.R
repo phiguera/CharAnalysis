@@ -10,7 +10,7 @@
 #' @param pretreatment Named list with element \code{yrInterp}.
 #' @param smoothing    Named list with elements:
 #'   \describe{
-#'     \item{method}{Integer 1–5 selecting the smoothing method.}
+#'     \item{method}{Integer 1-5 selecting the smoothing method.}
 #'     \item{yr}{Window width in years.}
 #'   }
 #' @param results      Named list (not used in R; kept for API symmetry).
@@ -100,8 +100,8 @@ char_smooth <- function(charcoal, pretreatment, smoothing,
   # METHOD 3: Moving average
   # Simple arithmetic mean within window; window shrinks at boundaries.
   # Mirrors: smooth(Charcoal.accI, s, 'moving')
-  #          → charLowess(accI_clean, s, 'moving')
-  #          → movmean(y, k, 'EndPoints', 'shrink')
+  #          -> charLowess(accI_clean, s, 'moving')
+  #          -> movmean(y, k, 'EndPoints', 'shrink')
   # =========================================================================
   k3 <- max(3L, min(round(s), N))
   char_acc_IS[, 3L] <- as.numeric(
@@ -178,9 +178,12 @@ char_smooth <- function(charcoal, pretreatment, smoothing,
   }
 
   # =========================================================================
-  # STORE SELECTED METHOD
+  # STORE SELECTED METHOD AND ALL CURVES
+  # accIS_all: N x 5 matrix of all smoothing curves (used by CharPlotFig1)
+  # accIS:     selected method only (used throughout the pipeline)
   # =========================================================================
-  charcoal$accIS <- char_acc_IS[, smoothing$method]
+  charcoal$accIS_all <- char_acc_IS
+  charcoal$accIS     <- char_acc_IS[, smoothing$method]
 
   charcoal
 }

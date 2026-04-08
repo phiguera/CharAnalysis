@@ -30,7 +30,7 @@
 #'   mirroring MATLAB's \code{fileName(1:end-15)} idiom.
 #'
 #'   **Parameter vector layout**: column 3 ("Parameters") of the CSV, rows
-#'   2–26 (25 data rows after the header), maps to positions 1–25 of the
+#'   2-26 (25 data rows after the header), maps to positions 1-25 of the
 #'   internal \code{charParams} vector exactly as in the MATLAB codebase.
 #'   Unused \code{zoneDiv} slots are filled with \code{-9999} in the CSV
 #'   (sentinel) or \code{NaN} in Excel; both are stripped before the list is
@@ -42,7 +42,7 @@
 #' \dontrun{
 #'   p <- char_parameters("CO_charParams.csv")
 #'   p$pretreatment$yrInterp   # interpolation interval (yr)
-#'   p$smoothing$method        # smoothing method index (1–5)
+#'   p$smoothing$method        # smoothing method index (1-5)
 #' }
 char_parameters <- function(file_name) {
 
@@ -59,7 +59,7 @@ char_parameters <- function(file_name) {
     char_data        <- as.matrix(char_data_raw[, seq_len(6L)])
     storage.mode(char_data) <- "double"
 
-    # Parameter column: rows 2–26, column C (numeric values)
+    # Parameter column: rows 2-26, column C (numeric values)
     params_raw  <- readxl::read_excel(file_name, sheet = "charParams",
                                       range = "C2:C26", col_names = FALSE)
     char_params <- as.numeric(unlist(params_raw))
@@ -106,11 +106,11 @@ char_parameters <- function(file_name) {
 
   # =========================================================================
   # UNPACK PARAMETER VECTOR INTO NAMED LISTS
-  # Positions 1–25 match the charParams worksheet rows 2–26 in the .xlsx
+  # Positions 1-25 match the charParams worksheet rows 2-26 in the .xlsx
   # template, identical to the MATLAB layout.
   # =========================================================================
 
-  # -- Pretreatment (positions 1–10) ----------------------------------------
+  # -- Pretreatment (positions 1-10) ----------------------------------------
   zone_div <- char_params[1:8]
   zone_div <- zone_div[!is.na(zone_div) & zone_div != -9999]  # strip sentinels
 
@@ -120,13 +120,13 @@ char_parameters <- function(file_name) {
     transform = char_params[10L]
   )
 
-  # -- Smoothing (positions 11–12) ------------------------------------------
+  # -- Smoothing (positions 11-12) ------------------------------------------
   smoothing <- list(
     method = char_params[11L],
     yr     = char_params[12L]
   )
 
-  # -- PeakAnalysis (positions 13–22) ---------------------------------------
+  # -- PeakAnalysis (positions 13-22) ---------------------------------------
   peak_analysis <- list(
     cPeak        = char_params[13L],
     threshType   = char_params[14L],
@@ -137,7 +137,7 @@ char_parameters <- function(file_name) {
     bkgSens      = char_params[22L]
   )
 
-  # -- Results (positions 23–25) --------------------------------------------
+  # -- Results (positions 23-25) --------------------------------------------
   all_figs <- if (length(char_params) >= 25L && !is.na(char_params[25L])) {
     char_params[25L]
   } else {

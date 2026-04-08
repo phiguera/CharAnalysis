@@ -3,17 +3,17 @@
 #' Two primary output figures mirroring the MATLAB CharAnalysis v2.0 plots:
 #'
 #' \describe{
-#'   \item{[char_plot_char()]}{Figure 3: Resampled CHAR with background trend
+#'   \item{[CharPlotChar()]}{Figure 3: Resampled CHAR with background trend
 #'     (top panel) and C_peak with thresholds and peak markers (bottom panel).}
-#'   \item{[char_plot_fire_history()]}{Figure 7: Peak magnitude (top), FRIs
+#'   \item{[CharPlotFireHistory()]}{Figure 7: Peak magnitude (top), FRIs
 #'     through time with smoothed FRI and CI ribbon (middle), and smoothed
 #'     fire frequency (bottom).}
-#'   \item{[char_plot_all()]}{Convenience wrapper: produces both figures and
+#'   \item{[CharPlotAll()]}{Convenience wrapper: produces both figures and
 #'     optionally saves them as PDF files.}
 #' }
 #'
 #' @name char_plot
-#' @aliases char_plot_char char_plot_fire_history char_plot_all
+#' @aliases CharPlotChar CharPlotFireHistory CharPlotAll
 #'
 #' @param out Named list returned by [CharAnalysis()].  Must contain
 #'   \code{charcoal}, \code{pretreatment}, \code{peak_analysis},
@@ -21,12 +21,12 @@
 #' @param save   Logical.  If \code{TRUE}, each figure is saved as a PDF in
 #'   \code{out_dir}.  Default \code{FALSE}.
 #' @param out_dir Directory for saved PDFs.  Default: current working directory.
-#' @param width,height PDF dimensions in inches.  Defaults: 11 × 8.5.
+#' @param width,height PDF dimensions in inches.  Defaults: 11 x 8.5.
 #'
 #' @return
-#'   \code{char_plot_char()} and \code{char_plot_fire_history()} each return
+#'   \code{CharPlotChar()} and \code{CharPlotFireHistory()} each return
 #'   a \pkg{patchwork} / \pkg{ggplot2} object.
-#'   \code{char_plot_all()} returns a named list with elements
+#'   \code{CharPlotAll()} returns a named list with elements
 #'   \code{fig_char} and \code{fig_fire_history}.
 #'
 #' @details
@@ -39,10 +39,10 @@
 #' @examples
 #' \dontrun{
 #'   out <- CharAnalysis("CO_charParams.csv")
-#'   char_plot_char(out)
-#'   char_plot_fire_history(out)
+#'   CharPlotChar(out)
+#'   CharPlotFireHistory(out)
 #'   # Save both to PDF:
-#'   char_plot_all(out, save = TRUE, out_dir = "Results")
+#'   CharPlotAll(out, save = TRUE, out_dir = "Results")
 #' }
 NULL
 
@@ -147,12 +147,12 @@ NULL
 }
 
 # =============================================================================
-# char_plot_char  —  Figure 3: C_interp / C_background / C_peak
+# CharPlotChar  --  Figure 3: C_interp / C_background / C_peak
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_char <- function(out) {
+CharPlotChar <- function(out) {
 
   .require_ggplot2()
 
@@ -281,12 +281,12 @@ char_plot_char <- function(out) {
 }
 
 # =============================================================================
-# char_plot_fire_history  —  Figure 7: peak magnitude / FRIs / fire frequency
+# CharPlotFireHistory  --  Figure 7: peak magnitude / FRIs / fire frequency
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_fire_history <- function(out) {
+CharPlotFireHistory <- function(out) {
 
   .require_ggplot2()
 
@@ -407,12 +407,12 @@ char_plot_fire_history <- function(out) {
 }
 
 # =============================================================================
-# char_plot_cumulative  —  Figure 5: cumulative peaks through time
+# CharPlotCumulative  --  Figure 5: cumulative peaks through time
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_cumulative <- function(out) {
+CharPlotCumulative <- function(out) {
 
   .require_ggplot2()
 
@@ -428,12 +428,12 @@ char_plot_cumulative <- function(out) {
   peak_idx <- which(peaks_col > 0)
 
   if (length(peak_idx) == 0L) {
-    message("char_plot_cumulative: no peaks to plot.")
+    message("CharPlotCumulative: no peaks to plot.")
     return(invisible(NULL))
   }
 
   # Cumulative count ordered young-to-old (x reversed), so the youngest
-  # peak gets the highest cumulative number — matching MATLAB's flipud(cumsum).
+  # peak gets the highest cumulative number -- matching MATLAB's flipud(cumsum).
   x_plot <- x_all[peak_idx]
   y_plot <- rev(seq_along(peak_idx))   # equals flipud(cumsum(1:n))
 
@@ -455,12 +455,12 @@ char_plot_cumulative <- function(out) {
 }
 
 # =============================================================================
-# char_plot_fri_dist  —  Figure 6: FRI histograms with Weibull fits by zone
+# CharPlotFRIDist  --  Figure 6: FRI histograms with Weibull fits by zone
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_fri_dist <- function(out) {
+CharPlotFRIDist <- function(out) {
 
   .require_ggplot2()
 
@@ -597,12 +597,12 @@ char_plot_fri_dist <- function(out) {
 }
 
 # =============================================================================
-# char_plot_zones  —  Figure 8: between-zone raw CHAR comparisons
+# CharPlotZones  --  Figure 8: between-zone raw CHAR comparisons
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_zones <- function(out) {
+CharPlotZones <- function(out) {
 
   .require_ggplot2()
 
@@ -615,7 +615,7 @@ char_plot_zones <- function(out) {
   zone_labels <- as.character(seq_len(n_zones))
 
   if (is.null(charcoal$acc) || is.null(charcoal$ybp)) {
-    message("char_plot_zones: raw CHAR (charcoal$acc / charcoal$ybp) not available.")
+    message("CharPlotZones: raw CHAR (charcoal$acc / charcoal$ybp) not available.")
     return(invisible(NULL))
   }
 
@@ -719,22 +719,787 @@ char_plot_zones <- function(out) {
 }
 
 # =============================================================================
-# char_plot_all  —  produce and optionally save all five figures
+# CharPlotFig1  --  Figure 1: C_raw / C_resampled / C_background options
+# Only produced when out$results$allFigures == 1.
+# Mirrors MATLAB CharPretreatment.m (subplot 1) + CharSmooth.m (subplot 2).
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-char_plot_all <- function(out, save = FALSE, out_dir = ".", width = 11, height = 8.5) {
+CharPlotFig1 <- function(out) {
 
   .require_ggplot2()
 
-  fig3 <- char_plot_char(out)
-  fig5 <- char_plot_cumulative(out)
-  fig6 <- char_plot_fri_dist(out)
-  fig7 <- char_plot_fire_history(out)
-  fig8 <- char_plot_zones(out)
+  charcoal  <- out$charcoal
+  smoothing <- out$smoothing
+  pretreat  <- out$pretreatment
+  site      <- out$site %||% ""
+  yr_interp <- pretreat$yrInterp
+  has_gt    <- .has_ggtext()
 
-  for (fig in list(fig3, fig5, fig6, fig7, fig8)) {
+  # Helper: subscript label, rendered in HTML when ggtext is available
+  sub_lbl <- function(base, sub)
+    if (has_gt) paste0(base, "<sub>", sub, "</sub>") else paste0(base, "_", sub)
+  # Helper: axis title element that renders markdown/HTML
+  md_axis <- function()
+    if (has_gt) ggtext::element_markdown() else ggplot2::element_text()
+
+  char_lbl <- sub_lbl("CHAR (# cm", "-2")
+  char_lbl <- if (has_gt)
+    "CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)" else "CHAR (# cm^-2 yr^-1)"
+
+  x_lim <- c(max(charcoal$ybp, na.rm = TRUE) + 100,
+              min(charcoal$ybp, na.rm = TRUE))  # reversed (old -> young right)
+
+  # Legend labels
+  lbl_raw  <- sub_lbl("C", "raw")
+  lbl_int  <- sub_lbl("C", paste0("interpolated: ", yr_interp, " yr"))
+
+  # -- Subplot 1: C_raw (bars) + C_interpolated (step) + legend --------------
+  df_raw <- data.frame(age = charcoal$ybp, acc = charcoal$acc)
+  df_int <- data.frame(age = charcoal$ybpI - 0.5 * yr_interp,
+                       acc = charcoal$accI)
+
+  p1 <- ggplot2::ggplot() +
+    ggplot2::geom_bar(data = df_raw,
+                      ggplot2::aes(x = age, y = acc, fill = "raw"),
+                      stat = "identity",
+                      width = diff(range(charcoal$ybp)) / length(charcoal$ybp),
+                      colour = NA) +
+    ggplot2::geom_step(data = df_int,
+                       ggplot2::aes(x = age, y = acc, colour = "int"),
+                       linewidth = 0.8) +
+    ggplot2::scale_fill_manual(
+      name   = NULL,
+      values = c("raw" = "grey50"),
+      labels = c("raw" = lbl_raw),
+      guide  = ggplot2::guide_legend(
+        override.aes = list(colour = NA, fill = "grey50",
+                            linetype = 0, size = 4))
+    ) +
+    ggplot2::scale_colour_manual(
+      name   = NULL,
+      values = c("int" = "black"),
+      labels = c("int" = lbl_int),
+      guide  = ggplot2::guide_legend(
+        override.aes = list(fill = NA, linetype = 1, linewidth = 0.8))
+    ) +
+    ggplot2::scale_x_reverse(limits = x_lim) +
+    ggplot2::coord_cartesian(
+      ylim = c(0, stats::quantile(charcoal$acc, 0.99, na.rm = TRUE))) +
+    .char_theme() +
+    ggplot2::theme(
+      axis.title.y = md_axis(),
+      legend.text  = md_axis()
+    ) +
+    ggplot2::labs(
+      title = .title(paste0(site, " (a) ", sub_lbl("C", "raw"), " and ",
+                            sub_lbl("C", paste0("interpolated: ", yr_interp, " yr")))),
+      x = "time (cal. yr BP)",
+      y = char_lbl
+    )
+
+  # -- Subplot 2: C_interpolated (bars) + all 5 smoothing curves -------------
+  smooth_names <- c("Lowess", "Robust Lowess",
+                    "Moving Average", "Moving Median", "Moving Mode")
+  all_curves   <- charcoal$accIS_all   # N x 5 matrix
+
+  df_int2 <- data.frame(age = charcoal$ybpI, acc = charcoal$accI)
+
+  df_smooth <- do.call(rbind, lapply(seq_len(5L), function(k) {
+    data.frame(age    = charcoal$ybpI,
+               smooth = all_curves[, k],
+               method = smooth_names[k])
+  }))
+  df_smooth$method <- factor(df_smooth$method, levels = smooth_names)
+
+  selected_name <- smooth_names[smoothing$method]
+  df_sel  <- df_smooth[df_smooth$method == selected_name, ]
+  df_rest <- df_smooth[df_smooth$method != selected_name, ]
+
+  p2_title <- paste0(
+    "(b) ", sub_lbl("C", "interpolated"),
+    " and options for a ", smoothing$yr, " yr ",
+    sub_lbl("C", "background"),
+    " (selected: ", selected_name, ")"
+  )
+
+  p2 <- ggplot2::ggplot() +
+    ggplot2::geom_bar(data = df_int2,
+                      ggplot2::aes(x = age, y = acc),
+                      stat = "identity",
+                      width = diff(range(charcoal$ybpI, na.rm = TRUE)) /
+                        length(charcoal$ybpI),
+                      fill = "grey50", colour = NA) +
+    ggplot2::geom_line(data = df_rest,
+                       ggplot2::aes(x = age, y = smooth, colour = method),
+                       linewidth = 0.6, alpha = 0.7) +
+    ggplot2::geom_line(data = df_sel,
+                       ggplot2::aes(x = age, y = smooth),
+                       colour = "black", linewidth = 1.2) +
+    ggplot2::scale_x_reverse(limits = x_lim) +
+    ggplot2::coord_cartesian(ylim = c(0, max(charcoal$accI, na.rm = TRUE))) +
+    ggplot2::scale_colour_brewer(palette = "Set1", name = "Method") +
+    .char_theme() +
+    ggplot2::theme(axis.title.y = md_axis()) +
+    ggplot2::labs(
+      title = .title(p2_title),
+      x     = "time (cal. yr BP)",
+      y     = char_lbl
+    )
+
+  fig <- patchwork::wrap_plots(p1, p2, ncol = 1L)
+  print(fig)
+  invisible(fig)
+}
+
+
+# =============================================================================
+# CharPlotFig2  --  Figure 2: threshold determination diagnostics
+# Only produced when out$results$allFigures == 1.
+# Global threshold: single panel histogram + noise PDF + threshold lines.
+# Local threshold:  5x5 grid of per-sample window distributions.
+# Mirrors MATLAB CharThreshGlobal.m (lines 201-268) and
+#         CharThreshLocal.m (lines 225-291).
+#
+# NOTE -- one vs. two distributions (threshMethod == 3, GMM):
+#   The MATLAB version draws both the noise and signal Gaussian components
+#   plus their weighted mixture on each subplot.  The R version currently
+#   draws only the noise component (smaller mean) when prop2 == 0, which
+#   happens when the per-sample GMM diagnostic is not captured (e.g. the
+#   out object was created before the diagnostic-capture code was in place).
+#   After a fresh devtools::load_all() + CharAnalysis() run with
+#   threshMethod == 3, char_thresh$diag entries will carry non-zero prop2
+#   and the R figure will show both components plus their mixture, matching
+#   the MATLAB output.  This is an accepted minor difference between
+#   implementations when using stale out objects.
+# =============================================================================
+
+#' @rdname char_plot
+#' @export
+CharPlotFig2 <- function(out) {
+
+  .require_ggplot2()
+
+  charcoal     <- out$charcoal
+  char_thresh  <- out$char_thresh
+  peak_analysis <- out$peak_analysis
+  pretreat     <- out$pretreatment
+  site         <- out$site %||% ""
+
+  thresh_type <- peak_analysis$threshType  # 1 = global, 2 = local
+
+  # ============================================================
+  # GLOBAL THRESHOLD (Figure 2, single panel)
+  # ============================================================
+  if (thresh_type == 1L) {
+
+    possible  <- char_thresh$possible
+    noise_pdf <- char_thresh$noise_pdf
+    thresh_pos <- char_thresh$pos[1L, ]   # 4 candidate levels
+
+    # Histogram of C_peak proportions at the candidate bins
+    bin_w  <- mean(diff(possible))
+    counts <- graphics::hist(charcoal$peak, breaks = possible,
+                             plot = FALSE)$counts
+    prop   <- counts / sum(counts)
+    df_hist <- data.frame(x = possible[-length(possible)] + bin_w / 2,
+                          y = prop)
+
+    p <- ggplot2::ggplot(df_hist, ggplot2::aes(x = x, y = y)) +
+      ggplot2::geom_col(fill = "grey50", colour = "grey50", width = bin_w)
+
+    # Noise PDF overlay (when data-defined threshold)
+    if (!is.null(noise_pdf) && length(noise_pdf) == length(possible) &&
+        !identical(noise_pdf, -99)) {
+      df_pdf <- data.frame(x = possible,
+                           y = noise_pdf * bin_w)
+      p <- p + ggplot2::geom_line(data = df_pdf,
+                                   ggplot2::aes(x = x, y = y),
+                                   colour = "black", linewidth = 1.2)
+    }
+
+    y_max <- max(prop, na.rm = TRUE)
+
+    # Dashed lines for all 4 candidate thresholds
+    for (tv in thresh_pos) {
+      p <- p + ggplot2::geom_vline(xintercept = tv,
+                                   linetype = "dashed", colour = "black")
+    }
+    # Solid red line for selected (4th) threshold
+    p <- p + ggplot2::geom_vline(xintercept = thresh_pos[4L],
+                                 colour = "red", linewidth = 1.0)
+
+    # Annotation: threshold value and mean SNI
+    xannot <- thresh_pos[4L]
+    sni_mean <- mean(char_thresh$SNI, na.rm = TRUE)
+    p <- p +
+      ggplot2::annotate("text", x = xannot * 1.5, y = y_max * 0.75,
+                        label = paste0("Threshold = ",
+                                       round(xannot, 4)),
+                        hjust = 0, size = 3) +
+      ggplot2::annotate("text", x = xannot * 1.5, y = y_max * 0.60,
+                        label = paste0("SNI = ", round(sni_mean, 2)),
+                        hjust = 0, size = 3)
+
+    p <- p +
+      .char_theme() +
+      ggplot2::labs(
+        title = paste0(site, ": ", pretreat$zoneDiv[1L], " to ",
+                       pretreat$zoneDiv[length(pretreat$zoneDiv)],
+                       " cal. yr BP"),
+        x     = "peak CHAR (# cm^-2 yr^-1)",
+        y     = "proportion or scaled density"
+      )
+
+    print(p)
+    return(invisible(p))
+  }
+
+  # ============================================================
+  # LOCAL THRESHOLD (Figure 2, 5x5 diagnostic grid)
+  # ============================================================
+  diag <- char_thresh$diag
+  if (is.null(diag) || length(diag) == 0L) {
+    message("CharPlotFig2: no local threshold diagnostic data available.")
+    return(invisible(NULL))
+  }
+
+  n_panels <- length(diag)
+  n_col    <- 5L
+  n_row    <- ceiling(n_panels / n_col)
+
+  panels <- lapply(seq_len(n_panels), function(k) {
+    d   <- diag[[k]]
+    X   <- d$X
+    bin_w_k <- diff(range(X, na.rm = TRUE)) / 50
+    if (bin_w_k <= 0) bin_w_k <- 0.01
+    breaks_k <- seq(min(X, na.rm = TRUE),
+                    max(X, na.rm = TRUE) + bin_w_k,
+                    by = bin_w_k)
+    h <- graphics::hist(X, breaks = breaks_k, plot = FALSE)
+    df_h <- data.frame(x = h$mids, y = h$counts / sum(h$counts))
+
+    x_seq <- seq(min(X, na.rm = TRUE), max(X, na.rm = TRUE),
+                 length.out = 200L)
+
+    # Base panel
+    pk <- ggplot2::ggplot(df_h, ggplot2::aes(x = x, y = y)) +
+      ggplot2::geom_col(fill = "grey75", colour = "grey75",
+                        width = bin_w_k)
+
+    # PDF overlay: two-component GMM or single Gaussian
+    if (peak_analysis$threshMethod == 3L && d$prop2 > 0) {
+      df_pdf1 <- data.frame(
+        x = x_seq,
+        y = stats::dnorm(x_seq, d$mu1, d$sig1) * bin_w_k * d$prop1)
+      df_pdf2 <- data.frame(
+        x = x_seq,
+        y = stats::dnorm(x_seq, d$mu2, d$sig2) * bin_w_k * d$prop2)
+      df_mix  <- data.frame(
+        x = x_seq,
+        y = df_pdf1$y + df_pdf2$y)
+      pk <- pk +
+        ggplot2::geom_line(data = df_pdf1,
+                           ggplot2::aes(x = x, y = y),
+                           colour = "black", linewidth = 0.6) +
+        ggplot2::geom_line(data = df_pdf2,
+                           ggplot2::aes(x = x, y = y),
+                           colour = "black", linewidth = 0.6) +
+        ggplot2::geom_line(data = df_mix,
+                           ggplot2::aes(x = x, y = y),
+                           colour = "blue", linewidth = 0.8)
+    } else {
+      df_pdf <- data.frame(
+        x = x_seq,
+        y = stats::dnorm(x_seq, d$mu1, d$sig1) * bin_w_k)
+      pk <- pk +
+        ggplot2::geom_line(data = df_pdf,
+                           ggplot2::aes(x = x, y = y),
+                           colour = "black", linewidth = 0.9)
+    }
+
+    # Threshold line
+    pk <- pk +
+      ggplot2::geom_vline(xintercept = d$t_pos,
+                          colour = "red", linewidth = 0.6) +
+      ggplot2::coord_cartesian(ylim = c(0, 0.25)) +
+      .char_theme() +
+      ggplot2::theme(
+        axis.text    = ggplot2::element_text(size = 6),
+        axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(),
+        plot.title   = .title_el(size = 7, face = "plain", hjust = 0)
+      )
+
+    # Shared axis labels: mirror MATLAB CharThreshLocal.m lines 281-286,
+    # which add ylabel to plotIn==11 (middle-left) and xlabel to plotIn==23
+    # (bottom-center) only.  Fall back to k==n_panels-2 for xlabel when
+    # fewer than 25 panels are plotted (record shorter than 25 windows).
+    if (k == 11L) {
+      pk <- pk +
+        ggplot2::labs(y = "proportion or density (scaled)") +
+        ggplot2::theme(axis.title.y = ggplot2::element_text(size = 7, angle = 90,
+                                                            vjust = 0.5))
+    }
+    x_lbl_k <- if (n_panels >= 23L) 23L else max(n_panels - 2L, 1L)
+    if (k == x_lbl_k) {
+      x_txt <- if (.has_ggtext()) {
+        "CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)"
+      } else {
+        "CHAR (# cm^-2 yr^-1)"
+      }
+      pk <- pk +
+        ggplot2::labs(x = x_txt) +
+        ggplot2::theme(
+          axis.title.x = if (.has_ggtext())
+            ggtext::element_markdown(size = 7)
+          else
+            ggplot2::element_text(size = 7)
+        )
+    }
+
+    # Title and annotation
+    yr_label <- round(d$yr_bp)
+    panel_title <- if (k == 1L) paste0(site, ": ", yr_label, " yr BP")
+                   else paste0(yr_label, " yr BP")
+    sni_label <- paste0("SNI = ",  round(d$sni, 2), "\n",
+                        "KS p = ", round(d$gof, 2), "\n",
+                        "t = ",    round(d$t_pos, 3))
+    pk <- pk +
+      ggplot2::labs(title = panel_title) +
+      ggplot2::annotate("text",
+                        x    = max(X, na.rm = TRUE),
+                        y    = 0.24,
+                        label = sni_label,
+                        hjust = 1, vjust = 1, size = 2.5)
+
+    pk
+  })
+
+  fig <- patchwork::wrap_plots(panels, ncol = n_col)
+  print(fig)
+  invisible(fig)
+}
+
+
+# =============================================================================
+# CharPlotFig4  --  Figure 4: Sensitivity to alternative thresholds and SNI
+# Mirrors MATLAB CharPlotFig4_ThresholdSNI.m
+#
+# Layout (mimics MATLAB 3x5 subplot grid):
+#   Panel (a): C_interp bar chart with C_back and final threshold; peaks at
+#              each threshold marked as dots, selected threshold as +.
+#   Panel (b): Global -- C_peak histogram, noise PDF, peak-count curve.
+#              Local  -- mean FRI +/- 95% CI by zone for each threshold.
+#   Panel (c): SNI time series with dashed reference at SNI = 3.
+#   Panel (d): SNI distribution boxplot.
+# =============================================================================
+
+#' @rdname char_plot
+#' @export
+CharPlotFig4 <- function(out) {
+
+  .require_ggplot2()
+
+  charcoal     <- out$charcoal
+  char_thresh  <- out$char_thresh
+  peak_analysis <- out$peak_analysis
+  pretreatment <- out$pretreatment
+  post         <- out$post
+  site         <- out$site
+
+  zone_div  <- pretreatment$zoneDiv
+  transform <- pretreatment$transform
+  cPeak     <- peak_analysis$cPeak
+  thresh_type <- peak_analysis$threshType   # 1 = global, 2 = local
+
+  x   <- charcoal$ybpI
+  y   <- charcoal$accI
+  y2  <- charcoal$accIS
+  y3  <- char_thresh$pos[, ncol(char_thresh$pos)]   # final threshold (+)
+  y4  <- if (is.matrix(char_thresh$neg)) char_thresh$neg[, 1L]
+         else rep(char_thresh$neg[1L], length(x))
+
+  # Positive and negative threshold lines on the C_interp scale
+  t_pos_line <- if (cPeak == 1L) y2 + y3 else y2 * y3
+  t_neg_line <- if (cPeak == 1L) y2 + y4 else y2 * y4
+
+  # CharcoalCharPeaks: N x T matrix (T = number of thresholds)
+  ccp        <- post$CharcoalCharPeaks
+  T_thresh   <- ncol(ccp)
+  y_max      <- max(y, na.rm = TRUE)
+
+  # y-levels for peak markers (mirroring MATLAB's 0.78 / 0.85 / 0.92)
+  lev <- c(0.78, 0.85, 0.92)
+  if (T_thresh < 3L) lev <- lev[(4L - T_thresh):3L]
+
+  # Identify which column is the "selected" threshold (last column)
+  sel_col <- T_thresh
+
+  # For the selected column, which level?
+  sel_lev_idx <- min(T_thresh, 3L)
+  sel_lev     <- lev[sel_lev_idx]
+
+  # y-axis label: mirrors charYLabel(transform)
+  y_lbl <- if (.has_ggtext()) {
+    switch(as.character(transform),
+           "1" = "log CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)",
+           "2" = "ln CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)",
+               "CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)")
+  } else {
+    switch(as.character(transform),
+           "1" = "log CHAR (# cm^-2 yr^-1)",
+           "2" = "ln CHAR (# cm^-2 yr^-1)",
+               "CHAR (# cm^-2 yr^-1)")
+  }
+  y_lbl_axis <- if (.has_ggtext()) ggtext::element_markdown() else ggplot2::element_text()
+
+  # Helper: x-axis ticks in 1000s of years
+  x_ticks <- seq(0, max(zone_div, na.rm = TRUE), by = 1000)
+
+  # ============================================================
+  # PANEL (a): C_interp + C_back + threshold + peak markers
+  # ============================================================
+  df_bar  <- data.frame(x = x, y = y)
+  df_back <- data.frame(x = x, y2 = y2)
+  df_tpos <- data.frame(x = x, t = t_pos_line)
+  df_tneg <- data.frame(x = x, t = t_neg_line)
+
+  pa <- ggplot2::ggplot(df_bar, ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_col(fill = "black", colour = "black", width = mean(diff(x), na.rm = TRUE)) +
+    ggplot2::geom_line(data = df_back, ggplot2::aes(x = x, y = y2),
+                       colour = "grey50", linewidth = 1.2) +
+    ggplot2::geom_line(data = df_tpos, ggplot2::aes(x = x, y = t),
+                       colour = "red", linewidth = 0.6) +
+    ggplot2::geom_line(data = df_tneg, ggplot2::aes(x = x, y = t),
+                       colour = "red", linewidth = 0.6)
+
+  # Zone dividers
+  if (length(zone_div) > 2L) {
+    for (zd in zone_div[-c(1L, length(zone_div))]) {
+      pa <- pa + ggplot2::annotate("segment",
+                                   x = zd, xend = zd,
+                                   y = y_max * 1.01, yend = y_max * 1.10,
+                                   colour = "grey50", linewidth = 1.0)
+    }
+    for (z in seq_along(zone_div[-1L])) {
+      mid_x <- mean(zone_div[z:(z + 1L)])
+      pa <- pa + ggplot2::annotate("text",
+                                   x = mid_x, y = y_max * 1.05,
+                                   label = as.character(z),
+                                   hjust = 0.5, size = 2.5)
+    }
+  }
+
+  # Peak markers: dots for each threshold column, + for selected
+  for (j in seq_len(min(T_thresh, 3L))) {
+    lev_j  <- lev[min(j, length(lev))]
+    pk_idx <- which(ccp[, j] > 0)
+    if (length(pk_idx) > 0L) {
+      df_pk <- data.frame(x = x[pk_idx], y = y_max * lev_j)
+      is_sel <- (j == sel_col) || (j == sel_lev_idx && j == sel_col)
+      if (j == sel_col) {
+        # White fill behind + then black +
+        pa <- pa +
+          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
+                              shape = 3L, size = 2, colour = "white", stroke = 1.2) +
+          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
+                              shape = 3L, size = 2, colour = "black", stroke = 0.8)
+      } else {
+        pa <- pa +
+          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
+                              shape = 16L, size = 1, colour = "grey50")
+      }
+    }
+  }
+
+  pa <- pa +
+    ggplot2::scale_x_reverse(limits = c(max(zone_div), min(zone_div)),
+                              breaks = x_ticks,
+                              labels = x_ticks / 1000,
+                              expand = ggplot2::expansion(0)) +
+    ggplot2::scale_y_continuous(limits = c(0, y_max * 1.15),
+                                expand = ggplot2::expansion(0)) +
+    .char_theme() +
+    ggplot2::theme(
+      axis.title.y = y_lbl_axis,
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x  = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank()
+    ) +
+    ggplot2::labs(
+      title = if (.has_ggtext())
+        paste0(site, " (a) C<sub>interp</sub>, C<sub>background</sub>, and peak ID (+)")
+      else
+        paste0(site, " (a) C_interp, C_background, and peak ID (+)"),
+      y = y_lbl
+    )
+
+  if (.has_ggtext()) {
+    pa <- pa + ggplot2::theme(plot.title = ggtext::element_markdown())
+  }
+
+  # ============================================================
+  # PANEL (b): Threshold sensitivity
+  # ============================================================
+  if (thresh_type == 1L) {
+    # ---- Global: C_peak histogram + noise PDF + peak-count curve ------------
+    cpk      <- charcoal$peak
+    possible <- char_thresh$possible
+    noise_pdf <- char_thresh$noise_pdf
+
+    # Histogram (probability)
+    bk   <- possible
+    cnts <- graphics::hist(cpk, breaks = bk, plot = FALSE)
+    n    <- cnts$counts / sum(cnts$counts)
+    xh_c <- cnts$mids
+
+    # Noise PDF scaled to histogram bin width (method > 1 only)
+    bw <- mean(diff(bk), na.rm = TRUE)
+    has_noise <- !is.null(noise_pdf) && length(noise_pdf) > 1L &&
+                   !all(noise_pdf == -99)
+
+    # Right axis: number of peaks as function of threshold
+    y3tot <- vapply(possible, function(tv) sum(cpk > tv, na.rm = TRUE),
+                    integer(1L))
+
+    # Filter x range for peak-count curve (mirrors MATLAB cPeak logic)
+    if (cPeak == 1L) {
+      xplot_thresh <- xh_c[xh_c > 0]
+    } else {
+      xplot_thresh <- xh_c[xh_c >= 1]
+    }
+    yplot_thresh <- stats::approx(possible, y3tot, xout = xplot_thresh,
+                                   method = "linear", rule = 2)$y
+
+    # Scale factor to overlay right axis on left axis
+    scale_fac <- max(n, na.rm = TRUE) / max(y3tot[y3tot > 0], na.rm = TRUE)
+
+    df_hist <- data.frame(x = xh_c, n = n)
+    df_cnt  <- data.frame(x = xplot_thresh, y = yplot_thresh * scale_fac)
+
+    pb <- ggplot2::ggplot(df_hist, ggplot2::aes(x = x, y = n)) +
+      ggplot2::geom_col(fill = "grey75", colour = "grey75",
+                        width = bw * 0.98)
+
+    if (has_noise) {
+      noise_pdf_sc <- stats::approx(possible, noise_pdf, xout = xh_c,
+                                     method = "linear", rule = 2)$y * bw
+      df_pdf <- data.frame(x = xh_c, y = noise_pdf_sc)
+      pb <- pb + ggplot2::geom_line(data = df_pdf,
+                                    ggplot2::aes(x = x, y = y),
+                                    linetype = "dashed", linewidth = 1.2)
+    }
+
+    pb <- pb +
+      ggplot2::geom_line(data = df_cnt, ggplot2::aes(x = x, y = y),
+                         linewidth = 1.2)
+
+    # Threshold vertical lines (grey dashed for all but last, solid for last)
+    n_tv    <- ncol(char_thresh$pos)
+    t_vals  <- char_thresh$pos[1L, ]   # first row (scalar for global)
+    n_max   <- max(n, na.rm = TRUE)
+    for (ti in seq_len(n_tv)) {
+      if (ti < n_tv) {
+        pb <- pb + ggplot2::geom_vline(xintercept = t_vals[ti],
+                                       linetype = "dashed",
+                                       colour = "grey75", linewidth = 0.8)
+      } else {
+        pb <- pb +
+          ggplot2::geom_vline(xintercept = t_vals[ti],
+                              colour = "black", linewidth = 0.8) +
+          ggplot2::annotate("text", x = t_vals[ti], y = 0,
+                            label = "<", angle = 90,
+                            fontface = "bold", size = 3.5, vjust = 0.5)
+        if (has_noise && !is.null(peak_analysis$threshValues)) {
+          tv_pct <- peak_analysis$threshValues[n_tv]
+          tv_val <- round(t_vals[ti], 4)
+          ann_x  <- t_vals[ti] * 1.25
+          ann_y  <- 0.9 * n_max
+          ann_lbl <- paste0(tv_pct * 100, "th percentile\n= ", tv_val)
+          pb <- pb + ggplot2::annotate("label", x = ann_x, y = ann_y,
+                                       label = ann_lbl,
+                                       hjust = 0, size = 2.5, fill = "white",
+                                       label.size = 0)
+        }
+      }
+    }
+
+    x_lim_b <- c(min(cpk, na.rm = TRUE),
+                  0.75 * max(cpk, na.rm = TRUE))
+    pb <- pb +
+      ggplot2::scale_x_continuous(limits = x_lim_b,
+                                   expand = ggplot2::expansion(0)) +
+      ggplot2::scale_y_continuous(
+        name  = "relative frequency",
+        limits = c(0, n_max * 1.01),
+        expand = ggplot2::expansion(0),
+        sec.axis = ggplot2::sec_axis(
+          transform = ~ . / scale_fac,
+          name  = "# of peaks identified"
+        )
+      ) +
+      ggplot2::labs(
+        x     = if (cPeak == 1L)
+          "residual CHAR value"
+        else
+          "CHAR ratio",
+        title = if (has_noise)
+          "(b) C_peak dist., noise dist., and threshold"
+        else
+          "(b) C_peak distribution and threshold"
+      ) +
+      .char_theme()
+
+  } else {
+    # ---- Local: mean FRI +/- 95% CI per zone per threshold ------------------
+    n_zones  <- length(zone_div) - 1L
+    ccp_cols <- seq_len(min(T_thresh, 3L))
+
+    zone_data <- lapply(seq_len(n_zones), function(z) {
+      lapply(ccp_cols, function(j) {
+        pk_yrs <- x[ccp[, j] > 0]
+        pk_yrs <- pk_yrs[pk_yrs >= zone_div[z] & pk_yrs < zone_div[z + 1L]]
+        fri_vals <- if (length(pk_yrs) > 1L) diff(pk_yrs) else NA_real_
+        fri_vals <- fri_vals[fri_vals > 0 & !is.na(fri_vals)]
+        mfri <- mean(fri_vals, na.rm = TRUE)
+        ci   <- if (length(fri_vals) > 1L) {
+          bm <- replicate(1000L, mean(sample(fri_vals, length(fri_vals),
+                                             replace = TRUE)))
+          stats::quantile(bm, c(0.025, 0.975))
+        } else {
+          c(NA_real_, NA_real_)
+        }
+        data.frame(zone = z, thresh = j,
+                   mfri = mfri, lo = ci[1L], hi = ci[2L])
+      })
+    })
+
+    df_zfri <- do.call(rbind, do.call(c, zone_data))
+    df_zfri <- df_zfri[!is.na(df_zfri$mfri), ]
+
+    # x positions: fliplr(1:n_zones) with offsets for threshold columns
+    offsets <- c(-0.25, 0, 0.25)
+    df_zfri$xpos <- (n_zones + 1L - df_zfri$zone) +
+                    offsets[df_zfri$thresh]
+
+    pb <- ggplot2::ggplot(df_zfri,
+                          ggplot2::aes(x = xpos, y = mfri,
+                                       ymin = lo, ymax = hi,
+                                       colour = factor(thresh == sel_col))) +
+      ggplot2::geom_errorbar(width = 0.08) +
+      ggplot2::geom_point(
+        shape = ifelse(df_zfri$thresh == sel_col, 3L, 16L),
+        size  = 2
+      ) +
+      ggplot2::scale_colour_manual(values = c("TRUE" = "black",
+                                               "FALSE" = "grey50"),
+                                   guide = "none") +
+      ggplot2::scale_x_continuous(
+        breaks = seq_len(n_zones),
+        labels = rev(seq_len(n_zones))
+      ) +
+      .char_theme() +
+      ggplot2::labs(
+        x     = "zone",
+        y     = "zone-specific\nmean FRI (years)",
+        title = "(b) Sensitivity to\nalternative thresholds"
+      )
+  }
+
+  # ============================================================
+  # PANEL (c): SNI time series
+  # ============================================================
+  sni_val <- char_thresh$SNI
+  if (length(sni_val) == 1L) {
+    sni_series <- rep(sni_val, length(x))
+  } else {
+    sni_series <- sni_val
+  }
+  df_sni <- data.frame(x = x, sni = sni_series)
+
+  y_lim_c <- c(0, 10)
+  y_tick_c <- if (y_lim_c[2L] < 20) seq(0, y_lim_c[2L], by = 2)
+              else if (y_lim_c[2L] < 50) seq(0, y_lim_c[2L], by = 5)
+              else seq(0, y_lim_c[2L], by = 10)
+
+  pc <- ggplot2::ggplot(df_sni, ggplot2::aes(x = x, y = sni)) +
+    ggplot2::geom_line(colour = "black", linewidth = 0.7) +
+    ggplot2::geom_hline(yintercept = 3, linetype = "dashed") +
+    ggplot2::scale_x_reverse(limits = c(max(zone_div), min(zone_div)),
+                              breaks = x_ticks,
+                              labels = x_ticks / 1000,
+                              expand = ggplot2::expansion(0)) +
+    ggplot2::scale_y_continuous(limits = y_lim_c,
+                                breaks = y_tick_c,
+                                expand = ggplot2::expansion(0)) +
+    .char_theme() +
+    ggplot2::labs(
+      x     = "time (cal. yr BP x 1000)",
+      y     = "signal-to-noise index",
+      title = "(c) Local signal-to-noise index"
+    )
+
+  # ============================================================
+  # PANEL (d): Global SNI boxplot / distribution
+  # ============================================================
+  df_sni_d <- data.frame(x = "SNI", y = sni_series[!is.na(sni_series)])
+
+  pd <- ggplot2::ggplot(df_sni_d, ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_boxplot(outlier.shape = 16L, outlier.size = 1.2,
+                          width = 0.5) +
+    ggplot2::geom_hline(yintercept = 3, linetype = "dashed") +
+    ggplot2::scale_y_continuous(limits = y_lim_c,
+                                breaks = y_tick_c,
+                                expand = ggplot2::expansion(0)) +
+    ggplot2::annotate("text",
+                      x = 1.35, y = stats::median(df_sni_d$y, na.rm = TRUE),
+                      label = round(stats::median(df_sni_d$y, na.rm = TRUE), 2),
+                      hjust = 0, size = 3, fontface = "plain") +
+    .char_theme() +
+    ggplot2::theme(axis.title.y  = ggplot2::element_blank(),
+                   axis.text.y   = ggplot2::element_blank(),
+                   axis.ticks.y  = ggplot2::element_blank()) +
+    ggplot2::labs(
+      x     = "global signal-to-\nnoise distribution",
+      title = "(d) Global signal-to-noise index"
+    )
+
+  # ============================================================
+  # Compose with patchwork (mirrors MATLAB 3x5 layout)
+  # Wide panels (a, c) take 4 units; narrow panels (b, d) take 1 unit.
+  # ============================================================
+  design <- "AAAAB\nCCCCD"
+  fig <- patchwork::wrap_plots(pa, pb, pc, pd) +
+    patchwork::plot_layout(design = design)
+  print(fig)
+  invisible(fig)
+}
+
+
+# =============================================================================
+# CharPlotAll  --  produce and optionally save all figures
+# =============================================================================
+
+#' @rdname char_plot
+#' @export
+CharPlotAll <- function(out, save = FALSE, out_dir = ".", width = 11, height = 8.5) {
+
+  .require_ggplot2()
+
+  all_figs <- isTRUE(out$results$allFigures == 1L)
+
+  fig1 <- if (all_figs) CharPlotFig1(out) else NULL
+  fig2 <- if (all_figs) CharPlotFig2(out) else NULL
+  fig3 <- CharPlotChar(out)
+  fig4 <- CharPlotFig4(out)
+  fig5 <- CharPlotCumulative(out)
+  fig6 <- CharPlotFRIDist(out)
+  fig7 <- CharPlotFireHistory(out)
+  fig8 <- CharPlotZones(out)
+
+  for (fig in list(fig3, fig4, fig5, fig6, fig7, fig8)) {
     if (!is.null(fig)) print(fig)
   }
 
@@ -742,7 +1507,10 @@ char_plot_all <- function(out, save = FALSE, out_dir = ".", width = 11, height =
     if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
     site <- out$site
     figs <- list(
+      list(fig = fig1, name = "01_pretreatment"),
+      list(fig = fig2, name = "02_threshold_determination"),
       list(fig = fig3, name = "03_CHAR_analysis"),
+      list(fig = fig4, name = "04_threshold_sensitivity_SNI"),
       list(fig = fig5, name = "05_cumulative_peaks"),
       list(fig = fig6, name = "06_FRI_distributions"),
       list(fig = fig7, name = "07_continuous_fire_hx"),
@@ -759,11 +1527,14 @@ char_plot_all <- function(out, save = FALSE, out_dir = ".", width = 11, height =
   }
 
   invisible(list(
-    fig_char         = fig3,
-    fig_cumulative   = fig5,
-    fig_fri_dist     = fig6,
-    fig_fire_history = fig7,
-    fig_zones        = fig8
+    fig_pretreatment       = fig1,
+    fig_threshold          = fig2,
+    fig_char               = fig3,
+    fig_threshold_sni      = fig4,
+    fig_cumulative         = fig5,
+    fig_fri_dist           = fig6,
+    fig_fire_history       = fig7,
+    fig_zones              = fig8
   ))
 }
 
