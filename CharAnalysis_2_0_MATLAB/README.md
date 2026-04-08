@@ -1,4 +1,4 @@
-# CharAnalysis 2.0 — MATLAB Implementation
+# _CharAnalysis_ 2.0 — MATLAB Implementation
 
 This directory contains the Version 2.0 MATLAB source code for *CharAnalysis*.
 For full documentation, installation instructions, and citations, see the
