@@ -1134,12 +1134,8 @@ CharPlotFig4 <- function(out) {
   lev <- c(0.78, 0.85, 0.92)
   if (T_thresh < 3L) lev <- lev[(4L - T_thresh):3L]
 
-  # Identify which column is the "selected" threshold (last column)
+  # Identify which column is the "selected" (Final) threshold (always last column)
   sel_col <- T_thresh
-
-  # For the selected column, which level?
-  sel_lev_idx <- min(T_thresh, 3L)
-  sel_lev     <- lev[sel_lev_idx]
 
   # y-axis label: mirrors charYLabel(transform)
   y_lbl <- if (.has_ggtext()) {
@@ -1187,31 +1183,52 @@ CharPlotFig4 <- function(out) {
       mid_x <- mean(zone_div[z:(z + 1L)])
       pa <- pa + ggplot2::annotate("text",
                                    x = mid_x, y = y_max * 1.05,
-                                   label = as.character(z),
+                                   label = paste0("Zone ", z),
                                    hjust = 0.5, size = 2.5)
     }
   }
 
-  # Peak markers: dots for each threshold column, + for selected
-  for (j in seq_len(min(T_thresh, 3L))) {
-    lev_j  <- lev[min(j, length(lev))]
+  # Peak markers: plot the first (T_thresh - 1) threshold columns as grey dots,
+  # sorted by threshold value lowest → highest, mapped to y-levels 0.78 → 0.92
+  # (bottom to top).  Then overlay black + at whichever y-level corresponds to
+  # the Final threshold value, mirroring MATLAB CharPlotFig4_ThresholdSNI.m.
+  #
+  # The 4th threshValue always duplicates one of the first three; the matching
+  # y-level is found by comparing threshold values, not peak vectors.
+  tv          <- peak_analysis$threshValues          # all T_thresh values
+  non_sel_idx <- setdiff(seq_len(T_thresh), sel_col) # columns 1:(T_thresh-1)
+  non_sel_tv  <- tv[non_sel_idx]                     # their threshold values
+  show_cols   <- utils::head(non_sel_idx[order(non_sel_tv)], 3L) # sorted asc, ≤3
+
+  for (rank in seq_along(show_cols)) {
+    j      <- show_cols[rank]
+    lev_j  <- lev[rank]
     pk_idx <- which(ccp[, j] > 0)
     if (length(pk_idx) > 0L) {
       df_pk <- data.frame(x = x[pk_idx], y = y_max * lev_j)
-      is_sel <- (j == sel_col) || (j == sel_lev_idx && j == sel_col)
-      if (j == sel_col) {
-        # White fill behind + then black +
-        pa <- pa +
-          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
-                              shape = 3L, size = 2, colour = "white", stroke = 1.2) +
-          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
-                              shape = 3L, size = 2, colour = "black", stroke = 0.8)
-      } else {
-        pa <- pa +
-          ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
-                              shape = 16L, size = 1, colour = "grey50")
-      }
+      pa <- pa +
+        ggplot2::geom_point(data = df_pk, ggplot2::aes(x = x, y = y),
+                            shape = 16L, size = 1, colour = "grey50")
     }
+  }
+
+  # Determine mIndex: find the rank (in the sorted non-selected columns) of the
+  # column whose threshValue matches the Final threshValue, then read its y-level.
+  sel_tv        <- tv[sel_col]
+  sorted_tv     <- non_sel_tv[order(non_sel_tv)][seq_along(show_cols)]
+  match_rank    <- which(sorted_tv == sel_tv)
+  if (length(match_rank) == 0L) match_rank <- ceiling(length(show_cols) / 2L)
+  mIndex        <- lev[match_rank[1L]]
+
+  # Selected (final) peaks: white layer erases the grey dot, then black +
+  pk_idx_sel <- which(ccp[, sel_col] > 0)
+  if (length(pk_idx_sel) > 0L) {
+    df_pk_sel <- data.frame(x = x[pk_idx_sel], y = y_max * mIndex)
+    pa <- pa +
+      ggplot2::geom_point(data = df_pk_sel, ggplot2::aes(x = x, y = y),
+                          shape = 3L, size = 2.5, colour = "white", stroke = 1.5) +
+      ggplot2::geom_point(data = df_pk_sel, ggplot2::aes(x = x, y = y),
+                          shape = 3L, size = 2.5, colour = "black", stroke = 0.9)
   }
 
   pa <- pa +
@@ -1354,8 +1371,16 @@ CharPlotFig4 <- function(out) {
 
   } else {
     # ---- Local: mean FRI +/- 95% CI per zone per threshold ------------------
+    # Mirrors MATLAB: always plot columns 1-3 of CharcoalCharPeaks, then
+    # find in2 = which of those columns shares its threshValue with the Final
+    # (last) threshold.  in2 is the column to mark in black with "+".
     n_zones  <- length(zone_div) - 1L
-    ccp_cols <- seq_len(min(T_thresh, 3L))
+    ccp_cols <- seq_len(min(T_thresh - 1L, 3L))   # columns 1-3 (non-Final)
+
+    # in2: which plotted column matches the Final threshValue (mirrors MATLAB)
+    sel_tv_local <- tv[sel_col]
+    in2 <- which(tv[ccp_cols] == sel_tv_local)[1L]
+    if (is.na(in2)) in2 <- length(ccp_cols)       # fallback: last plotted col
 
     zone_data <- lapply(seq_len(n_zones), function(z) {
       lapply(ccp_cols, function(j) {
@@ -1384,18 +1409,25 @@ CharPlotFig4 <- function(out) {
     df_zfri$xpos <- (n_zones + 1L - df_zfri$zone) +
                     offsets[df_zfri$thresh]
 
-    pb <- ggplot2::ggplot(df_zfri,
-                          ggplot2::aes(x = xpos, y = mfri,
-                                       ymin = lo, ymax = hi,
-                                       colour = factor(thresh == sel_col))) +
-      ggplot2::geom_errorbar(width = 0.08) +
-      ggplot2::geom_point(
-        shape = ifelse(df_zfri$thresh == sel_col, 3L, 16L),
-        size  = 2
-      ) +
-      ggplot2::scale_colour_manual(values = c("TRUE" = "black",
-                                               "FALSE" = "grey50"),
-                                   guide = "none") +
+    # Split on in2 (column index within the plotted 1-3 cols matching Final)
+    df_nosel <- df_zfri[df_zfri$thresh != in2, ]
+    df_sel   <- df_zfri[df_zfri$thresh == in2, ]
+
+    pb <- ggplot2::ggplot() +
+      # Non-selected thresholds: grey dots + grey error bars
+      ggplot2::geom_errorbar(data = df_nosel,
+                             ggplot2::aes(x = xpos, ymin = lo, ymax = hi),
+                             colour = "grey50", width = 0.08) +
+      ggplot2::geom_point(data = df_nosel,
+                          ggplot2::aes(x = xpos, y = mfri),
+                          shape = 16L, size = 2, colour = "grey50") +
+      # Selected (final) threshold: black + + black error bars
+      ggplot2::geom_errorbar(data = df_sel,
+                             ggplot2::aes(x = xpos, ymin = lo, ymax = hi),
+                             colour = "black", width = 0.08) +
+      ggplot2::geom_point(data = df_sel,
+                          ggplot2::aes(x = xpos, y = mfri),
+                          shape = 16L, size = 2, colour = "black") +
       ggplot2::scale_x_continuous(
         breaks = seq_len(n_zones),
         labels = rev(seq_len(n_zones))
