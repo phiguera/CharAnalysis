@@ -47,14 +47,15 @@ gaussian_mixture_em <- function(x, k = 2L) {
   k <- as.integer(k)
 
   # ---- Convergence threshold -------------------------------------------------
-  # MATLAB uses epsilon = 0.01 * Lc * log(N) ~= 0.03*log(N) (Lc=3 for M=1),
-  # which is deliberately loose (Bowman CLUSTER convention).  In practice this
-  # loose criterion causes MATLAB's EM to freeze earlier than a tight criterion
-  # would, and floating-point differences between R and MATLAB compound over
-  # iterations, landing at systematically different local solutions.
-  # Using tight convergence (1e-6) forces both implementations toward the true
-  # MLE, which in testing produces thresholds closer to MATLAB's output.
-  eps <- 1e-6                      # tight convergence -- find true MLE
+  # MATLAB's EMIterate uses epsilon = 0.01 * Lc * log(N*M) where for
+  # univariate data (M=1) Lc = 1 + M + 0.5*M*(M+1) = 3, giving
+  # epsilon = 0.03 * log(N).  For a typical 50-sample window this is ~0.117,
+  # which is deliberately loose (Bowman CLUSTER convention) and causes the EM
+  # to stop after only 1-2 iterations.  A tight criterion (1e-6) runs many
+  # more iterations and diverges from MATLAB's solution, producing different
+  # threshold values and therefore different peak counts.  Using MATLAB's
+  # criterion keeps the two implementations in close agreement.
+  eps <- 0.01 * 3 * log(n)         # MATLAB loose criterion: 0.03 * log(N)
 
   # ---- initMixture -----------------------------------------------------------
   # Population variance: MATLAB computes R = (N-1)/N * cov(pixels)

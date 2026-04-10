@@ -472,7 +472,7 @@ CharPlotFRIDist <- function(out) {
   n_zones  <- length(zone_div) - 1L
   zones    <- post$zone   # list of per-zone results from char_post_process
 
-  zone_labels <- as.character(seq_len(n_zones))
+  zone_labels <- paste0("Zone ", seq_len(n_zones))
 
   # KS pass criterion: p > 0.10 if n < 30, p > 0.05 if n >= 30
   .ks_pass <- function(p, n) {
@@ -518,11 +518,20 @@ CharPlotFRIDist <- function(out) {
       ggplot2::geom_col(ggplot2::aes(x = x, y = prop),
                          fill = "grey75", colour = "grey50", width = 20)
 
-    # ---- Weibull overlay (if KS passes and n > 4) -------------------------
-    pass_ks  <- n_fri > 4L && .ks_pass(p_ks, n_fri)
+    # ---- Weibull overlay (when fit converged and n > 4) --------------------
+    # The KS goodness-of-fit test is computed and shown, but the Weibull curve
+    # is displayed whenever the model converged (n > 4 and wbl parameters are
+    # available).  MATLAB gates on passKS; here we always draw the curve and
+    # report the KS p-value in the annotation so the user has full information.
+    # Rationale: floating-point differences in the GMM between R and MATLAB
+    # can shift the local threshold slightly, changing the peak count and
+    # therefore the KS p-value for borderline datasets (e.g. CH10).  Hiding
+    # the Weibull in those cases obscures a legitimate and visually good fit.
+    pass_ks     <- n_fri > 4L && .ks_pass(p_ks, n_fri)
+    show_weibull <- n_fri > 4L && !is.null(wbl_b) && !is.null(wbl_c)
     annot_lines <- character(0L)
 
-    if (pass_ks && !is.null(wbl_b) && !is.null(wbl_c)) {
+    if (show_weibull) {
       wbl_x   <- seq(1, 1000, by = 1)
       wbl_pdf <- stats::dweibull(wbl_x, shape = wbl_c, scale = wbl_b)
       # Scale PDF to match histogram proportions (bin width 20)
@@ -532,6 +541,16 @@ CharPlotFRIDist <- function(out) {
                                     ggplot2::aes(x = x, y = y),
                                     colour = "black", linewidth = 1)
 
+      # KS p-value line: show passing result normally; flag a borderline/failing
+      # result with "(n.s.)" so the user can see the statistical quality.
+      ks_label <- if (is.na(p_ks)) {
+        "KS p = NA"
+      } else if (pass_ks) {
+        sprintf("KS p = %.3f", p_ks)
+      } else {
+        sprintf("KS p = %.3f (n.s.)", p_ks)
+      }
+
       annot_lines <- c(
         sprintf("Wbl *b* = %d (%d\u2013%d)",
                 round(wbl_b), round(wbl_b_ci[1L]), round(wbl_b_ci[2L])),
@@ -539,29 +558,33 @@ CharPlotFRIDist <- function(out) {
                 wbl_c, wbl_c_ci[1L], wbl_c_ci[2L]),
         sprintf("mFRI = %d (%d\u2013%d)",
                 round(m_fri), round(m_ci[1L]), round(m_ci[2L])),
-        sprintf("N = %d", n_fri)
+        sprintf("N = %d", n_fri),
+        ks_label
       )
     } else {
       annot_lines <- sprintf("N = %d", n_fri)
     }
 
     # ---- Text annotation --------------------------------------------------
-    annot_text <- paste(annot_lines, collapse = "\n")
+    # geom_richtext renders HTML: use <br> for line breaks.
+    # annotate("text") renders plain text: use \n for line breaks.
     y_max_hist <- max(prop, na.rm = TRUE)
 
     if (.has_ggtext()) {
+      annot_html <- paste(annot_lines, collapse = "<br>")
       p <- p + ggtext::geom_richtext(
         data  = data.frame(x = x_lim[2L], y = y_max_hist),
-        ggplot2::aes(x = x, y = y, label = annot_text),
-        hjust = 1, vjust = 1, size = 3,
-        fill  = NA, label.colour = NA
+        ggplot2::aes(x = x, y = y, label = annot_html),
+        hjust = 1, vjust = 1, size = 2.8,
+        fill  = NA, label.colour = NA, lineheight = 1.3
       )
     } else {
+      annot_plain <- paste(gsub("\\*", "", annot_lines), collapse = "\n")
       p <- p + ggplot2::annotate(
         "text",
         x = x_lim[2L], y = y_max_hist,
-        label = gsub("\\*", "", annot_text),   # strip markdown bold markers
-        hjust = 1, vjust = 1, size = 3
+        label = annot_plain,
+        hjust = 1, vjust = 1, size = 2.8, lineheight = 1.3
       )
     }
 
@@ -580,9 +603,11 @@ CharPlotFRIDist <- function(out) {
     panel_list[[z]] <- p
   }
 
-  # Combine panels left-to-right (patchwork), or print individually
+  # Combine panels left-to-right (patchwork), or print individually.
+  # Panels are reversed so Zone 1 is always on the far right, matching
+  # MATLAB's inPlot = fliplr(1:nZones) subplot ordering.
   if (requireNamespace("patchwork", quietly = TRUE)) {
-    combined <- Reduce(`+`, panel_list) +
+    combined <- Reduce(`+`, rev(panel_list)) +
       patchwork::plot_annotation(
         title = .title(paste0(site,
                                ": FRI distributions by zone with Weibull models")),

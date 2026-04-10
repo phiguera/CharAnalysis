@@ -349,18 +349,18 @@ for (i in inspect_rows) {
 }
 
 # =============================================================================
-# SECTION F — char_write_results() round-trip test
+# SECTION F — CharWriteResults() round-trip test
 # Write to a temp directory, read back, compare column headers and a
 # selection of numeric values against the MATLAB reference.
 # =============================================================================
 
-cat("--- F. char_write_results() round-trip test ---\n\n")
+cat("--- F. CharWriteResults() round-trip test ---\n\n")
 
 tmp_dir  <- file.path(tempdir(), "charanalysis_test")
 r_path   <- suppressMessages(
-  char_write_results(r_full$char_results,
-                     site    = "CO",
-                     out_dir = tmp_dir)
+  CharWriteResults(r_full$char_results,
+                   site    = "CO",
+                   out_dir = tmp_dir)
 )
 
 if (!file.exists(r_path)) {

@@ -77,8 +77,8 @@
 #' @examples
 #' \dontrun{
 #'   out <- CharAnalysis("CO_charParams.csv")
-#'   char_write_results(out$char_results, out$site,
-#'                      out_dir = "Results")
+#'   CharWriteResults(out$char_results, out$site,
+#'                    out_dir = "Results")
 #' }
 CharWriteResults <- function(CharResults,
                                 site,
@@ -86,14 +86,14 @@ CharWriteResults <- function(CharResults,
                                 digits  = 7L) {
 
   # ---- Validate inputs -------------------------------------------------------
-  if (!is.matrix(char_results) || ncol(char_results) != 33L)
-    stop("char_results must be a numeric matrix with exactly 33 columns.")
+  if (!is.matrix(CharResults) || ncol(CharResults) != 33L)
+    stop("CharResults must be a numeric matrix with exactly 33 columns.")
   if (!is.character(site) || length(site) != 1L || nchar(site) == 0L)
     stop("site must be a non-empty character string.")
 
   if (!dir.exists(out_dir)) {
     dir.create(out_dir, recursive = TRUE)
-    message("char_write_results: created output directory '", out_dir, "'")
+    message("CharWriteResults: created output directory '", out_dir, "'")
   }
 
   # ---- Column headers (matching MATLAB charResults exactly) ------------------
@@ -148,12 +148,12 @@ CharWriteResults <- function(CharResults,
     formatC(x, digits = digits, format = "g", flag = "-")
   }
 
-  N   <- nrow(char_results)
+  N   <- nrow(CharResults)
   out <- matrix("", nrow = N, ncol = 33L)
 
   for (j in seq_len(33L)) {
     is_int <- j %in% integer_cols
-    out[, j] <- vapply(char_results[, j], fmt_val,
+    out[, j] <- vapply(CharResults[, j], fmt_val,
                        FUN.VALUE = character(1L),
                        is_int    = is_int)
   }
@@ -174,6 +174,6 @@ CharWriteResults <- function(CharResults,
                      quote     = FALSE,
                      na        = "")
 
-  message("char_write_results: wrote '", out_path, "'")
+  message("CharWriteResults: wrote '", out_path, "'")
   invisible(out_path)
 }

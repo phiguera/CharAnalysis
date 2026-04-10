@@ -193,7 +193,7 @@ R packages needed: `MASS`, `boot`, `stats` (base).
 
 R functions to implement:
 
-- `char_write_results()` — Write the output data table to CSV (columns matching the MATLAB `CharResults` output exactly, same column names and order).
+- `CharWriteResults()` — Write the output data table to CSV (columns matching the MATLAB `CharResults` output exactly, same column names and order).
 - **Figure functions** — Build `ggplot2` equivalents for each of the nine standard output figures. Implement as standalone functions analogous to the MATLAB modular figure interface (`CharPlotFig3.m` through `CharPlotFig9.m`). Focus on information content, not pixel-level reproduction of MATLAB figure aesthetics. Use `patchwork` for multi-panel layouts and `ggplot2::sec_axis()` for dual y-axes.
 - `CharAnalysis()` — Top-level wrapper that calls the full pipeline and returns a named list of all outputs (equivalent to the MATLAB `results` struct). Call `CharWriteResults()` separately to save the output CSV.
 
@@ -209,7 +209,7 @@ R/
   CharPeakID.R
   CharPostProcess.R
   CharWriteResults.R
-  CharPlotResults.R       (all five figure functions + char_plot_all wrapper)
+  CharPlotResults.R       (all figure functions + CharPlotAll wrapper)
   CharAnalysis.R          (top-level pipeline wrapper)
   charLowess.R
   CharValidateParams.R

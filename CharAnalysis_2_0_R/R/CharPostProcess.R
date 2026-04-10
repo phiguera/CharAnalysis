@@ -304,8 +304,9 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     x_plot <- charcoal$ybpI[charcoal_charpeaks[, T_thresh] > 0]
     x_plot <- x_plot[x_plot >= zone_div[z] & x_plot < zone_div[z + 1L]]
     fri_z  <- diff(x_plot)
+    fri_z  <- fri_z[is.finite(fri_z)]   # drop NA/NaN from gaps in ybpI
 
-    if (max(fri_z, -Inf) > 5000 || length(fri_z) <= 1L) next
+    if (length(fri_z) <= 1L || max(fri_z) > 5000) next
 
     # Bin FRIs matching MATLAB histcounts(FRIz, binWidth:binWidth:1000):
     # values outside [bin_edges[1], bin_edges[end]) are silently ignored.
@@ -334,11 +335,19 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     wbl_scale <- unname(fit_wbl$estimate["scale"])   # = MATLAB param(1) = WBLb
     wbl_shape <- unname(fit_wbl$estimate["shape"])   # = MATLAB param(2) = WBLc
 
-    # KS goodness-of-fit (continuous Weibull CDF at observed FRIs)
-    ks_res   <- tryCatch(
-      suppressWarnings(stats::ks.test(fri_z, stats::pweibull,
-                                       shape = wbl_shape,
-                                       scale = wbl_scale)),
+    # KS goodness-of-fit against fitted Weibull CDF.
+    # Matches MATLAB's kstest(FRIz, [FRIBinKS', wbl_cdf']) where
+    # FRIBinKS = 0:20:5000.  MATLAB evaluates the CDF at each data point
+    # by linear interpolation from that discrete table, then uses the
+    # asymptotic Kolmogorov distribution for the p-value.
+    # We replicate both choices: discrete CDF via approxfun, exact = FALSE.
+    fri_bin_ks   <- seq(0L, 5000L, by = 20L)
+    wbl_cdf_disc <- stats::pweibull(fri_bin_ks,
+                                    shape = wbl_shape, scale = wbl_scale)
+    disc_cdf_fn  <- stats::approxfun(fri_bin_ks, wbl_cdf_disc,
+                                     method = "linear", rule = 2L)
+    ks_res <- tryCatch(
+      suppressWarnings(stats::ks.test(fri_z, disc_cdf_fn, exact = FALSE)),
       error = function(e) NULL
     )
     p_ks <- if (is.null(ks_res)) NA_real_ else ks_res$p.value
@@ -377,12 +386,17 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
       mean_mfri_boot[b] <- mean(fri_t)
     }
 
+    # Use na.rm = TRUE: failed Weibull fits store NA_real_, and NA > 0 returns
+    # NA (not FALSE) in R, so NAs pass through the > 0 filter without it.
     wbl_scale_ci    <- stats::quantile(wbl_scale_boot[wbl_scale_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
     wbl_shape_ci    <- stats::quantile(wbl_shape_boot[wbl_shape_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
     mean_mfri_ci    <- stats::quantile(mean_mfri_boot[mean_mfri_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
 
     # NOTE: MATLAB CharPostProcess stores CIs as [quantile(2.5%), quantile(97.5%)]
     # in columns labelled uCI / lCI (i.e. uCI = lower bound, lCI = upper bound).

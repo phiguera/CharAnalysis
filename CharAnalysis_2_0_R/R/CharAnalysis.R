@@ -4,7 +4,11 @@
 #' all intermediate and final results as a single named list.
 #'
 #' @param file_name Path to the \code{*_charParams.csv} (or \code{.xlsx})
-#'   parameter file.
+#'   parameter file.  If omitted (or \code{NULL}), a system file-picker dialog
+#'   is opened so you can navigate to the file interactively -- matching the
+#'   MATLAB behaviour of typing \code{CharAnalysis} with no argument.  In
+#'   non-interactive sessions (e.g. scripts, batch jobs) the argument is
+#'   required and an error is thrown if it is missing.
 #'
 #' @return Named list with the following elements:
 #'   \describe{
@@ -50,7 +54,26 @@
 #'   # Phase 3 outputs
 #'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])
 #' }
-CharAnalysis <- function(file_name) {
+CharAnalysis <- function(file_name = NULL) {
+
+  # If no file supplied, open an interactive picker (mirrors MATLAB behaviour
+  # of prompting when CharAnalysis is called with no argument).
+  if (is.null(file_name)) {
+    if (!interactive()) {
+      stop("file_name is required in non-interactive sessions (scripts, ",
+           "batch jobs, RMarkdown, etc.).")
+    }
+    message("No file specified -- opening file picker...")
+    file_name <- tryCatch(
+      file.choose(),
+      error = function(e) {
+        # file.choose() not available (e.g. RStudio Server, some terminals);
+        # fall back to a console prompt.
+        readline("Enter path to *_charParams.csv or .xlsx file: ")
+      }
+    )
+    if (!nzchar(file_name)) stop("No file selected. CharAnalysis cancelled.")
+  }
 
   # (1) Read input file ---------------------------------------------------------
   message("(1) Reading input file...")
