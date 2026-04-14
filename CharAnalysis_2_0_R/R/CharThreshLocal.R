@@ -86,7 +86,7 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
   # (0 for residuals, 1 for ratios)
   neutral_val <- if (peak_analysis$cPeak == 1L) 0 else 1
 
-  # Diagnostic data for CharPlotFig2: capture up to 25 evenly-spaced samples.
+  # Diagnostic data for CharPlotFig2_ThreshDiagnostics: capture up to 25 evenly-spaced samples.
   # Mirrors MATLAB CharThreshLocal.m lines 228-229.
   plot_step   <- max(round(N / 25L), 1L)
   in_plot_set <- seq(hw * 2L, N, by = plot_step)
@@ -283,7 +283,7 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
       char_thresh$GOF[i] <- ks_result$p.value
     }
 
-    # ---- Capture diagnostic data for CharPlotFig2 ---------------------------
+    # ---- Capture diagnostic data for CharPlotFig2_ThreshDiagnostics ----------
     # Store per-sample fit info for up to 25 evenly-spaced samples so the
     # figure function can reconstruct local window histograms + PDF overlays
     # without re-running the loop.  Mirrors MATLAB lines 228-290.

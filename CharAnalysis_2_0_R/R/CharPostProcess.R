@@ -326,9 +326,26 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     if (sum(ok) < 2L || sum(freq_tab) == 0L) next
 
     x_rep <- rep(bin_centers[ok], freq_tab[ok])
+
+    # Fit Weibull via MLE.  MASS::fitdistr() can fail with the default
+    # starting values when x_rep is small or the likelihood surface is flat
+    # (typically < ~10 points or all-unique bin centres).  On failure, retry
+    # with method-of-moments starting values before giving up.
+    .wbl_start <- function(x) {
+      m <- mean(x);  s <- max(stats::sd(x), 1e-6)
+      # Approximation: shape ≈ (m/s)^1.086  (valid for CV < ~1)
+      sh <- max(0.1, (m / s)^1.086)
+      list(shape = sh, scale = m / gamma(1 + 1 / sh))
+    }
     fit_wbl <- tryCatch(
       suppressWarnings(MASS::fitdistr(x_rep, "weibull")),
-      error = function(e) NULL
+      error = function(e) {
+        tryCatch(
+          suppressWarnings(MASS::fitdistr(x_rep, "weibull",
+                                          start = .wbl_start(x_rep))),
+          error = function(e2) NULL
+        )
+      }
     )
     if (is.null(fit_wbl)) next
 

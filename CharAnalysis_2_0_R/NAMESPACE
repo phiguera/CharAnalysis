@@ -8,14 +8,14 @@ export(CharAnalysis)
 export(CharWriteResults)
 
 # Figures
-export(CharPlotFig1)
-export(CharPlotFig2)
-export(CharPlotChar)
-export(CharPlotFig4)
-export(CharPlotCumulative)
-export(CharPlotFireHistory)
-export(CharPlotFRIDist)
-export(CharPlotZones)
+export(CharPlotFig1_Craw_Cinterp_Cbkg)
+export(CharPlotFig2_ThreshDiagnostics)
+export(CharPlotFig3_CintCbackCpeak)
+export(CharPlotFig4_ThresholdSNI)
+export(CharPlotFig5_CumulativePeaks)
+export(CharPlotFig6_FRIDistributions)
+export(CharPlotFig7_ContinuousFireHistory)
+export(CharPlotFig8_ZoneComparisons)
 export(CharPlotAll)
 
 # Imports from recommended packages

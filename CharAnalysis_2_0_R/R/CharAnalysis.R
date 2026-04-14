@@ -114,7 +114,7 @@ CharAnalysis <- function(file_name = NULL) {
                      pretreatment = pre$pretreatment,
                      smoothing    = params$smoothing,
                      site         = params$site)
-    CharPlotFig1(mini_out)
+    CharPlotFig1_Craw_Cinterp_Cbkg(mini_out)
   }
 
   # Guard: cannot compute ratio C_peak when background contains a zero.
@@ -171,7 +171,7 @@ CharAnalysis <- function(file_name = NULL) {
                       peak_analysis = params$peak_analysis,
                       pretreatment  = pre$pretreatment,
                       site          = params$site)
-    CharPlotFig2(mini_out2)
+    CharPlotFig2_ThreshDiagnostics(mini_out2)
   }
 
   # (5) Identify peaks ----------------------------------------------------------
@@ -206,14 +206,14 @@ CharAnalysis <- function(file_name = NULL) {
   message("(7) Analysis complete.")
   message("    Save CSV:     CharWriteResults(out$char_results, out$site)")
   message("    All figures:  CharPlotAll(out)  [Figs 1-2 only when allFigures = 1]")
-  message("    One figure:   CharPlotFig1(out)          # Fig 1: C_raw, C_interp, C_back options")
-  message("                  CharPlotFig2(out)          # Fig 2: threshold diagnostics")
-  message("                  CharPlotChar(out)          # Fig 3: peak analysis")
-  message("                  CharPlotFig4(out)          # Fig 4: threshold sensitivity and SNI")
-  message("                  CharPlotCumulative(out)    # Fig 5: cumulative peaks")
-  message("                  CharPlotFRIDist(out)       # Fig 6: FRI distributions")
-  message("                  CharPlotFireHistory(out)   # Fig 7: continuous fire history")
-  message("                  CharPlotZones(out)         # Fig 8: CHAR zone comparisons")
+  message("    One figure:   CharPlotFig1_Craw_Cinterp_Cbkg(out)      # Fig 1: C_raw, C_interp, C_back options")
+  message("                  CharPlotFig2_ThreshDiagnostics(out)       # Fig 2: threshold diagnostics")
+  message("                  CharPlotFig3_CintCbackCpeak(out)          # Fig 3: peak analysis")
+  message("                  CharPlotFig4_ThresholdSNI(out)            # Fig 4: threshold sensitivity and SNI")
+  message("                  CharPlotFig5_CumulativePeaks(out)         # Fig 5: cumulative peaks")
+  message("                  CharPlotFig6_FRIDistributions(out)        # Fig 6: FRI distributions")
+  message("                  CharPlotFig7_ContinuousFireHistory(out)   # Fig 7: continuous fire history")
+  message("                  CharPlotFig8_ZoneComparisons(out)         # Fig 8: CHAR zone comparisons")
 
   # Assemble and return ---------------------------------------------------------
   list(

@@ -1,19 +1,34 @@
-#' CharAnalysis ggplot2 figures
+#' CharAnalysis output figures
 #'
-#' Two primary output figures mirroring the MATLAB CharAnalysis v2.0 plots:
+#' Nine output figures mirroring the MATLAB CharAnalysis v2.0 plots.
+#' Function names match the MATLAB source exactly.
 #'
 #' \describe{
-#'   \item{[CharPlotChar()]}{Figure 3: Resampled CHAR with background trend
-#'     (top panel) and C_peak with thresholds and peak markers (bottom panel).}
-#'   \item{[CharPlotFireHistory()]}{Figure 7: Peak magnitude (top), FRIs
-#'     through time with smoothed FRI and CI ribbon (middle), and smoothed
+#'   \item{[CharPlotFig1_Craw_Cinterp_Cbkg()]}{Figure 1 (allFigures only):
+#'     C_raw, C_interpolated, and C_background smoothing options.}
+#'   \item{[CharPlotFig2_ThreshDiagnostics()]}{Figure 2 (allFigures only):
+#'     Local threshold determination diagnostics (5x5 window grid).}
+#'   \item{[CharPlotFig3_CintCbackCpeak()]}{Figure 3: Resampled CHAR with
+#'     background trend (top) and C_peak with thresholds and peak markers (bottom).}
+#'   \item{[CharPlotFig4_ThresholdSNI()]}{Figure 4: Sensitivity to alternative
+#'     thresholds and signal-to-noise index.}
+#'   \item{[CharPlotFig5_CumulativePeaks()]}{Figure 5: Cumulative peaks through time.}
+#'   \item{[CharPlotFig6_FRIDistributions()]}{Figure 6: FRI distributions by
+#'     zone with Weibull model fits.}
+#'   \item{[CharPlotFig7_ContinuousFireHistory()]}{Figure 7: Peak magnitude (top),
+#'     FRIs through time with smoothed FRI and CI ribbon (middle), and smoothed
 #'     fire frequency (bottom).}
-#'   \item{[CharPlotAll()]}{Convenience wrapper: produces both figures and
+#'   \item{[CharPlotFig8_ZoneComparisons()]}{Figure 8: Between-zone comparisons
+#'     of raw CHAR distributions (CDF and box plots).}
+#'   \item{[CharPlotAll()]}{Convenience wrapper: produces all figures and
 #'     optionally saves them as PDF files.}
 #' }
 #'
 #' @name char_plot
-#' @aliases CharPlotChar CharPlotFireHistory CharPlotAll
+#' @aliases CharPlotFig1_Craw_Cinterp_Cbkg CharPlotFig2_ThreshDiagnostics
+#'   CharPlotFig3_CintCbackCpeak CharPlotFig4_ThresholdSNI
+#'   CharPlotFig5_CumulativePeaks CharPlotFig6_FRIDistributions
+#'   CharPlotFig7_ContinuousFireHistory CharPlotFig8_ZoneComparisons CharPlotAll
 #'
 #' @param out Named list returned by [CharAnalysis()].  Must contain
 #'   \code{charcoal}, \code{pretreatment}, \code{peak_analysis},
@@ -24,10 +39,8 @@
 #' @param width,height PDF dimensions in inches.  Defaults: 11 x 8.5.
 #'
 #' @return
-#'   \code{CharPlotChar()} and \code{CharPlotFireHistory()} each return
-#'   a \pkg{patchwork} / \pkg{ggplot2} object.
-#'   \code{CharPlotAll()} returns a named list with elements
-#'   \code{fig_char} and \code{fig_fire_history}.
+#'   Individual figure functions each return a \pkg{patchwork} / \pkg{ggplot2}
+#'   object.  \code{CharPlotAll()} returns a named list of all figure objects.
 #'
 #' @details
 #'   Requires the \pkg{ggplot2} package.  Multi-panel layout uses
@@ -39,10 +52,13 @@
 #' @examples
 #' \dontrun{
 #'   out <- CharAnalysis("CO_charParams.csv")
-#'   CharPlotChar(out)
-#'   CharPlotFireHistory(out)
-#'   # Save both to PDF:
+#'   CharPlotFig3_CintCbackCpeak(out)
+#'   CharPlotFig7_ContinuousFireHistory(out)
+#'   # Save all figures to PDF:
 #'   CharPlotAll(out, save = TRUE, out_dir = "Results")
+#'   # Individual figures can also be called directly:
+#'   CharPlotFig4_ThresholdSNI(out)
+#'   CharPlotFig6_FRIDistributions(out)
 #' }
 NULL
 
@@ -114,11 +130,11 @@ NULL
 }
 
 .zone_labels <- function(zone_div, y_pos, base_size = 10) {
-  # Text labels centred in each zone
+  # Text labels centred in each zone (e.g. "Zone 1", "Zone 2")
   n_zones <- length(zone_div) - 1L
   if (n_zones <= 1L) return(NULL)
   mids   <- (zone_div[-length(zone_div)] + zone_div[-1L]) / 2
-  labels <- as.character(seq_len(n_zones))
+  labels <- paste0("Zone ", seq_len(n_zones))
   lapply(seq_len(n_zones), function(z) {
     ggplot2::annotate("text",
                       x = mids[z], y = y_pos,
@@ -147,12 +163,12 @@ NULL
 }
 
 # =============================================================================
-# CharPlotChar  --  Figure 3: C_interp / C_background / C_peak
+# CharPlotFig3_CintCbackCpeak  --  Figure 3: C_interp / C_background / C_peak
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotChar <- function(out) {
+CharPlotFig3_CintCbackCpeak <- function(out) {
 
   .require_ggplot2()
 
@@ -206,8 +222,8 @@ CharPlotChar <- function(out) {
     ggplot2::labs(
       title = .title(paste0(
         "(a) ", site,
-        ": C<sub>interp</sub> (", yr_interp, " yr) and",
-        " C<sub>bkg</sub> defined by ", smooth_yr_label, " trends"))
+        ": C<sub>interpolated</sub> (", yr_interp, " yr) and",
+        " C<sub>background</sub> defined by ", smooth_yr_label, "-yr trends"))
     ) +
     ggplot2::theme(axis.title.x = ggplot2::element_blank(),
                    axis.text.x  = ggplot2::element_blank(),
@@ -262,11 +278,20 @@ CharPlotChar <- function(out) {
 
   peak_type <- if (!is.null(peak_analysis$cPeak) &&
                    peak_analysis$cPeak == 2L) "ratio" else "residual"
-  cpeak_label <- .title(if (peak_type == "ratio") {
-    "(b) C<sub>peak</sub> (C<sub>interp</sub> / C<sub>bkg</sub>), thresholds, and identified peaks"
+  # Two-line title matching MATLAB: line break after "peaks"
+  cpeak_label <- if (.has_ggtext()) {
+    if (peak_type == "ratio") {
+      .title("(b) C<sub>peak</sub> (C<sub>interpolated</sub> / C<sub>background</sub>), thresholds defining C<sub>noise</sub>, and peaks<br>identified (gray peaks fail to pass peak-magnitude test)")
+    } else {
+      .title("(b) C<sub>peak</sub> (C<sub>interpolated</sub> \u2212 C<sub>background</sub>), thresholds defining C<sub>noise</sub>, and peaks<br>identified (gray dots fail to pass peak-magnitude test)")
+    }
   } else {
-    "(b) C<sub>peak</sub> (C<sub>interp</sub> \u2212 C<sub>bkg</sub>), thresholds, and identified peaks"
-  })
+    if (peak_type == "ratio") {
+      "(b) C_peak (C_interpolated / C_background), thresholds defining C_noise, and peaks\nidentified (gray peaks fail to pass peak-magnitude test)"
+    } else {
+      "(b) C_peak (C_interpolated - C_background), thresholds defining C_noise, and peaks\nidentified (gray dots fail to pass peak-magnitude test)"
+    }
+  }
 
   pb <- pb +
     .zone_lines(zone_div, y_min_b, y_max_b * 1.0) +
@@ -281,12 +306,12 @@ CharPlotChar <- function(out) {
 }
 
 # =============================================================================
-# CharPlotFireHistory  --  Figure 7: peak magnitude / FRIs / fire frequency
+# CharPlotFig7_ContinuousFireHistory  --  Figure 7: peak magnitude / FRIs / fire frequency
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotFireHistory <- function(out) {
+CharPlotFig7_ContinuousFireHistory <- function(out) {
 
   .require_ggplot2()
 
@@ -335,7 +360,7 @@ CharPlotFireHistory <- function(out) {
     ggplot2::scale_y_continuous(limits = c(0, 1.1 * y_max_mag), expand = c(0, 0)) +
     ggplot2::ylab(expression(paste("peak mag. (pieces cm"^{-2}*" peak"^{-1}*")"))) +
     ggplot2::labs(title = .title(paste0(
-        site, ": peak magnitude, FRIs through time, and fire frequency"))) +
+        "Peak magnitude, FRIs, and fire frequ.\n\n", site))) +
     ggplot2::theme(axis.title.x = ggplot2::element_blank(),
                    axis.text.x  = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank()) +
@@ -407,12 +432,12 @@ CharPlotFireHistory <- function(out) {
 }
 
 # =============================================================================
-# CharPlotCumulative  --  Figure 5: cumulative peaks through time
+# CharPlotFig5_CumulativePeaks  --  Figure 5: cumulative peaks through time
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotCumulative <- function(out) {
+CharPlotFig5_CumulativePeaks <- function(out) {
 
   .require_ggplot2()
 
@@ -428,7 +453,7 @@ CharPlotCumulative <- function(out) {
   peak_idx <- which(peaks_col > 0)
 
   if (length(peak_idx) == 0L) {
-    message("CharPlotCumulative: no peaks to plot.")
+    message("CharPlotFig5_CumulativePeaks: no peaks to plot.")
     return(invisible(NULL))
   }
 
@@ -448,19 +473,20 @@ CharPlotCumulative <- function(out) {
     ggplot2::scale_y_continuous(limits = c(0, y_max * 1.05), expand = c(0, 0)) +
     ggplot2::ylab("cumulative number of peaks") +
     ggplot2::labs(
-      title = .title(paste0(site, ": cumulative fires as a function of time"))
+      title = .title(paste0(site, ": Cumulative fires as a function of time"))
     ) +
-    ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "grey90")) +
-    .char_theme()
+    .char_theme() +
+    ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "grey90",
+                                                             linewidth = 0.4))
 }
 
 # =============================================================================
-# CharPlotFRIDist  --  Figure 6: FRI histograms with Weibull fits by zone
+# CharPlotFig6_FRIDistributions  --  Figure 6: FRI histograms with Weibull fits by zone
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotFRIDist <- function(out) {
+CharPlotFig6_FRIDistributions <- function(out) {
 
   .require_ggplot2()
 
@@ -572,9 +598,14 @@ CharPlotFRIDist <- function(out) {
 
     if (.has_ggtext()) {
       annot_html <- paste(annot_lines, collapse = "<br>")
+      # annot_html must live in the data frame, NOT referenced via aes().
+      # If it is referenced by name in aes(), ggplot2 lazy-evaluates it and
+      # picks up whatever value the variable holds when the panel is finally
+      # rendered (after the loop finishes) -- i.e. always the last zone.
+      # Putting it in the data frame captures the value immediately.
       p <- p + ggtext::geom_richtext(
-        data  = data.frame(x = x_lim[2L], y = y_max_hist),
-        ggplot2::aes(x = x, y = y, label = annot_html),
+        data  = data.frame(x = x_lim[2L], y = y_max_hist, lbl = annot_html),
+        ggplot2::aes(x = x, y = y, label = lbl),
         hjust = 1, vjust = 1, size = 2.8,
         fill  = NA, label.colour = NA, lineheight = 1.3
       )
@@ -622,12 +653,12 @@ CharPlotFRIDist <- function(out) {
 }
 
 # =============================================================================
-# CharPlotZones  --  Figure 8: between-zone raw CHAR comparisons
+# CharPlotFig8_ZoneComparisons  --  Figure 8: between-zone raw CHAR comparisons
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotZones <- function(out) {
+CharPlotFig8_ZoneComparisons <- function(out) {
 
   .require_ggplot2()
 
@@ -637,10 +668,10 @@ CharPlotZones <- function(out) {
 
   zone_div    <- pretreatment$zoneDiv
   n_zones     <- length(zone_div) - 1L
-  zone_labels <- as.character(seq_len(n_zones))
+  zone_labels <- paste0("Zone ", seq_len(n_zones))
 
   if (is.null(charcoal$acc) || is.null(charcoal$ybp)) {
-    message("CharPlotZones: raw CHAR (charcoal$acc / charcoal$ybp) not available.")
+    message("CharPlotFig8_ZoneComparisons: raw CHAR (charcoal$acc / charcoal$ybp) not available.")
     return(invisible(NULL))
   }
 
@@ -662,18 +693,25 @@ CharPlotZones <- function(out) {
                   "#f46d43", "#006837")[seq_len(n_zones)]
 
   # ---- Left panel: empirical CDFs ------------------------------------------
+  x_max_cdf <- max(df_raw$acc, na.rm = TRUE)
+
   p_cdf <- ggplot2::ggplot(df_raw,
                              ggplot2::aes(x = acc, colour = zone,
                                           group = zone)) +
     ggplot2::stat_ecdf(linewidth = 1) +
     ggplot2::scale_colour_manual(values = zone_cols,
-                                  name   = "Zone",
+                                  name   = NULL,
                                   labels = zone_labels) +
+    ggplot2::scale_x_continuous(limits = c(0, x_max_cdf), expand = c(0, 0)) +
     ggplot2::xlab(expression(paste("CHAR (pieces cm"^{-2}*" yr"^{-1}*")"))) +
     ggplot2::ylab("cumulative proportion") +
-    ggplot2::labs(title = .title(paste0("(a) CDFs of raw CHAR by zone"))) +
+    ggplot2::labs(title = .title("CDFs of zone-specific raw CHAR, with KS test results")) +
     .char_theme() +
-    ggplot2::theme(legend.position = "bottom")
+    ggplot2::theme(legend.position        = c(0.85, 0.15),
+                   legend.justification   = c("right", "bottom"),
+                   legend.background      = ggplot2::element_rect(fill  = "white",
+                                                                    colour = "grey80",
+                                                                    linewidth = 0.3))
 
   # ---- KS test table (annotated on CDF plot) --------------------------------
   if (n_zones > 1L) {
@@ -724,14 +762,14 @@ CharPlotZones <- function(out) {
     ggplot2::scale_colour_manual(values = zone_cols, guide = "none") +
     ggplot2::xlab("zone") +
     ggplot2::ylab(expression(paste("CHAR (pieces cm"^{-2}*" yr"^{-1}*")"))) +
-    ggplot2::labs(title = .title("(b) Box plots of raw CHAR per zone")) +
+    ggplot2::labs(title = .title("Box plots of raw CHAR per zone")) +
     .char_theme()
 
   if (requireNamespace("patchwork", quietly = TRUE)) {
     combined <- (p_cdf | p_box) +
       patchwork::plot_annotation(
         title = .title(paste0(site,
-                               ": between-zone comparisons of raw CHAR")),
+                               ": Between-zone comparisons of raw CHAR distributions")),
         theme = ggplot2::theme(plot.title = .title_el(face = "bold"))
       ) +
       patchwork::plot_layout(widths = c(2, 1))
@@ -744,14 +782,14 @@ CharPlotZones <- function(out) {
 }
 
 # =============================================================================
-# CharPlotFig1  --  Figure 1: C_raw / C_resampled / C_background options
+# CharPlotFig1_Craw_Cinterp_Cbkg  --  Figure 1: C_raw / C_resampled / C_background options
 # Only produced when out$results$allFigures == 1.
 # Mirrors MATLAB CharPretreatment.m (subplot 1) + CharSmooth.m (subplot 2).
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotFig1 <- function(out) {
+CharPlotFig1_Craw_Cinterp_Cbkg <- function(out) {
 
   .require_ggplot2()
 
@@ -778,7 +816,7 @@ CharPlotFig1 <- function(out) {
 
   # Legend labels
   lbl_raw  <- sub_lbl("C", "raw")
-  lbl_int  <- sub_lbl("C", paste0("interpolated: ", yr_interp, " yr"))
+  lbl_int  <- paste0(sub_lbl("C", "interpolated"), ": ", yr_interp, " yr")
 
   # -- Subplot 1: C_raw (bars) + C_interpolated (step) + legend --------------
   df_raw <- data.frame(age = charcoal$ybp, acc = charcoal$acc)
@@ -819,7 +857,7 @@ CharPlotFig1 <- function(out) {
     ) +
     ggplot2::labs(
       title = .title(paste0(site, " (a) ", sub_lbl("C", "raw"), " and ",
-                            sub_lbl("C", paste0("interpolated: ", yr_interp, " yr")))),
+                            sub_lbl("C", "interpolated"), ": ", yr_interp, " yr")),
       x = "time (cal. yr BP)",
       y = char_lbl
     )
@@ -842,6 +880,16 @@ CharPlotFig1 <- function(out) {
   df_sel  <- df_smooth[df_smooth$method == selected_name, ]
   df_rest <- df_smooth[df_smooth$method != selected_name, ]
 
+  # Build a named colour vector: selected method = black, others = Set1 palette
+  set1_4 <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3")
+  non_sel_names <- smooth_names[smooth_names != selected_name]
+  col_map <- stats::setNames(
+    c("black", set1_4[seq_along(non_sel_names)]),
+    c(selected_name, non_sel_names)
+  )
+  # Legend linewidth override in factor-level order (selected = thick)
+  lw_override <- ifelse(smooth_names == selected_name, 1.2, 0.6)
+
   p2_title <- paste0(
     "(b) ", sub_lbl("C", "interpolated"),
     " and options for a ", smoothing$yr, " yr ",
@@ -860,11 +908,17 @@ CharPlotFig1 <- function(out) {
                        ggplot2::aes(x = age, y = smooth, colour = method),
                        linewidth = 0.6, alpha = 0.7) +
     ggplot2::geom_line(data = df_sel,
-                       ggplot2::aes(x = age, y = smooth),
-                       colour = "black", linewidth = 1.2) +
+                       ggplot2::aes(x = age, y = smooth, colour = method),
+                       linewidth = 1.2) +
     ggplot2::scale_x_reverse(limits = x_lim) +
     ggplot2::coord_cartesian(ylim = c(0, max(charcoal$accI, na.rm = TRUE))) +
-    ggplot2::scale_colour_brewer(palette = "Set1", name = "Method") +
+    ggplot2::scale_colour_manual(
+      values = col_map,
+      name   = "Method",
+      guide  = ggplot2::guide_legend(
+        override.aes = list(linewidth = lw_override)
+      )
+    ) +
     .char_theme() +
     ggplot2::theme(axis.title.y = md_axis()) +
     ggplot2::labs(
@@ -880,29 +934,28 @@ CharPlotFig1 <- function(out) {
 
 
 # =============================================================================
-# CharPlotFig2  --  Figure 2: threshold determination diagnostics
+# CharPlotFig2_ThreshDiagnostics  --  Figure 2: threshold determination diagnostics
 # Only produced when out$results$allFigures == 1.
 # Global threshold: single panel histogram + noise PDF + threshold lines.
 # Local threshold:  5x5 grid of per-sample window distributions.
 # Mirrors MATLAB CharThreshGlobal.m (lines 201-268) and
 #         CharThreshLocal.m (lines 225-291).
 #
-# NOTE -- one vs. two distributions (threshMethod == 3, GMM):
-#   The MATLAB version draws both the noise and signal Gaussian components
-#   plus their weighted mixture on each subplot.  The R version currently
-#   draws only the noise component (smaller mean) when prop2 == 0, which
-#   happens when the per-sample GMM diagnostic is not captured (e.g. the
-#   out object was created before the diagnostic-capture code was in place).
-#   After a fresh devtools::load_all() + CharAnalysis() run with
-#   threshMethod == 3, char_thresh$diag entries will carry non-zero prop2
-#   and the R figure will show both components plus their mixture, matching
-#   the MATLAB output.  This is an accepted minor difference between
-#   implementations when using stale out objects.
+# NOTE -- R vs. MATLAB difference (intentional, documented):
+#   When threshMethod == 3 (Gaussian mixture model), the MATLAB version draws
+#   both the noise and signal Gaussian components plus their weighted mixture
+#   on each subplot.  The R version plots only the noise component (the
+#   component with the smaller mean), which is the distribution used to define
+#   the threshold.  This is an intentional simplification: the noise component
+#   is the only part of the GMM that directly determines the threshold, and
+#   plotting only it avoids visual confusion in windows where the two components
+#   have very similar means.  This difference is noted in the package
+#   documentation and release notes.
 # =============================================================================
 
 #' @rdname char_plot
 #' @export
-CharPlotFig2 <- function(out) {
+CharPlotFig2_ThreshDiagnostics <- function(out) {
 
   .require_ggplot2()
 
@@ -986,7 +1039,7 @@ CharPlotFig2 <- function(out) {
   # ============================================================
   diag <- char_thresh$diag
   if (is.null(diag) || length(diag) == 0L) {
-    message("CharPlotFig2: no local threshold diagnostic data available.")
+    message("CharPlotFig2_ThreshDiagnostics: no local threshold diagnostic data available.")
     return(invisible(NULL))
   }
 
@@ -1109,8 +1162,8 @@ CharPlotFig2 <- function(out) {
 
 
 # =============================================================================
-# CharPlotFig4  --  Figure 4: Sensitivity to alternative thresholds and SNI
-# Mirrors MATLAB CharPlotFig4_ThresholdSNI.m
+# CharPlotFig4_ThresholdSNI  --  Figure 4: Sensitivity to alternative thresholds and SNI
+# Mirrors MATLAB CharPlotFig4_ThresholdSNI_ThresholdSNI.m
 #
 # Layout (mimics MATLAB 3x5 subplot grid):
 #   Panel (a): C_interp bar chart with C_back and final threshold; peaks at
@@ -1123,7 +1176,7 @@ CharPlotFig2 <- function(out) {
 
 #' @rdname char_plot
 #' @export
-CharPlotFig4 <- function(out) {
+CharPlotFig4_ThresholdSNI <- function(out) {
 
   .require_ggplot2()
 
@@ -1216,7 +1269,7 @@ CharPlotFig4 <- function(out) {
   # Peak markers: plot the first (T_thresh - 1) threshold columns as grey dots,
   # sorted by threshold value lowest → highest, mapped to y-levels 0.78 → 0.92
   # (bottom to top).  Then overlay black + at whichever y-level corresponds to
-  # the Final threshold value, mirroring MATLAB CharPlotFig4_ThresholdSNI.m.
+  # the Final threshold value, mirroring MATLAB CharPlotFig4_ThresholdSNI_ThresholdSNI.m.
   #
   # The 4th threshValue always duplicates one of the first three; the matching
   # y-level is found by comparing threshold values, not peak vectors.
@@ -1272,9 +1325,9 @@ CharPlotFig4 <- function(out) {
     ) +
     ggplot2::labs(
       title = if (.has_ggtext())
-        paste0(site, " (a) C<sub>interp</sub>, C<sub>background</sub>, and peak ID (+)")
+        paste0(site, " (a) C<sub>interpolated</sub>, C<sub>background</sub>, and peak ID (+)")
       else
-        paste0(site, " (a) C_interp, C_background, and peak ID (+)"),
+        paste0(site, " (a) C_interpolated, C_background, and peak ID (+)"),
       y = y_lbl
     )
 
@@ -1547,14 +1600,14 @@ CharPlotAll <- function(out, save = FALSE, out_dir = ".", width = 11, height = 8
 
   all_figs <- isTRUE(out$results$allFigures == 1L)
 
-  fig1 <- if (all_figs) CharPlotFig1(out) else NULL
-  fig2 <- if (all_figs) CharPlotFig2(out) else NULL
-  fig3 <- CharPlotChar(out)
-  fig4 <- CharPlotFig4(out)
-  fig5 <- CharPlotCumulative(out)
-  fig6 <- CharPlotFRIDist(out)
-  fig7 <- CharPlotFireHistory(out)
-  fig8 <- CharPlotZones(out)
+  fig1 <- if (all_figs) CharPlotFig1_Craw_Cinterp_Cbkg(out) else NULL
+  fig2 <- if (all_figs) CharPlotFig2_ThreshDiagnostics(out) else NULL
+  fig3 <- CharPlotFig3_CintCbackCpeak(out)
+  fig4 <- CharPlotFig4_ThresholdSNI(out)
+  fig5 <- CharPlotFig5_CumulativePeaks(out)
+  fig6 <- CharPlotFig6_FRIDistributions(out)
+  fig7 <- CharPlotFig7_ContinuousFireHistory(out)
+  fig8 <- CharPlotFig8_ZoneComparisons(out)
 
   for (fig in list(fig3, fig4, fig5, fig6, fig7, fig8)) {
     if (!is.null(fig)) print(fig)

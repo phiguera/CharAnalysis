@@ -84,17 +84,28 @@ char_smooth <- function(charcoal, pretreatment, smoothing,
   # METHOD 1: Lowess
   # Locally-weighted linear regression, no robustness iterations.
   # Mirrors: smooth(Charcoal.accI, s, 'lowess')
+  #
+  # Pass raw accI (including any NaN gap entries) so that char_lowess can
+  # exclude gap positions from the local fit, matching MATLAB smooth() which
+  # handles NaN natively.  NaN bridging via acc_clean is NOT used for methods
+  # 1 and 2; char_lowess handles NaN internally.
   # =========================================================================
-  char_acc_IS[, 1L] <- char_lowess(acc_clean, span = s, iter = 0L)
+  char_acc_IS[, 1L] <- char_lowess(charcoal$accI, span = s, iter = 0L)
 
   # =========================================================================
   # METHOD 2: Robust Lowess
-  # Same as method 1 with bisquare re-weighting.
-  # MATLAB charLowess uses nIter = 5 (1 initial + 4 robustness updates);
-  # this maps to iter = 4 in R's lowess().
+  # Same as method 1 with bisquare re-weighting (5 total passes).
   # Mirrors: smooth(Charcoal.accI, s, 'rlowess')
+  #
+  # Passing raw accI (not acc_clean) is critical here: bridging NaN with
+  # linear interpolation before the bisquare iteration causes the bridged
+  # value to participate in all 4 robustness weight updates, shifting the
+  # weight trajectory and producing charBkg differences of up to 36% near
+  # record gaps (observed on CH10).  char_lowess now excludes NaN positions
+  # from local fits and from the bisquare median, replicating smooth()'s
+  # NaN handling.
   # =========================================================================
-  char_acc_IS[, 2L] <- char_lowess(acc_clean, span = s, iter = 4L)
+  char_acc_IS[, 2L] <- char_lowess(charcoal$accI, span = s, iter = 4L)
 
   # =========================================================================
   # METHOD 3: Moving average
@@ -179,7 +190,7 @@ char_smooth <- function(charcoal, pretreatment, smoothing,
 
   # =========================================================================
   # STORE SELECTED METHOD AND ALL CURVES
-  # accIS_all: N x 5 matrix of all smoothing curves (used by CharPlotFig1)
+  # accIS_all: N x 5 matrix of all smoothing curves (used by CharPlotFig1_Craw_Cinterp_Cbkg)
   # accIS:     selected method only (used throughout the pipeline)
   # =========================================================================
   charcoal$accIS_all <- char_acc_IS
