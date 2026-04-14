@@ -1,4 +1,4 @@
-# CharAnalysis R Translation — Project Brief
+# _CharAnalysis_ R Translation — Project Brief
 *Prepared for Claude Cowork | April 2026 — Updated April 2026 to reflect as-built implementation*
 
 ## 1. Project Overview
