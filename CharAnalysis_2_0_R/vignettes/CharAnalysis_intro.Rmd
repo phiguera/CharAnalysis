@@ -9,7 +9,7 @@ output:
     fig_width: 7
     fig_height: 5
 vignette: >
-  %\VignetteIndexEntry{CharAnalysis: Fire-history reconstruction from lake-sediment charcoal}
+  %\VignetteIndexEntry{CharAnalysis: peak detection in high-resolution sediment-charcoal records}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -26,19 +26,19 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-**CharAnalysis** reconstructs local fire histories from lake-sediment charcoal records. Charcoal preserved in lake sediments is a direct proxy for past fire activity: individual fire events near a lake deposit pulses of charcoal that appear as peaks above a slowly varying background signal. CharAnalysis formalises this peak-detection logic as a reproducible, quantitative workflow.
+***CharAnalysis*** is program for reconstructing local fire histories from high-resolution, continuously sampled lake-sediment charcoal records. It is designed specifically for macroscopic charcoal records with contiguous sampling at fine enough resolution to resolve individual fire events; it is *not* appropriate for low-resolution or discontinuously sampled records. The program formalises the logic of peak-detection as a reproducible, quantitative workflow.
 
 This R package (v2.0.0) is a direct translation of CharAnalysis v2.0 (MATLAB), validated against reference outputs on four benchmark datasets spanning a range of record lengths, sampling resolutions, ecosystems, and analysis configurations. Analytical methods are described in Higuera et al. (2009).
 
 The full workflow proceeds in five steps:
 
-1. **Pretreatment** — Resample the raw charcoal series to equal time steps and compute charcoal accumulation rate (CHAR, pieces cm^-2^ yr^-1^).
-2. **Smoothing** — Estimate low-frequency trends (C~background~) using lowess or a moving-window statistic.
-3. **Peak decomposition** — Compute the high-frequency residual C~peak~ = C~interp~ − C~background~ (or ratio C~interp~ / C~background~).
-4. **Thresholding** — Define a noise threshold and flag C~peak~ values that exceed it as candidate fire events.  Thresholds can be global (one distribution fitted to the full record) or local (sliding-window distribution).
-5. **Screening and metrics** — Apply a minimum-count significance test, then compute fire-return intervals (FRIs), Weibull statistics, smoothed fire frequency, signal-to-noise index (SNI), and goodness-of-fit.
+1.  **Pretreatment** — Resample the raw charcoal series to equal time steps and compute charcoal accumulation rate (CHAR, pieces cm^-2^ yr^-1^).
+2.  **Smoothing** — Estimate low-frequency trends (C~background~) using lowess or a moving-window statistic.
+3.  **Peak decomposition** — Compute the high-frequency residual C~peak~ = C~interp~ − C~background~ (or ratio C~interp~ / C~background~).
+4.  **Thresholding** — Define a noise threshold and flag C~peak~ values that exceed it as candidate fire events. Thresholds can be global (one distribution fitted to the full record) or local (sliding-window distribution).
+5.  **Screening and metrics** — Apply a minimum-count significance test, then compute fire-return intervals (FRIs), Weibull statistics, smoothed fire frequency, signal-to-noise index (SNI), and goodness-of-fit.
 
----
+------------------------------------------------------------------------
 
 ## Installation
 
@@ -51,7 +51,7 @@ devtools::install_github("phiguera/CharAnalysis",
 install.packages(c("ggplot2", "patchwork", "ggtext"))
 ```
 
----
+------------------------------------------------------------------------
 
 ## Worked example: Code Lake
 
@@ -61,8 +61,8 @@ Code Lake (CO; Colorado, USA) is the primary validation dataset for CharAnalysis
 
 CharAnalysis reads two CSV files:
 
-- **`CO_charData.csv`** — the charcoal data table (depth, age, volume, count).
-- **`CO_charParams.csv`** — the analysis parameter file.
+-   **`CO_charData.csv`** — the charcoal data table (depth, age, volume, count).
+-   **`CO_charParams.csv`** — the analysis parameter file.
 
 Both files are included in the package's `inst/extdata/` directory and can be located with `system.file()`:
 
@@ -89,7 +89,7 @@ out <- CharAnalysis(params_file)
 
 The progress messages show each step completing in sequence:
 
-```
+```         
 (1) Reading input file...
       ...done.
 (1b) Validating input parameters...
@@ -175,7 +175,7 @@ sum(out$charcoal$charPeaks[, 4], na.rm = TRUE)
 #> [1] 39
 ```
 
----
+------------------------------------------------------------------------
 
 ### Output figures
 
@@ -203,7 +203,7 @@ The slope of the cumulative curve at any point reflects the instantaneous fire f
 char_plot_fri(out)
 ```
 
-Each panel shows a histogram of fire-return intervals within one stratigraphic zone (20-yr bins, normalised to proportions). A two-parameter Weibull probability density function is overlaid where the Kolmogorov-Smirnov goodness-of-fit test passes (p > 0.10 for n < 30; p > 0.05 for n ≥ 30). Weibull scale (b) and shape (c) parameters, mean FRI, and sample size are annotated.
+Each panel shows a histogram of fire-return intervals within one stratigraphic zone (20-yr bins, normalised to proportions). A two-parameter Weibull probability density function is overlaid where the Kolmogorov-Smirnov goodness-of-fit test passes (p \> 0.10 for n \< 30; p \> 0.05 for n ≥ 30). Weibull scale (b) and shape (c) parameters, mean FRI, and sample size are annotated.
 
 #### Figure 7 — Continuous fire history
 
@@ -235,7 +235,7 @@ char_plot_all(out, save = TRUE, out_dir = "Results")
 
 > **Note:** Figures 9 (threshold sensitivity detail) and 10 (multi-site comparisons) from the MATLAB v2.0 interface are not implemented in this R package. All core analytical outputs are available through Figures 1–8 above.
 
----
+------------------------------------------------------------------------
 
 ### Writing results to CSV
 
@@ -250,14 +250,14 @@ char_write_results(out$char_results,
 
 The output CSV contains one row per interpolated time step and 33 columns covering all analytical outputs from C~interp~ through to per-zone Weibull confidence intervals. Column headers match the MATLAB reference file exactly to facilitate direct numerical comparison.
 
----
+------------------------------------------------------------------------
 
 ## Key parameters
 
 The parameter file (`*_charParams.csv`) controls all aspects of the analysis. The most commonly adjusted parameters are:
 
 | Parameter | Default | Description |
-|-----------|---------|-------------|
+|----|----|----|
 | `yrInterp` | 15 | Resampling resolution (yr). Set to 0 for automatic (median raw resolution). |
 | `yr` | 500 | Smoothing window width (yr) for C~background~ estimation. |
 | `threshType` | 2 | Threshold type: 1 = global, 2 = local (sliding window). |
@@ -267,39 +267,39 @@ The parameter file (`*_charParams.csv`) controls all aspects of the analysis. Th
 | `peakFrequ` | 1000 | Window width (yr) for smoothed fire frequency and FRI statistics. |
 | `zoneDiv` | record bounds | Zone boundaries (yr BP) for stratified FRI and Weibull analysis. |
 
----
+------------------------------------------------------------------------
 
 ## Comparison with MATLAB v2.0
 
 CharAnalysis v2.0.0 (R) is a direct translation of CharAnalysis v2.0 (MATLAB). Outputs are quantitatively equivalent on all validated reference datasets. The table below summarises results across the four validation datasets; full details are in `inst/z_Validation_report_R_vs_MATLAB_V_2.0.md`.
 
 | Dataset | Site | Smoothing | charBkg max\|diff\| | Peaks R v2.0.0 | Peaks MATLAB v2.0 |
-|---------|------|-----------|-------------------|---------|-------------|
-| CO | Code Lake, AK | Method 1 (lowess) | ~5 × 10^-6^ | 39 | 48 |
+|----|----|----|----|----|----|
+| CO | Code Lake, AK | Method 1 (lowess) | \~5 × 10^-6^ | 39 | 48 |
 | CH10 | Chickaree Lake, CO | Method 2 (robust lowess) | 0.267 | 59 | 50 |
 | SI17 | Silver Lake, CO | Method 2 (robust lowess) | 0.130 | 25 | 31 |
-| RA07 | Raven Lake, AK | Method 2 (robust lowess) | < 0.001 | 15 | 17 |
+| RA07 | Raven Lake, AK | Method 2 (robust lowess) | \< 0.001 | 15 | 17 |
 
 Two sources of numerical difference are documented:
 
-**1. Robust lowess background (smoothing method 2)** — MATLAB's Curve Fitting Toolbox `smooth(..., 'rlowess')` and the R `char_lowess()` port produce slightly different C~background~ series. For gap-free records (RA07) the difference is negligible (< 0.001). For records with NaN gaps (CH10) the difference is larger (≤ 0.267) because the two implementations handle gap positions differently inside the bisquare robustness iteration. Smoothing method 1 (plain lowess) is not affected and agrees to within floating-point noise on all datasets.
+**1. Robust lowess background (smoothing method 2)** — MATLAB's Curve Fitting Toolbox `smooth(..., 'rlowess')` and the R `char_lowess()` port produce slightly different C~background~ series. For gap-free records (RA07) the difference is negligible (\< 0.001). For records with NaN gaps (CH10) the difference is larger (≤ 0.267) because the two implementations handle gap positions differently inside the bisquare robustness iteration. Smoothing method 1 (plain lowess) is not affected and agrees to within floating-point noise on all datasets.
 
 **2. Gaussian mixture model (GMM) peak counts** — The R package ports the MATLAB `GaussianMixture.m` EM algorithm directly. Floating-point arithmetic accumulates differently across languages during EM iterations, causing the two implementations to reach slightly different threshold values in some local windows. Peak counts differ by 10–20% across datasets, with the direction varying (R sometimes higher, sometimes lower). All threshold and peak differences are downstream consequences of this single source; interpolation and peak-magnitude outputs agree to within numerical precision.
 
 **Weibull confidence intervals** — Bootstrap CIs use random resampling and will differ between R and MATLAB runs regardless of any other differences. Weibull point estimates (scale *b*, shape *c*) agree within a few percent on datasets where peak counts are similar.
 
----
+------------------------------------------------------------------------
 
 ## Citation
 
 If you use CharAnalysis in published research, please cite Higuera et al. (2009), the first study to apply the core analytical tools implemented in the program. If you used CharAnalysis v2.0 (MATLAB or R v2.0.0) specifically, please also cite the software:
 
-> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
+> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. <https://doi.org/10.1890/07-2019.1>
 
-> Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo. https://doi.org/10.5281/zenodo.19304064
+> Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo. <https://doi.org/10.5281/zenodo.19304064>
 
----
+------------------------------------------------------------------------
 
 ## References
 
-Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. <https://doi.org/10.1890/07-2019.1>
