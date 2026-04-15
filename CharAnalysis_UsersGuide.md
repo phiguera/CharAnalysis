@@ -22,15 +22,15 @@ https://phiguera.github.io/CharAnalysis
 - [Part I. Background](#part-i-background)
   - [Citation](#citation)
   - [Support and Updates](#support-and-updates)
-- [Part II. Using CharAnalysis](#part-ii-using-charanalysis)
+- [Part II. Using *CharAnalysis*](#part-ii-using-charanalysis)
   - [1. Download and Installation](#1-download-and-installation)
   - [2. Data Input and Parameter Selection](#2-data-input-and-parameter-selection)
-  - [3. Running CharAnalysis](#3-running-charanalysis)
-- [Part III. Understanding CharAnalysis](#part-iii-understanding-charanalysis)
+  - [3. Running *CharAnalysis*](#3-running-charanalysis)
+- [Part III. Understanding *CharAnalysis*](#part-iii-understanding-charanalysis)
   - [4. Terminology](#4-terminology)
   - [5. General Steps of the Analysis](#5-general-steps-of-the-analysis)
   - [6. Analytical Choices](#6-analytical-choices)
-  - [7. CharAnalysis Output](#7-charanalysis-output)
+  - [7. *CharAnalysis* Output](#7-charanalysis-output)
 - [Part IV. Acknowledgments](#part-iv-acknowledgments)
 - [Part V. Disclaimer](#part-v-disclaimer)
 - [Part VI. References](#part-vi-references)
@@ -192,7 +192,7 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 
 ---
 
-## Part II. Using CharAnalysis
+## Part II. Using *CharAnalysis*
 
 ### 1. Download and Installation
 
@@ -369,7 +369,7 @@ Parameter choices are entered in column C (column 3) of the `CharParams` workshe
 
 ---
 
-### 3. Running CharAnalysis
+### 3. Running *CharAnalysis*
 
 #### 3.1 From within MATLAB
 
@@ -438,11 +438,6 @@ The `'modular'` run mode allows individual output figures to be selected interac
 >> CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
 ```
 
-**Results only** — run the full analysis and save data (if `saveData = 1`) without generating any figures:
-```matlab
->> CharAnalysis('mysite_charParams.csv', 'resultsOnly')
-```
-
 **Calling individual figures directly** — after any run, individual figure functions can be called from the workspace using the results struct:
 ```matlab
 >> results = CharAnalysis('mysite_charParams.csv');
@@ -478,7 +473,7 @@ Figures 1, 2, and 10 are not part of the modular interface. Figures 1 and 2 are 
 
 ---
 
-## Part III. Understanding CharAnalysis
+## Part III. Understanding *CharAnalysis*
 
 ### 4. Terminology
 
@@ -508,7 +503,7 @@ The structure of *CharAnalysis* reflects the main analytical components of most 
 5. **Screen peaks** and remove any that fail to pass the minimum-count criterion.
 
 ![Decision tree for peak detection in CharAnalysis](.github/docs/figures/fig_decision_tree.png)\
-*Figure 3. Decision tree for peak detection in CharAnalysis.*
+*Figure 3. Decision tree for peak detection in* CharAnalysis.
 
 ---
 
@@ -575,7 +570,7 @@ where X<sub>1</sub>, V<sub>1</sub> are the count and volume of the minimum-count
 
 ---
 
-### 7. CharAnalysis Output
+### 7. *CharAnalysis* Output
 
 #### 7.1 Data
 
@@ -618,7 +613,7 @@ Output data are saved to a `CharResults` worksheet (.xlsx) or file (.csv) when `
 | GG | WBLc_lCI | Lower 95% CI for WBLc |
 
 ![charResults worksheet](.github/docs/figures/fig_charresults_worksheet.png)
-*Figure 4. Example of the CharResults worksheet after running CharAnalysis and saving data.*
+*Figure 4. Example of the CharResults worksheet after running* CharAnalysis *and saving data.*
 
 ---
 

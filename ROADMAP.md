@@ -1,5 +1,5 @@
 # *CharAnalysis* Development Roadmap
-*Last updated: March 2026*
+*Last updated: April 2026*
 
 ---
 
@@ -9,17 +9,32 @@ development beyond the R translation will occur in MATLAB, R, or both.
 
 ---
 
-## 1. R Translation
+## 1. R Translation ✓ *Complete — v2.0.0 beta (April 2026)*
 
-Translate *CharAnalysis* Version 2.0 into R, the dominant language in the
-paleoecological community. The R implementation will use modern packages including
-`mclust` for Gaussian mixture modeling and `ggplot2` for figure output. A central
-goal of this effort is quantitative equivalence with the MATLAB Version 2.0
-results, so that users can move between platforms with confidence that results are
-comparable. The R translation will be explicitly benchmarked against MATLAB
-Version 2.0 outputs, and will possibly also be compared — qualitatively or
-quantitatively — against existing R packages that were developed based on
-*CharAnalysis* Version 1.1, including:
+*CharAnalysis* v2.0.0 is a direct R translation of the MATLAB v2.0 implementation,
+released as a beta package in April 2026. CRAN submission is pending.
+
+The R package (`CharAnalysis_2_0_R/`) reproduces the full five-step analytical
+pipeline and all eight output figures. Key design choices:
+
+- **Quantitative equivalence**: validated against MATLAB v2.0 on four benchmark
+  datasets (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Known numerical
+  differences are documented in `NEWS.md` and `inst/z_Validation_report_R_vs_MATLAB_V_2.0.md`.
+- **GMM implementation**: the Gaussian mixture model threshold uses a direct port
+  of the MATLAB `GaussianMixture.m` EM algorithm rather than an existing R package,
+  preserving numerical comparability with the reference implementation.
+- **Figures**: eight publication-quality ggplot2 figures mirroring the MATLAB output.
+- **API**: snake_case function names (`char_plot_peaks()`, `char_write_results()`,
+  etc.) following R community conventions; the top-level entry point `CharAnalysis()`
+  retains its original name for continuity.
+
+Install the beta from GitHub:
+```r
+devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
+```
+
+Possible future comparisons with related R packages that were developed based on
+*CharAnalysis* Version 1.1:
 
 - `tapas`: https://github.com/wfinsinger/tapas
 - `CharcoalFireReconstructionR`: https://github.com/rglueckler/CharcoalFireReconstructionR

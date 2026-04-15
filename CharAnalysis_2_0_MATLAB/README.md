@@ -1,4 +1,4 @@
-# _CharAnalysis_ 2.0 — MATLAB Implementation
+# *CharAnalysis* 2.0 — MATLAB Implementation
 
 This directory contains the Version 2.0 MATLAB source code for *CharAnalysis*.
 For full documentation, installation instructions, and citations, see the
@@ -35,10 +35,7 @@ CharAnalysis('mysite_charParams.csv', 'modular')
 CharAnalysis('mysite_charParams.csv', 'modular', [3 7])
 
 % Programmatic selection with automatic save
-CharAnalysis('mysite.csv', 'modular', [3 7], true)
-
-% Run analysis and save data only, no figures generated
-CharAnalysis('mysite.csv', 'resultsOnly')
+CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
 ```
 
 See Section 3.1 of the User's Guide for full details on the modular figure interface.

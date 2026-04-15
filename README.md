@@ -6,7 +6,7 @@ Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 https://www.umt.edu/people/phiguera
 
-***CharAnalysis*** is a program for analyzing sediment-charcoal records when the goal is peak detection to reconstruct local fire history. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what's going on, and modify the program to suit individual needs.
+*CharAnalysis* is a program for analyzing sediment-charcoal records when the goal is peak detection to reconstruct local fire history. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what's going on, and modify the program to suit individual needs.
 
 ## Getting Started
 
@@ -96,11 +96,11 @@ CharPlotFig7_ContinuousFireHistory(results)
 % Interactive figure menu — select figures from a command-window prompt
 CharAnalysis('mysite.csv', 'modular')
 
+% Programmatic figure selection — generate figures 3 and 7 only
+CharAnalysis('mysite.csv', 'modular', [3 7])
+
 % Programmatic selection with automatic save
 CharAnalysis('mysite.csv', 'modular', [3 7], true)
-
-% Run analysis and save data only, no figures generated
-CharAnalysis('mysite.csv', 'resultsOnly')
 ```
 
 The modular architecture also lays the groundwork for the planned R translation by cleanly separating computation from visualization.
@@ -125,7 +125,7 @@ Key features of the R package:
 
 If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
 the first study to apply the core analytical tools implemented in *CharAnalysis*.
-If you used CharAnalysis v2.0 (MATLAB) or v2.0.0 (R) specifically, please also
+If you used *CharAnalysis* v2.0 (MATLAB) or v2.0.0 (R) specifically, please also
 cite the software:
 
 [Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
