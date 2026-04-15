@@ -10,28 +10,55 @@ https://www.umt.edu/people/phiguera
 
 ## Getting Started
 
-**Option 1: Download and run locally in MATLAB** *(recommended)*\
+**Option 1: Install and run in R** *(v2.0.0 — beta release)*\
+Install the R package directly from GitHub. Requires R 4.0 or higher. Output
+figures require `ggplot2`, `patchwork`, and `ggtext`.
+```r
+# install.packages("devtools")
+devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
+```
+See the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+for a full worked example on the bundled Code Lake dataset. This is a beta
+release — analytical outputs are validated against four reference datasets
+(Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
+at https://github.com/phiguera/CharAnalysis/issues.
+
+**Option 2: Download and run locally in MATLAB**\
 Download the entire *CharAnalysis* program as a `.zip` or `tar.gz` archive from the
 project website at https://phiguera.github.io/CharAnalysis/, or clone the repository
 directly at https://github.com/phiguera/CharAnalysis. Requires MATLAB R2019a or
 higher. No additional toolboxes are required. See the
 [User's Guide](CharAnalysis_UsersGuide.md) for installation instructions.
 
-**Option 2: Download and run the standalone Windows application (Version 1.1)**\
+**Option 3: Try MATLAB online**\
+Not sure if *CharAnalysis* is the right tool for your research? Click the badge
+below to run the MATLAB version instantly in your browser on the bundled Code Lake
+example dataset — no installation required. A free MathWorks account is needed;
+university users can log in with their institutional email for full access. [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+
+**Option 4: Download and run the standalone Windows application (Version 1.1)**\
 A standalone Windows executable (`.exe`) is available for users without a MATLAB
 license. Note that this version predates the Version 2.0 update. See the
 [standalone application readme](CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
 for download and installation instructions.
 
-**Option 3: Try it online**\
-Not sure if *CharAnalysis* is the right tool for your research? Click the badge
-below to run the program instantly in your browser on the bundled Code Lake example
-dataset — no installation required. A free MathWorks account is needed; university
-users can log in with their institutional email for full access. [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+### Choosing between R and MATLAB
+
+Both implementations are based on the same analytical methods and produce
+quantitatively equivalent results on validated reference datasets. **R** is the
+dominant language in the paleoecological community and integrates more easily with
+downstream statistical analysis and publication-quality figures. **MATLAB** is the
+reference implementation and has been validated on the full suite of five benchmark
+datasets; the R package (v2.0.0) has been validated on four of those five datasets
+(Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Minor numerical differences
+in peak detection may occur between the two versions due to floating-point
+divergence in the Gaussian mixture model used for threshold estimation; these
+differences are small and do not affect qualitative fire-history interpretations.
 
 ## Repository Contents
 ```
-CharAnalysis_2_0_MATLAB/       MATLAB source code (Version 2.0)
+CharAnalysis_2_0_R/            R package source code (v2.0.0, beta)
+CharAnalysis_2_0_MATLAB/       MATLAB source code (v2.0)
 CharAnalysis_1_1_MATLAB/       MATLAB source code (Version 1.1)
 CharAnalysis_1_1_Windows/      Standalone Windows application (Version 1.1)
 DataTemplates_and_Examples/    Template input files and Code Lake example dataset
@@ -39,10 +66,13 @@ DataTemplates_and_Examples/    Template input files and Code Lake example datase
 
 ## Documentation
 
-The current User's Guide is available as
-[CharAnalysis_UsersGuide.md](CharAnalysis_UsersGuide.md). It covers installation,
-data input, parameter selection, and a full description of all analytical choices
-and program output. The original guide (v0.9, January 2009) is retained for reference as
+The [User's Guide](CharAnalysis_UsersGuide.md) covers installation, data input,
+parameter selection, and a full description of all analytical choices and program
+output. It is written primarily for the MATLAB implementation. R users should
+consult the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+for R-specific installation, usage, and known differences from the MATLAB version.
+
+The original guide (v0.9, January 2009) is retained for reference as
 [ARCHIVED_UsersGuide_v_0.9_2009.pdf](ARCHIVED_UsersGuide_v_0.9_2009.pdf).
 
 Planned future development is described in [ROADMAP.md](ROADMAP.md).
@@ -77,18 +107,33 @@ The modular architecture also lays the groundwork for the planned R translation 
 
 *Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
+## R Package v2.0.0 (beta, April 2026)
+
+**CharAnalysis v2.0.0 is the first R implementation of CharAnalysis**, providing
+a fully validated, reproducible R workflow for the same analytical methods
+implemented in the MATLAB version.
+
+Key features of the R package:
+- `CharAnalysis()` — single call runs the full five-step pipeline and returns a named list with S3 class `"CharAnalysis"`; `print()`, `summary()`, and `plot()` methods included.
+- Eight publication-quality ggplot2 figures mirroring the MATLAB output (Figures 1–8); save all to PDF with `char_plot_all()`.
+- `char_write_results()` — writes the 33-column output matrix to CSV with column headers and numeric format matching the MATLAB output exactly.
+- Validated against four benchmark datasets; known numerical differences from the MATLAB version are documented in `NEWS.md` and the package vignette.
+
+*The R package was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with the MATLAB-to-R translation, validation, and documentation. All code was reviewed and validated by the author against MATLAB v2.0 reference outputs.*
+
 ## Citation
 
 If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
 the first study to apply the core analytical tools implemented in *CharAnalysis*.
-If you used Version 2.0 specifically, please also cite the software:
+If you used CharAnalysis v2.0 (MATLAB) or v2.0.0 (R) specifically, please also
+cite the software:
 
 [Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
 Vegetation mediated the impacts of postglacial climate change on fire regimes
 in the south-central Brooks Range, Alaska. *Ecological Monographs*
 79:201–219.](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/07-2019.1)
 
-[Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records (Version 2.0).
+[Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0).
 Zenodo.](https://doi.org/10.5281/zenodo.19304064)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19304064.svg)](https://doi.org/10.5281/zenodo.19304064)
 
