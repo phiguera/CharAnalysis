@@ -1,5 +1,5 @@
 ---
-title: "_CharAnalysis_: peak detection in high-resolution sediment-charcoal records"
+title: "CharAnalysis: peak detection in high-resolution sediment-charcoal records"
 author: "Philip Higuera"
 date: "`r Sys.Date()`"
 output:
