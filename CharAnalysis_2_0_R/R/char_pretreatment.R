@@ -44,14 +44,14 @@
 #'   For each resampled interval \eqn{i} and each raw sample \eqn{j},
 #'   \code{prop_matrix[i,j]} is the fraction of the raw sample's age span
 #'   that falls within the resampled interval.  Four mutually exclusive
-#'   overlap geometries (Cases A–D) are evaluated via matrix broadcasting
-#'   across the full \eqn{[N_{rs} \times N_{raw}]} grid — no loops required.
+#'   overlap geometries (Cases A-D) are evaluated via matrix broadcasting
+#'   across the full \eqn{[N_{rs} \times N_{raw}]} grid -- no loops required.
 #'
 #'   | Case | Geometry                                      | Overlap            |
 #'   |------|-----------------------------------------------|--------------------|
-#'   | A    | Raw straddles the **bottom** edge             | rsAgeBot − ageTop  |
-#'   | B    | Raw straddles the **top** edge                | ageBot − rsAgeTop  |
-#'   | C    | Raw lies **entirely within** resampled interval | ageBot − ageTop  |
+#'   | A    | Raw straddles the **bottom** edge             | rsAgeBot - ageTop  |
+#'   | B    | Raw straddles the **top** edge                | ageBot - rsAgeTop  |
+#'   | C    | Raw lies **entirely within** resampled interval | ageBot - ageTop  |
 #'   | D    | Resampled lies **entirely within** raw sample | yrInterp           |
 #'
 #'   ## zoneDiv auto-correction
@@ -104,7 +104,7 @@ char_pretreatment <- function(char_data, site, pretreatment,
   # SCREEN FOR MISSING VALUES (sample volume <= 0)
   #
   #   nGaps is defined unconditionally here so it is always safe to reference
-  #   (v2.0 bug fix — in v1.1 it was undefined when nMissingValues == 0).
+  #   (v2.0 bug fix -- in v1.1 it was undefined when nMissingValues == 0).
   # =========================================================================
   missing_idx  <- which(char_data[, 5L] <= 0)
   n_missing    <- length(missing_idx)

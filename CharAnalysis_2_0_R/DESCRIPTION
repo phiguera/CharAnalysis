@@ -14,8 +14,8 @@ Description: CharAnalysis is a freely available program for reconstructing
     macroscopic charcoal records with contiguous sampling at fine enough
     resolution to resolve individual fire events; it is not appropriate for
     low-resolution or discontinuously sampled records.
-    .
-    For records that meet the required criteria, CharAnalysis implements a
+ .
+     For records that meet the required criteria, CharAnalysis implements a
     widely applied approach that decomposes a charcoal record into low- and
     high-frequency components, including the ability to use locally defined
     thresholds to separate fire signal from noise. This approach was first
@@ -23,14 +23,15 @@ Description: CharAnalysis is a freely available program for reconstructing
     of the method are most thoroughly described in Higuera et al. (2010) and
     Kelly et al. (2011), which are recommended reading before applying the
     program.
-    .
-    Since its original development in the mid-2000s, CharAnalysis has been
+ .
+     Since its original development in the mid-2000s, CharAnalysis has been
     used in dozens of published studies to analyze sediment-charcoal records
     on six continents. A selection of these application examples is listed in
     the User's Guide. The entire codebase is distributed and well commented
     — users are encouraged to look under the hood, understand what is going
     on, and modify the program to suit their needs.
 License: GPL-3
+Encoding: UTF-8
 URL: https://github.com/phiguera/CharAnalysis,
     https://doi.org/10.5281/zenodo.19304064
 BugReports: https://github.com/phiguera/CharAnalysis/issues
@@ -50,3 +51,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+RoxygenNote: 7.3.3

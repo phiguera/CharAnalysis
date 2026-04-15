@@ -1,3 +1,4 @@
+#' @noRd
 #' Post-processing: FRIs, fire frequency, Weibull statistics, output matrix
 #'
 #' Pure-computation post-processing step that follows peak identification.
@@ -38,18 +39,18 @@
 #' @details
 #'   ## Smoothed FRI (\code{smooth_fri} helper)
 #'   A sliding window of width \code{peak_analysis$peakFrequ} yr steps every
-#'   100 yr from −70 to the maximum age.  Within each window the mean FRI and
-#'   bootstrapped (1−\code{alpha})×100 % CIs are computed, then the mean and
+#'   100 yr from -70 to the maximum age.  Within each window the mean FRI and
+#'   bootstrapped (1-\code{alpha})x100 % CIs are computed, then the mean and
 #'   CI series are smoothed with \code{char_lowess}.  Mirrors
 #'   \code{smoothFRI.m}.
 #'
 #'   ## Weibull statistics
 #'   FRIs within each zone (\code{pretreatment$zoneDiv}) are binned (bin width
-#'   20 yr, edges 20–1000 yr) and a two-parameter Weibull is fitted to the bin
+#'   20 yr, edges 20-1000 yr) and a two-parameter Weibull is fitted to the bin
 #'   centres weighted by bin frequency, matching MATLAB's
 #'   \code{wblfit(centres, [], [], freq)}.  Bootstrap CIs use
 #'   \code{nBoot = 100} resamples of the raw FRIs.  Zones with \eqn{\leq 1}
-#'   FRI or max FRI > 5000 yr are left as −999.
+#'   FRI or max FRI > 5000 yr are left as -999.
 #'
 #' @seealso [char_peak_id()], [CharAnalysis()], [char_write_results()]
 #'
@@ -57,7 +58,7 @@
 #'           MASS package for fitdistr()
 
 # ---------------------------------------------------------------------------
-# HELPER: smooth_fri — R port of smoothFRI.m
+# HELPER: smooth_fri -- R port of smoothFRI.m  (internal, not exported)
 # ---------------------------------------------------------------------------
 smooth_fri <- function(yr, peaks, win_width,
                         alpha    = 0.05,
@@ -175,7 +176,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   # =========================================================================
   # 2. Peak magnitude
   # For each contiguous run of samples where C_peak exceeds the final
-  # threshold, accumulate (sum × resolution) to get pieces cm⁻² peak⁻¹.
+  # threshold, accumulate (sum x resolution) to get pieces cm^-^2 peak^-^1.
   # Mirrors CharPostProcess.m lines 67-103.
   # =========================================================================
   c_peaks <- charcoal$peak - char_thresh$pos[, T_thresh]
@@ -271,7 +272,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
                             method = "linear", rule = 1)$y
     } else {
       yis <- rep(-999, length(smFRI))
-      warning("char_post_process: fewer than 3 FRIs — smoothFRI set to -999.")
+      warning("char_post_process: fewer than 3 FRIs -- smoothFRI set to -999.")
     }
   } else {
     FRIyr <- NA_real_;  FRI     <- NA_real_
@@ -283,7 +284,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   # 5. Per-zone Weibull / FRI statistics
   # Mirrors CharPostProcess.m lines 153-222.
   #
-  # Weibull fit uses MASS::fitdistr on bin-centre–weighted data (equivalent
+  # Weibull fit uses MASS::fitdistr on bin-centre-weighted data (equivalent
   # to MATLAB's wblfit(centres, [], [], freq)), with bin width 20 yr and
   # edges 20:20:1000 yr.
   # =========================================================================
@@ -293,7 +294,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   n_zones         <- length(zone_div) - 1L
   FRI_params_zone <- matrix(NA_real_, nrow = n_zones, ncol = 10L)
   bin_width       <- 20L
-  # bin_edges: 20, 40, ..., 1000  — 50 values, 49 bins [20,40),[40,60),...,[980,1000)
+  # bin_edges: 20, 40, ..., 1000  -- 50 values, 49 bins [20,40),[40,60),...,[980,1000)
   # Matches MATLAB histcounts(FRIz, binWidth:binWidth:1000) which has 49 bins.
   bin_edges       <- seq(bin_width, 1000L, by = bin_width)
   bin_centers     <- bin_edges[-length(bin_edges)] + bin_width / 2  # 30,50,...,990
@@ -304,8 +305,9 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     x_plot <- charcoal$ybpI[charcoal_charpeaks[, T_thresh] > 0]
     x_plot <- x_plot[x_plot >= zone_div[z] & x_plot < zone_div[z + 1L]]
     fri_z  <- diff(x_plot)
+    fri_z  <- fri_z[is.finite(fri_z)]   # drop NA/NaN from gaps in ybpI
 
-    if (max(fri_z, -Inf) > 5000 || length(fri_z) <= 1L) next
+    if (length(fri_z) <= 1L || max(fri_z) > 5000) next
 
     # Bin FRIs matching MATLAB histcounts(FRIz, binWidth:binWidth:1000):
     # values outside [bin_edges[1], bin_edges[end]) are silently ignored.
@@ -320,25 +322,50 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     } else {
       integer(length(bin_centers))
     }
-    # freq_tab[j] corresponds to bin_centers[j] — both length 49
+    # freq_tab[j] corresponds to bin_centers[j] -- both length 49
     ok <- freq_tab > 0L
     if (sum(ok) < 2L || sum(freq_tab) == 0L) next
 
     x_rep <- rep(bin_centers[ok], freq_tab[ok])
+
+    # Fit Weibull via MLE.  MASS::fitdistr() can fail with the default
+    # starting values when x_rep is small or the likelihood surface is flat
+    # (typically < ~10 points or all-unique bin centres).  On failure, retry
+    # with method-of-moments starting values before giving up.
+    .wbl_start <- function(x) {
+      m <- mean(x);  s <- max(stats::sd(x), 1e-6)
+      # Approximation: shape ≈ (m/s)^1.086  (valid for CV < ~1)
+      sh <- max(0.1, (m / s)^1.086)
+      list(shape = sh, scale = m / gamma(1 + 1 / sh))
+    }
     fit_wbl <- tryCatch(
-      MASS::fitdistr(x_rep, "weibull"),
-      error = function(e) NULL
+      suppressWarnings(MASS::fitdistr(x_rep, "weibull")),
+      error = function(e) {
+        tryCatch(
+          suppressWarnings(MASS::fitdistr(x_rep, "weibull",
+                                          start = .wbl_start(x_rep))),
+          error = function(e2) NULL
+        )
+      }
     )
     if (is.null(fit_wbl)) next
 
     wbl_scale <- unname(fit_wbl$estimate["scale"])   # = MATLAB param(1) = WBLb
     wbl_shape <- unname(fit_wbl$estimate["shape"])   # = MATLAB param(2) = WBLc
 
-    # KS goodness-of-fit (continuous Weibull CDF at observed FRIs)
-    ks_res   <- tryCatch(
-      suppressWarnings(stats::ks.test(fri_z, stats::pweibull,
-                                       shape = wbl_shape,
-                                       scale = wbl_scale)),
+    # KS goodness-of-fit against fitted Weibull CDF.
+    # Matches MATLAB's kstest(FRIz, [FRIBinKS', wbl_cdf']) where
+    # FRIBinKS = 0:20:5000.  MATLAB evaluates the CDF at each data point
+    # by linear interpolation from that discrete table, then uses the
+    # asymptotic Kolmogorov distribution for the p-value.
+    # We replicate both choices: discrete CDF via approxfun, exact = FALSE.
+    fri_bin_ks   <- seq(0L, 5000L, by = 20L)
+    wbl_cdf_disc <- stats::pweibull(fri_bin_ks,
+                                    shape = wbl_shape, scale = wbl_scale)
+    disc_cdf_fn  <- stats::approxfun(fri_bin_ks, wbl_cdf_disc,
+                                     method = "linear", rule = 2L)
+    ks_res <- tryCatch(
+      suppressWarnings(stats::ks.test(fri_z, disc_cdf_fn, exact = FALSE)),
       error = function(e) NULL
     )
     p_ks <- if (is.null(ks_res)) NA_real_ else ks_res$p.value
@@ -364,7 +391,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
       if (sum(ok_t) < 2L) next
       x_rep_t <- rep(bin_centers[ok_t], freq_t[ok_t])
       fit_t <- tryCatch(
-        MASS::fitdistr(x_rep_t, "weibull"),
+        suppressWarnings(MASS::fitdistr(x_rep_t, "weibull")),
         error = function(e) NULL
       )
       if (!is.null(fit_t)) {
@@ -377,12 +404,17 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
       mean_mfri_boot[b] <- mean(fri_t)
     }
 
+    # Use na.rm = TRUE: failed Weibull fits store NA_real_, and NA > 0 returns
+    # NA (not FALSE) in R, so NAs pass through the > 0 filter without it.
     wbl_scale_ci    <- stats::quantile(wbl_scale_boot[wbl_scale_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
     wbl_shape_ci    <- stats::quantile(wbl_shape_boot[wbl_shape_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
     mean_mfri_ci    <- stats::quantile(mean_mfri_boot[mean_mfri_boot > 0],
-                                        probs = c(0.025, 0.975), names = FALSE)
+                                        probs = c(0.025, 0.975), names = FALSE,
+                                        na.rm = TRUE)
 
     # NOTE: MATLAB CharPostProcess stores CIs as [quantile(2.5%), quantile(97.5%)]
     # in columns labelled uCI / lCI (i.e. uCI = lower bound, lCI = upper bound).
@@ -418,7 +450,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   }
 
   # =========================================================================
-  # 6. peakInsig — samples where minCountP exceeded alphaPeak before removal
+  # 6. peakInsig -- samples where minCountP exceeded alphaPeak before removal
   # Mirrors CharPostProcess.m lines 226-228.
   # =========================================================================
   peak_insig <- integer(N)
@@ -433,7 +465,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   charcoal$peaksFrequ       <- peaks_frequ
 
   # =========================================================================
-  # 8. Assemble output matrix  (N × 33)
+  # 8. Assemble output matrix  (N x 33)
   # Column order matches MATLAB charResults exactly:
   #   1  cmI       2  ybpI     3  countI    4  volI      5  conI
   #   6  accI      7  accIS    8  peak      9  pos[,1]  10  pos[,2]
@@ -461,7 +493,7 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     charcoal$accI,
     charcoal$accIS,
     charcoal$peak,
-    char_thresh$pos,              # [N x T_thresh] — 4 columns (9-12)
+    char_thresh$pos,              # [N x T_thresh] -- 4 columns (9-12)
     char_thresh$neg[, T_thresh],  # final-threshold negative column (13)
     sni_col,                      # 14
     char_thresh$GOF,              # 15  (GOF vector; NA for global)

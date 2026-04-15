@@ -15,7 +15,7 @@
 #'     \item{ybpI}{Age at each interpolated sample (cal yr BP), length \eqn{N}.}
 #'     \item{accI}{Interpolated charcoal accumulation rate, length \eqn{N}.}
 #'     \item{countI}{Interpolated charcoal count, length \eqn{N}.}
-#'     \item{volI}{Interpolated sediment volume (cm³), length \eqn{N}.}
+#'     \item{volI}{Interpolated sediment volume (cm^3), length \eqn{N}.}
 #'   }
 #' @param pretreatment Named list with element \code{yrInterp} (interpolation
 #'   resolution, years).
@@ -30,18 +30,18 @@
 #'   \describe{
 #'     \item{charcoal}{Input \code{charcoal} list augmented with:
 #'       \itemize{
-#'         \item \code{charPeaks}      — \eqn{[N \times T]} numeric: 1 at peak
+#'         \item \code{charPeaks}      -- \eqn{[N \times T]} numeric: 1 at peak
 #'           samples, 0 elsewhere.
-#'         \item \code{charPeaksThresh} — \eqn{[N \times T]} numeric: threshold
+#'         \item \code{charPeaksThresh} -- \eqn{[N \times T]} numeric: threshold
 #'           value at each identified peak, 0 elsewhere.
-#'         \item \code{peaksTotal}     — numeric vector length \eqn{T}: total
+#'         \item \code{peaksTotal}     -- numeric vector length \eqn{T}: total
 #'           peaks per threshold column.
-#'         \item \code{threshFRI}      — numeric matrix (\eqn{\leq N \times T}):
+#'         \item \code{threshFRI}      -- numeric matrix (\eqn{\leq N \times T}):
 #'           fire-return intervals derived from peak ages per threshold column.
 #'       }
 #'     }
 #'     \item{char_thresh}{Input \code{char_thresh} list augmented with
-#'       \code{minCountP} — \eqn{[N \times T]} matrix of Shuie-Bain p-values
+#'       \code{minCountP} -- \eqn{[N \times T]} matrix of Shuie-Bain p-values
 #'       (NaN where not computed).}
 #'   }
 #'
@@ -54,7 +54,7 @@
 #'
 #'   ## Consecutive-peak removal
 #'   After flagging all exceedances, a diff-based pass retains only the
-#'   \emph{last} sample of each consecutive run — the oldest sample within a
+#'   \emph{last} sample of each consecutive run -- the oldest sample within a
 #'   group of contiguous above-threshold values.  This matches the MATLAB v1.1
 #'   algorithm (which the v2.0 comment documents correctly despite the v1.1
 #'   comment being misleading).
@@ -120,7 +120,7 @@ char_peak_id <- function(charcoal, pretreatment, peak_analysis, char_thresh) {
   # charPeaksThresh: threshold value at each identified peak
   # ============================================================
   # Used downstream for plotting and peak magnitude.
-  # MATLAB uses thresholdValues(1,:) — the first row (same for global;
+  # MATLAB uses thresholdValues(1,:) -- the first row (same for global;
   # per-column constant for local since the threshold is per-sample but
   # the graph marker only needs a representative value).
 
@@ -138,16 +138,16 @@ char_peak_id <- function(charcoal, pretreatment, peak_analysis, char_thresh) {
 
     peak_index <- which(char_peaks[, j] > 0)
 
-    if (length(peak_index) <= 1L) next    # need ≥ 2 peaks
+    if (length(peak_index) <= 1L) next    # need >= 2 peaks
 
     for (i in seq_along(peak_index)) {
 
       peak_yr_i <- charcoal$ybpI[peak_index[i]]
 
-      # ---- Time-based window ±mcWindow around peak ----------------
-      # ybpI is ordered youngest→oldest (ascending yr BP values).
-      # windowTime[1]: oldest boundary (max ybpI ≤ peakYr + mcWindow)
-      # windowTime[2]: youngest boundary (min ybpI ≥ peakYr - mcWindow)
+      # ---- Time-based window +/-mcWindow around peak ----------------
+      # ybpI is ordered youngest->oldest (ascending yr BP values).
+      # windowTime[1]: oldest boundary (max ybpI <= peakYr + mcWindow)
+      # windowTime[2]: youngest boundary (min ybpI >= peakYr - mcWindow)
       wt1_candidates <- charcoal$ybpI[charcoal$ybpI <= peak_yr_i + mc_window]
       wt2_candidates <- charcoal$ybpI[charcoal$ybpI >= peak_yr_i - mc_window]
       if (length(wt1_candidates) == 0L || length(wt2_candidates) == 0L) next
@@ -204,7 +204,7 @@ char_peak_id <- function(charcoal, pretreatment, peak_analysis, char_thresh) {
 
       d_mat[peak_index[i], j] <- d_val
 
-      # p-value: t_{1e10} → standard normal; pnorm(d) is equivalent.
+      # p-value: t_{1e10} -> standard normal; pnorm(d) is equivalent.
       min_count_p_mat[peak_index[i], j] <- 1 - stats::pnorm(d_val)
     }
   }

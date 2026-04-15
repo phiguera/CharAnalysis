@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 
 **CharAnalysis** reconstructs local fire histories from lake-sediment charcoal records. Charcoal preserved in lake sediments is a direct proxy for past fire activity: individual fire events near a lake deposit pulses of charcoal that appear as peaks above a slowly varying background signal. CharAnalysis formalises this peak-detection logic as a reproducible, quantitative workflow.
 
-This R package is a direct translation of CharAnalysis v2.0 (MATLAB), validated against reference outputs on the Code Lake benchmark dataset. Analytical methods are described in Higuera et al. (2009).
+This R package (v2.0.0) is a direct translation of CharAnalysis v2.0 (MATLAB), validated against reference outputs on four benchmark datasets spanning a range of record lengths, sampling resolutions, ecosystems, and analysis configurations. Analytical methods are described in Higuera et al. (2009).
 
 The full workflow proceeds in five steps:
 
@@ -104,7 +104,7 @@ The progress messages show each step completing in sequence:
       ...done.
 (6) Post-processing: fire-return intervals, Weibull statistics...
       ...done.
-(7) Pipeline complete.  Call CharWriteResults(...) to save output CSV.
+(7) Pipeline complete.  Call char_write_results(...) to save output CSV.
 ```
 
 ### Exploring the output
@@ -184,7 +184,7 @@ CharAnalysis provides five publication-quality ggplot2 figures. All are produced
 #### Figure 3 — C~interp~, C~background~, and C~peak~
 
 ```{r fig3, eval = FALSE}
-char_plot_char(out)
+char_plot_peaks(out)
 ```
 
 The top panel shows resampled CHAR (black bars) with the smoothed C~background~ trend (grey line). The bottom panel shows C~peak~ with the positive and negative threshold lines (red), identified fire events (+ symbols), and peaks that failed the minimum-count screen (grey dots).
@@ -200,7 +200,7 @@ The slope of the cumulative curve at any point reflects the instantaneous fire f
 #### Figure 6 — FRI distributions by zone
 
 ```{r fig6, eval = FALSE}
-char_plot_fri_dist(out)
+char_plot_fri(out)
 ```
 
 Each panel shows a histogram of fire-return intervals within one stratigraphic zone (20-yr bins, normalised to proportions). A two-parameter Weibull probability density function is overlaid where the Kolmogorov-Smirnov goodness-of-fit test passes (p > 0.10 for n < 30; p > 0.05 for n ≥ 30). Weibull scale (b) and shape (c) parameters, mean FRI, and sample size are annotated.
@@ -233,14 +233,16 @@ char_plot_all(out, save = TRUE, out_dir = "Results")
 #   Results/CO_08_zone_comparisons.pdf
 ```
 
+> **Note:** Figures 9 (threshold sensitivity detail) and 10 (multi-site comparisons) from the MATLAB v2.0 interface are not implemented in this R package. All core analytical outputs are available through Figures 1–8 above.
+
 ---
 
 ### Writing results to CSV
 
-`CharWriteResults()` writes the 33-column output matrix to a CSV file whose column names and format match the MATLAB `charResults` output exactly:
+`char_write_results()` writes the 33-column output matrix to a CSV file whose column names and format match the MATLAB `charResults` output exactly:
 
 ```{r write, eval = FALSE}
-CharWriteResults(out$char_results,
+char_write_results(out$char_results,
                  site    = out$site,
                  out_dir = "Results")
 # Writes: Results/CO_charResults.csv
@@ -269,19 +271,28 @@ The parameter file (`*_charParams.csv`) controls all aspects of the analysis. Th
 
 ## Comparison with MATLAB v2.0
 
-This R package is a direct translation of CharAnalysis v2.0 (MATLAB). Outputs are quantitatively equivalent on all validated reference datasets, with the following documented differences:
+CharAnalysis v2.0.0 (R) is a direct translation of CharAnalysis v2.0 (MATLAB). Outputs are quantitatively equivalent on all validated reference datasets. The table below summarises results across the four validation datasets; full details are in `inst/z_Validation_report_R_vs_MATLAB_V_2.0.md`.
 
-**Gaussian mixture model (GMM) thresholds** — The R package uses a direct port of the MATLAB `GaussianMixture.m` EM algorithm (`GaussianMixture.R`). Floating-point arithmetic accumulates differently across languages during EM iterations, causing the two implementations to converge to slightly different local solutions in some windows. This results in an approximately 20% difference in peak counts on the Code Lake dataset (39 R peaks vs. 48 MATLAB peaks). Threshold values themselves agree well (maximum difference < 0.094 pieces cm^-2^ yr^-1^).
+| Dataset | Site | Smoothing | charBkg max\|diff\| | Peaks R v2.0.0 | Peaks MATLAB v2.0 |
+|---------|------|-----------|-------------------|---------|-------------|
+| CO | Code Lake, AK | Method 1 (lowess) | ~5 × 10^-6^ | 39 | 48 |
+| CH10 | Chickaree Lake, CO | Method 2 (robust lowess) | 0.267 | 59 | 50 |
+| SI17 | Silver Lake, CO | Method 2 (robust lowess) | 0.130 | 25 | 31 |
+| RA07 | Raven Lake, AK | Method 2 (robust lowess) | < 0.001 | 15 | 17 |
 
-**Weibull confidence intervals** — Bootstrap CIs are stochastic and will differ between R and MATLAB runs due to differences in random-number generation. Weibull point estimates (WBLb, WBLc) agree within < 5% on validated datasets.
+Two sources of numerical difference are documented:
 
-**Zone 2 FRI statistics (Code Lake)** — Because R identifies fewer peaks in the older part of the Code Lake record, zone 2 has insufficient FRIs for Weibull fitting. This is a downstream consequence of the GMM floating-point divergence, not an implementation error.
+**1. Robust lowess background (smoothing method 2)** — MATLAB's Curve Fitting Toolbox `smooth(..., 'rlowess')` and the R `char_lowess()` port produce slightly different C~background~ series. For gap-free records (RA07) the difference is negligible (< 0.001). For records with NaN gaps (CH10) the difference is larger (≤ 0.267) because the two implementations handle gap positions differently inside the bisquare robustness iteration. Smoothing method 1 (plain lowess) is not affected and agrees to within floating-point noise on all datasets.
+
+**2. Gaussian mixture model (GMM) peak counts** — The R package ports the MATLAB `GaussianMixture.m` EM algorithm directly. Floating-point arithmetic accumulates differently across languages during EM iterations, causing the two implementations to reach slightly different threshold values in some local windows. Peak counts differ by 10–20% across datasets, with the direction varying (R sometimes higher, sometimes lower). All threshold and peak differences are downstream consequences of this single source; interpolation and peak-magnitude outputs agree to within numerical precision.
+
+**Weibull confidence intervals** — Bootstrap CIs use random resampling and will differ between R and MATLAB runs regardless of any other differences. Weibull point estimates (scale *b*, shape *c*) agree within a few percent on datasets where peak counts are similar.
 
 ---
 
 ## Citation
 
-If you use CharAnalysis in published research, please cite Higuera et al. (2009), the first study to apply the core analytical tools implemented in the program. If you used Version 2.0 specifically, please also cite the software:
+If you use CharAnalysis in published research, please cite Higuera et al. (2009), the first study to apply the core analytical tools implemented in the program. If you used CharAnalysis v2.0 (MATLAB or R v2.0.0) specifically, please also cite the software:
 
 > Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
 

@@ -22,10 +22,10 @@
 #'     \item{possible}{Numeric vector of 251 candidate threshold bins.}
 #'     \item{pos}{Numeric matrix [N x 4]: positive threshold for each of the
 #'       four \code{threshValues}.}
-#'     \item{neg}{Numeric matrix [N x 4] (method 1) or [N x 1] (methods 2–3):
+#'     \item{neg}{Numeric matrix [N x 4] (method 1) or [N x 1] (methods 2-3):
 #'       negative threshold.}
 #'     \item{noise_pdf}{Estimated noise PDF evaluated at \code{possible}
-#'       (methods 2–3), or scalar \code{-99} (method 1).}
+#'       (methods 2-3), or scalar \code{-99} (method 1).}
 #'     \item{mu_hat}{Fitted noise-component mean.}
 #'     \item{sigma_hat}{Fitted noise-component standard deviation.}
 #'     \item{SNI}{Signal-to-noise index (scalar).}
@@ -148,7 +148,7 @@ char_thresh_global <- function(charcoal, pretreatment, peak_analysis,
         sigma_both <- fit$sigma
 
         if (mu_both[1L] == mu_both[2L]) {
-          # Poor GMM fit — re-fit with K = 3, take two smallest-mean components
+          # Poor GMM fit -- re-fit with K = 3, take two smallest-mean components
           warning("char_thresh_global: poor GMM fit (mu1 == mu2). ",
                   "Re-fitting with K = 3.")
           fit3 <- tryCatch(

@@ -86,6 +86,12 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
   # (0 for residuals, 1 for ratios)
   neutral_val <- if (peak_analysis$cPeak == 1L) 0 else 1
 
+  # Diagnostic data for CharPlotFig2_ThreshDiagnostics: capture up to 25 evenly-spaced samples.
+  # Mirrors MATLAB CharThreshLocal.m lines 228-229.
+  plot_step   <- max(round(N / 25L), 1L)
+  in_plot_set <- seq(hw * 2L, N, by = plot_step)
+  diag_data   <- vector("list", 0L)
+
   # Preallocate output arrays (NaN-initialised matching MATLAB)
   char_thresh        <- list()
   char_thresh$pos    <- matrix(NA_real_, nrow = N, ncol = n_tv)
@@ -97,6 +103,13 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
   # PER-SAMPLE LOOP
   # ===========================================================================
   for (i in seq_len(N)) {
+
+    # Reset GMM variables each iteration to prevent stale values from a
+    # previous iteration persisting when the current sample falls back to
+    # single-Gaussian (R does not scope loop bodies as new environments).
+    mu_both    <- NULL
+    sigma_both <- NULL
+    fit        <- NULL
 
     # ---- Window selection (shifted at boundaries) ---------------------------
     # Mirrors MATLAB CharThreshLocal.m lines 86-92 (1-indexed)
@@ -270,6 +283,37 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
       char_thresh$GOF[i] <- ks_result$p.value
     }
 
+    # ---- Capture diagnostic data for CharPlotFig2_ThreshDiagnostics ----------
+    # Store per-sample fit info for up to 25 evenly-spaced samples so the
+    # figure function can reconstruct local window histograms + PDF overlays
+    # without re-running the loop.  Mirrors MATLAB lines 228-290.
+    if (i %in% in_plot_set && length(diag_data) < 25L) {
+      # Recover second GMM component if available; otherwise replicate first.
+      # mu_both and fit are reset to NULL at the top of each iteration, so
+      # a non-NULL value here reliably indicates the GMM succeeded this sample.
+      if (!is.null(mu_both) && length(mu_both) >= 2L && !is.null(fit)) {
+        mu2   <- mu_both[2L]
+        sig2  <- sigma_both[2L]
+        prop1 <- fit$prop[1L]
+        prop2 <- fit$prop[2L]
+      } else {
+        mu2   <- mu_hat_i
+        sig2  <- sigma_hat_i
+        prop1 <- 1
+        prop2 <- 0
+      }
+      diag_data[[length(diag_data) + 1L]] <- list(
+        i      = i,
+        yr_bp  = charcoal$ybpI[i],
+        X      = X,
+        mu1    = mu_hat_i,  sig1  = sigma_hat_i,  prop1 = prop1,
+        mu2    = mu2,        sig2  = sig2,          prop2 = prop2,
+        t_pos  = t_pos,
+        sni    = char_thresh$SNI[i],   # pre-smoothing value
+        gof    = char_thresh$GOF[i]
+      )
+    }
+
   }  # end per-sample loop
 
   # ===========================================================================
@@ -288,6 +332,8 @@ char_thresh_local <- function(charcoal, smoothing, peak_analysis,
     char_thresh$neg[, i] <- char_lowess(char_thresh$neg[, i],
                                          span = span, iter = 0L)
   }
+
+  char_thresh$diag <- diag_data
 
   char_thresh
 }

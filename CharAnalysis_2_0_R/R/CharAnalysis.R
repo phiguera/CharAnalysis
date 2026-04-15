@@ -54,6 +54,7 @@
 #'   # Phase 3 outputs
 #'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])
 #' }
+#' @export
 CharAnalysis <- function(file_name = NULL) {
 
   # If no file supplied, open an interactive picker (mirrors MATLAB behaviour
@@ -114,7 +115,7 @@ CharAnalysis <- function(file_name = NULL) {
                      pretreatment = pre$pretreatment,
                      smoothing    = params$smoothing,
                      site         = params$site)
-    CharPlotFig1_Craw_Cinterp_Cbkg(mini_out)
+    char_plot_raw(mini_out)
   }
 
   # Guard: cannot compute ratio C_peak when background contains a zero.
@@ -171,7 +172,7 @@ CharAnalysis <- function(file_name = NULL) {
                       peak_analysis = params$peak_analysis,
                       pretreatment  = pre$pretreatment,
                       site          = params$site)
-    CharPlotFig2_ThreshDiagnostics(mini_out2)
+    char_plot_thresh_diag(mini_out2)
   }
 
   # (5) Identify peaks ----------------------------------------------------------
@@ -199,24 +200,24 @@ CharAnalysis <- function(file_name = NULL) {
   message("      ...done.")
 
   # (7) Write results CSV -------------------------------------------------------
-  # In the R package, CSV output is explicit: call CharWriteResults() directly
+  # In the R package, CSV output is explicit: call char_write_results() directly
   # after CharAnalysis() returns.  The saveData flag from the parameter file is
   # stored in results$save and can be inspected by the caller, but no file is
   # written automatically here (prevents accidental overwrites of reference data).
   message("(7) Analysis complete.")
-  message("    Save CSV:     CharWriteResults(out$char_results, out$site)")
-  message("    All figures:  CharPlotAll(out)  [Figs 1-2 only when allFigures = 1]")
-  message("    One figure:   CharPlotFig1_Craw_Cinterp_Cbkg(out)      # Fig 1: C_raw, C_interp, C_back options")
-  message("                  CharPlotFig2_ThreshDiagnostics(out)       # Fig 2: threshold diagnostics")
-  message("                  CharPlotFig3_CintCbackCpeak(out)          # Fig 3: peak analysis")
-  message("                  CharPlotFig4_ThresholdSNI(out)            # Fig 4: threshold sensitivity and SNI")
-  message("                  CharPlotFig5_CumulativePeaks(out)         # Fig 5: cumulative peaks")
-  message("                  CharPlotFig6_FRIDistributions(out)        # Fig 6: FRI distributions")
-  message("                  CharPlotFig7_ContinuousFireHistory(out)   # Fig 7: continuous fire history")
-  message("                  CharPlotFig8_ZoneComparisons(out)         # Fig 8: CHAR zone comparisons")
+  message("    Save CSV:     char_write_results(out$char_results, out$site)")
+  message("    All figures:  char_plot_all(out)  [Figs 1-2 only when allFigures = 1]")
+  message("    One figure:   char_plot_raw(out)            # Fig 1: C_raw, C_interp, C_back options")
+  message("                  char_plot_thresh_diag(out)    # Fig 2: threshold diagnostics")
+  message("                  char_plot_peaks(out)          # Fig 3: peak analysis")
+  message("                  char_plot_sni(out)            # Fig 4: threshold sensitivity and SNI")
+  message("                  char_plot_cumulative(out)     # Fig 5: cumulative peaks")
+  message("                  char_plot_fri(out)            # Fig 6: FRI distributions")
+  message("                  char_plot_fire_history(out)   # Fig 7: continuous fire history")
+  message("                  char_plot_zones(out)          # Fig 8: CHAR zone comparisons")
 
   # Assemble and return ---------------------------------------------------------
-  list(
+  out <- list(
     charcoal      = charcoal,
     pretreatment  = pre$pretreatment,   # may differ from params$pretreatment
     smoothing     = params$smoothing,
@@ -228,4 +229,52 @@ CharAnalysis <- function(file_name = NULL) {
     post          = post,
     char_results  = char_results
   )
+  class(out) <- c("CharAnalysis", "list")
+  out
+}
+
+# ── S3 methods ────────────────────────────────────────────────────────────────
+
+#' @export
+print.CharAnalysis <- function(x, ...) {
+  n      <- nrow(x$char_results)
+  n_peak <- sum(x$charcoal$charPeaks[, ncol(x$charcoal$charPeaks)],
+                na.rm = TRUE)
+  zones  <- x$pretreatment$zoneDiv
+  n_zone <- max(1L, length(zones) - 1L)
+  cat(sprintf(
+    "CharAnalysis results \u2014 %s\n  %d interpolated samples  |  %d fire event%s  |  %d zone%s\n",
+    x$site,
+    n,
+    n_peak, if (n_peak == 1) "" else "s",
+    n_zone, if (n_zone == 1) "" else "s"
+  ))
+  invisible(x)
+}
+
+#' @export
+summary.CharAnalysis <- function(object, ...) {
+  n_peak  <- sum(object$charcoal$charPeaks[, ncol(object$charcoal$charPeaks)],
+                 na.rm = TRUE)
+  age_rng <- range(object$charcoal$ybpI, na.rm = TRUE)
+  fpi     <- object$post$FRI_params_zone
+  cat(sprintf("Site:            %s\n", object$site))
+  cat(sprintf("Record length:   %d samples  (%.0f \u2013 %.0f yr BP)\n",
+              nrow(object$char_results), age_rng[1], age_rng[2]))
+  cat(sprintf("Smoothing:       method %d  (%d yr window)\n",
+              object$smoothing$method, object$smoothing$yr))
+  cat(sprintf("Peaks (final):   %d\n", n_peak))
+  if (!is.null(fpi) && nrow(fpi) > 0) {
+    cat("Zone statistics (nFRI / mFRI yr):\n")
+    for (z in seq_len(nrow(fpi))) {
+      cat(sprintf("  Zone %d:  n=%d  mFRI=%.1f yr\n",
+                  z, fpi[z, 1], fpi[z, 2]))
+    }
+  }
+  invisible(object)
+}
+
+#' @export
+plot.CharAnalysis <- function(x, ...) {
+  char_plot_all(x, ...)
 }
