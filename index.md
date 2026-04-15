@@ -95,7 +95,7 @@ figures require `ggplot2`, `patchwork`, and `ggtext`.
 devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
 ```
 
-See the [R package vignette](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+See the [R package vignette](https://github.com/phiguera/CharAnalysis/tree/main/CharAnalysis_2_0_R/vignettes)
 for a full worked example on the bundled Code Lake dataset. This is a beta
 release — analytical outputs are validated against four reference datasets
 (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
@@ -146,9 +146,10 @@ all analytical methods and choices, and documentation of all program output. It
 is written primarily for the MATLAB implementation.
 
 R users should consult the
-[R package vignette](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+[R package vignette](https://github.com/phiguera/CharAnalysis/tree/main/CharAnalysis_2_0_R/vignettes)
 for R-specific installation, usage, and known differences from the MATLAB
-version.
+version. After installing the package, the vignette is also accessible locally
+via `vignette("CharAnalysis_intro", package = "CharAnalysis")`.
 
 The original guide (v0.9, 2009) is retained as a historical reference:
 [ARCHIVED_UsersGuide_v_0.9_2009.pdf](https://github.com/phiguera/CharAnalysis/blob/main/ARCHIVED_UsersGuide_v_0.9_2009.pdf).
