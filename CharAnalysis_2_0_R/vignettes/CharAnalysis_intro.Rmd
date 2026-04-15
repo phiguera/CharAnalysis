@@ -1,6 +1,5 @@
 ---
-title: "_CharAnalysis_: Diagnostic and analytical tools for peak detection and fire-history
-  interpretations using high-resolution sediment-charcoal records"
+title: "_CharAnalysis_: peak detection in high-resolution sediment-charcoal records"
 author: "Philip Higuera"
 date: "`r Sys.Date()`"
 output:
