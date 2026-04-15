@@ -95,7 +95,7 @@ figures require `ggplot2`, `patchwork`, and `ggtext`.
 devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
 ```
 
-See the [R package vignette](https://github.com/phiguera/CharAnalysis/tree/main/CharAnalysis_2_0_R/vignettes)
+See the [R package vignette](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
 for a full worked example on the bundled Code Lake dataset. This is a beta
 release — analytical outputs are validated against four reference datasets
 (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
