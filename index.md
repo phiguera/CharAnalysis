@@ -36,7 +36,7 @@ which are recommended reading before applying the program.
 Since its original development in the mid-2000s, *CharAnalysis* has been used in
 dozens of published studies to analyze sediment-charcoal records on six
 continents. A selection of these application examples is listed in the
-[User's Guide](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_UsersGuide.md).
+[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md).
 The entire codebase is distributed and well commented — users are encouraged to
 look under the hood, understand what is going on, and modify the program to suit
 their needs.
@@ -95,7 +95,7 @@ figures require `ggplot2`, `patchwork`, and `ggtext`.
 devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
 ```
 
-See the [R package vignette](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+See the [R package vignette](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_R/vignettes)
 for a full worked example on the bundled Code Lake dataset. This is a beta
 release — analytical outputs are validated against four reference datasets
 (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
@@ -103,12 +103,12 @@ at the [Issues tab](https://github.com/phiguera/CharAnalysis/issues).
 
 **Option 2: Download and run locally in MATLAB** *(v2.0)*  
 Requires MATLAB R2019a or higher. No additional toolboxes are required.  
-[Download as .zip](https://github.com/phiguera/CharAnalysis/zipball/main) |
-[Download as tar.gz](https://github.com/phiguera/CharAnalysis/tarball/main) |
+[Download as .zip](https://github.com/phiguera/CharAnalysis/zipball/master) |
+[Download as tar.gz](https://github.com/phiguera/CharAnalysis/tarball/master) |
 [Clone on GitHub](https://github.com/phiguera/CharAnalysis)
 
 Full installation and usage instructions are in the
-[User's Guide](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_UsersGuide.md).
+[User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md).
 
 **Option 3: Try MATLAB online — no installation required**  
 Run *CharAnalysis* instantly in your browser on the bundled Code Lake example
@@ -120,7 +120,7 @@ their institutional email.
 **Option 4: Standalone Windows application (Version 1.1)**  
 For users without a MATLAB license. Note that this version predates the Version
 2.0 update.  
-[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
+[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
 
 ### Choosing between R and MATLAB
 
@@ -140,19 +140,19 @@ fire-history interpretations.
 
 ## Documentation
 
-The [User's Guide](https://github.com/phiguera/CharAnalysis/blob/main/CharAnalysis_UsersGuide.md)
+The [User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md)
 covers installation, data input and parameter selection, a full description of
 all analytical methods and choices, and documentation of all program output. It
 is written primarily for the MATLAB implementation.
 
 R users should consult the
-[R package vignette](https://github.com/phiguera/CharAnalysis/tree/main/CharAnalysis_2_0_R/vignettes)
+[R package vignette](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_R/vignettes)
 for R-specific installation, usage, and known differences from the MATLAB
 version. After installing the package, the vignette is also accessible locally
 via `vignette("CharAnalysis_intro", package = "CharAnalysis")`.
 
 The original guide (v0.9, 2009) is retained as a historical reference:
-[ARCHIVED_UsersGuide_v_0.9_2009.pdf](https://github.com/phiguera/CharAnalysis/blob/main/ARCHIVED_UsersGuide_v_0.9_2009.pdf).
+[ARCHIVED_UsersGuide_v_0.9_2009.pdf](https://github.com/phiguera/CharAnalysis/blob/master/ARCHIVED_UsersGuide_v_0.9_2009.pdf).
 
 Questions and bug reports can be submitted via the
 [Issues tab](https://github.com/phiguera/CharAnalysis/issues) on GitHub.
