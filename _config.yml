@@ -1,6 +1,6 @@
 title: <em> CharAnalysis </em>
 description: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records
-show_downloads: true
+show_downloads: false
 theme: jekyll-theme-slate
 gems:
   - jekyll-mentions
