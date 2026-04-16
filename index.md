@@ -120,7 +120,7 @@ their institutional email.
 **Option 4: Standalone Windows application (Version 1.1)**  
 For users without a MATLAB license. Note that this version predates the Version
 2.0 update.  
-[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
+[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/README_CharAnalysis_standAlone.md)
 
 ### Choosing between R and MATLAB
 
