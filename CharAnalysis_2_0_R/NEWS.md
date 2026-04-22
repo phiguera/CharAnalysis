@@ -1,3 +1,17 @@
+# *CharAnalysis* 2.0.1
+
+Patch release addressing CRAN reviewer feedback on the initial submission.
+No changes to analytical behaviour.
+
+- DESCRIPTION: condensed to a single paragraph and removed the paragraph
+  separators that were rendering as double periods in CRAN metadata.
+- `char_parameters()` is now exported. Its help page previously contained
+  an example for an unexported function.
+- Replaced `\dontrun{}` wrappers in all examples with `\donttest{}` (or
+  unwrapped entirely, where the example runs in under 5 seconds). All
+  examples now use the bundled validation dataset via `system.file()` and
+  write any output to `tempdir()`.
+
 # *CharAnalysis* 2.0.0 (beta)
 
 First R implementation of *CharAnalysis*, a direct translation of

@@ -44,12 +44,15 @@
 #'   [char_thresh_local()], [char_peak_id()], [char_post_process()]
 #'
 #' @examples
-#' \dontrun{
-#'   out <- CharAnalysis("CO_charParams.csv")
+#' \donttest{
+#'   # Run the full pipeline on the bundled example dataset:
+#'   params_file <- system.file("validation", "CO_charParams.csv",
+#'                              package = "CharAnalysis")
+#'   out <- CharAnalysis(params_file)
 #'   # Phase 2 outputs
-#'   head(data.frame(ageTop_i  = out$charcoal$ybpI,
-#'                   charAcc_i = out$charcoal$accI,
-#'                   charBkg_i = out$charcoal$accIS,
+#'   head(data.frame(ageTop_i   = out$charcoal$ybpI,
+#'                   charAcc_i  = out$charcoal$accI,
+#'                   charBkg_i  = out$charcoal$accIS,
 #'                   charPeak_i = out$charcoal$peak))
 #'   # Phase 3 outputs
 #'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])

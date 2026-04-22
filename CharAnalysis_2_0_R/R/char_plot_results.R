@@ -50,15 +50,18 @@
 #' @seealso [CharAnalysis()], [char_post_process()]
 #'
 #' @examples
-#' \dontrun{
-#'   out <- CharAnalysis("CO_charParams.csv")
+#' \donttest{
+#'   # Run pipeline on the bundled example dataset, then plot:
+#'   params_file <- system.file("validation", "CO_charParams.csv",
+#'                              package = "CharAnalysis")
+#'   out <- CharAnalysis(params_file)
 #'   char_plot_peaks(out)
 #'   char_plot_fire_history(out)
-#'   # Save all figures to PDF:
-#'   char_plot_all(out, save = TRUE, out_dir = "Results")
 #'   # Individual figures can also be called directly:
 #'   char_plot_sni(out)
 #'   char_plot_fri(out)
+#'   # Save all figures to PDF in a temporary directory:
+#'   char_plot_all(out, save = TRUE, out_dir = tempdir())
 #' }
 NULL
 
@@ -89,11 +92,21 @@ utils::globalVariables(c(
   } else {
     ggplot2::element_text(size = base_size, face = "bold")
   }
+  # Axis-title element: use element_markdown() when ggtext is available so
+  # that HTML <sup>/<sub> tags render as proper super/subscripts.  Plain text
+  # passes through unchanged, so this is safe for all axis labels.
+  axis_title_el <- if (.has_ggtext()) {
+    ggtext::element_markdown(size = base_size)
+  } else {
+    ggplot2::element_text(size = base_size)
+  }
   ggplot2::theme_classic(base_size = base_size) +
   ggplot2::theme(
     axis.line         = ggplot2::element_line(colour = "black"),
     panel.grid        = ggplot2::element_blank(),
     plot.title        = title_el,
+    axis.title.x      = axis_title_el,
+    axis.title.y      = axis_title_el,
     axis.ticks        = ggplot2::element_line(colour = "black"),
     axis.ticks.length = ggplot2::unit(3, "pt")
   )
@@ -125,7 +138,7 @@ utils::globalVariables(c(
       breaks = x_break,
       labels = x_label
     ),
-    ggplot2::xlab("cal. yr BP (\u00d7 1000)")
+    ggplot2::xlab("cal. yr BP (x 1000)")
   )
 }
 
@@ -295,7 +308,7 @@ char_plot_peaks <- function(out) {
     if (peak_type == "ratio") {
       .title("(b) C<sub>peak</sub> (C<sub>interpolated</sub> / C<sub>background</sub>), thresholds defining C<sub>noise</sub>, and peaks<br>identified (gray peaks fail to pass peak-magnitude test)")
     } else {
-      .title("(b) C<sub>peak</sub> (C<sub>interpolated</sub> \u2212 C<sub>background</sub>), thresholds defining C<sub>noise</sub>, and peaks<br>identified (gray dots fail to pass peak-magnitude test)")
+      .title("(b) C<sub>peak</sub> (C<sub>interpolated</sub> - C<sub>background</sub>), thresholds defining C<sub>noise</sub>, and peaks<br>identified (gray dots fail to pass peak-magnitude test)")
     }
   } else {
     if (peak_type == "ratio") {
@@ -410,9 +423,16 @@ char_plot_fire_history <- function(out) {
       .zone_lines(zone_div, 0, y_max_fri) +
       .char_xscale(zone_div) +
       ggplot2::scale_y_continuous(limits = c(0, y_max_fri), expand = c(0, 0)) +
-      ggplot2::ylab(paste0("FRI (yr fire\u207b\u00b9)\n",
-                            peak_analysis$peakFrequ, "-yr mean\n",
-                            round((1 - alpha) * 100), "% CI")) +
+      ggplot2::ylab(
+        if (.has_ggtext()) {
+          paste0("FRI (yr fire<sup>-1</sup>)<br>",
+                 peak_analysis$peakFrequ, "-yr mean<br>",
+                 round((1 - alpha) * 100), "% CI")
+        } else {
+          paste0("FRI (yr fire^-1)\n",
+                 peak_analysis$peakFrequ, "-yr mean\n",
+                 round((1 - alpha) * 100), "% CI")
+        }) +
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
                      axis.text.x  = ggplot2::element_blank(),
                      axis.ticks.x = ggplot2::element_blank()) +
@@ -420,7 +440,7 @@ char_plot_fire_history <- function(out) {
   } else {
     p2 <- ggplot2::ggplot() +
       ggplot2::annotate("text", x = 0.5, y = 0.5,
-                         label = "Fewer than 3 FRIs \u2014 FRI plot not available",
+                         label = "Fewer than 3 FRIs - FRI plot not available",
                          hjust = 0.5) +
       ggplot2::theme_void()
   }
@@ -436,8 +456,14 @@ char_plot_fire_history <- function(out) {
     .zone_lines(zone_div, 0, y_max_ff) +
     .char_xscale(zone_div) +
     ggplot2::scale_y_continuous(limits = c(0, y_max_ff), expand = c(0, 0)) +
-    ggplot2::ylab(paste0("fire freq.\n(fires ",
-                          peak_analysis$peakFrequ, " yr\u207b\u00b9)")) +
+    ggplot2::ylab(
+      if (.has_ggtext()) {
+        paste0("fire freq.<br>(fires ",
+               peak_analysis$peakFrequ, " yr<sup>-1</sup>)")
+      } else {
+        paste0("fire freq.\n(fires ",
+               peak_analysis$peakFrequ, " yr^-1)")
+      }) +
     .char_theme()
 
   .combine_panels(list(p1, p2, p3), heights = c(1.2, 1.2, 1))
@@ -590,11 +616,11 @@ char_plot_fri <- function(out) {
       }
 
       annot_lines <- c(
-        sprintf("Wbl *b* = %d (%d\u2013%d)",
+        sprintf("Wbl *b* = %d (%d-%d)",
                 round(wbl_b), round(wbl_b_ci[1L]), round(wbl_b_ci[2L])),
-        sprintf("Wbl *c* = %.2f (%.2f\u2013%.2f)",
+        sprintf("Wbl *c* = %.2f (%.2f-%.2f)",
                 wbl_c, wbl_c_ci[1L], wbl_c_ci[2L]),
-        sprintf("mFRI = %d (%d\u2013%d)",
+        sprintf("mFRI = %d (%d-%d)",
                 round(m_fri), round(m_ci[1L]), round(m_ci[2L])),
         sprintf("N = %d", n_fri),
         ks_label
@@ -1135,7 +1161,7 @@ char_plot_thresh_diag <- function(out) {
     x_lbl_k <- if (n_panels >= 23L) 23L else max(n_panels - 2L, 1L)
     if (k == x_lbl_k) {
       x_txt <- if (.has_ggtext()) {
-        "CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)"
+        "CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)"
       } else {
         "CHAR (# cm^-2 yr^-1)"
       }
@@ -1230,9 +1256,9 @@ char_plot_sni <- function(out) {
   # y-axis label: mirrors charYLabel(transform)
   y_lbl <- if (.has_ggtext()) {
     switch(as.character(transform),
-           "1" = "log CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)",
-           "2" = "ln CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)",
-               "CHAR (# cm<sup>\u22122</sup> yr<sup>\u22121</sup>)")
+           "1" = "log CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)",
+           "2" = "ln CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)",
+               "CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)")
   } else {
     switch(as.character(transform),
            "1" = "log CHAR (# cm^-2 yr^-1)",

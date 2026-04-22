@@ -79,15 +79,18 @@ Function names follow R snake_case conventions.
   with a message.
 }
 \examples{
-\dontrun{
-  out <- CharAnalysis("CO_charParams.csv")
+\donttest{
+  # Run pipeline on the bundled example dataset, then plot:
+  params_file <- system.file("validation", "CO_charParams.csv",
+                             package = "CharAnalysis")
+  out <- CharAnalysis(params_file)
   char_plot_peaks(out)
   char_plot_fire_history(out)
-  # Save all figures to PDF:
-  char_plot_all(out, save = TRUE, out_dir = "Results")
   # Individual figures can also be called directly:
   char_plot_sni(out)
   char_plot_fri(out)
+  # Save all figures to PDF in a temporary directory:
+  char_plot_all(out, save = TRUE, out_dir = tempdir())
 }
 }
 \seealso{

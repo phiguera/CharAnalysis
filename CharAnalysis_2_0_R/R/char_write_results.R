@@ -75,10 +75,13 @@
 #' @seealso [char_post_process()], [CharAnalysis()]
 #'
 #' @examples
-#' \dontrun{
-#'   out <- CharAnalysis("CO_charParams.csv")
+#' \donttest{
+#'   # Run the pipeline on the bundled example and write results to tempdir:
+#'   params_file <- system.file("validation", "CO_charParams.csv",
+#'                              package = "CharAnalysis")
+#'   out <- CharAnalysis(params_file)
 #'   char_write_results(out$char_results, out$site,
-#'                    out_dir = "Results")
+#'                      out_dir = tempdir())
 #' }
 #' @export
 char_write_results <- function(char_results,
