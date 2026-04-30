@@ -86,20 +86,35 @@ intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).
 There are four ways to access *CharAnalysis*, suited to different users and
 needs.
 
-**Option 1: Install and run in R** *(v2.0.0 — beta release)*  
-Install the R package directly from GitHub. Requires R 4.0 or higher. Output
-figures require `ggplot2`, `patchwork`, and `ggtext`.
+**Option 1: Install and run in R**  
+Install from CRAN. Requires R 4.0 or higher. Output figures require
+`ggplot2`, `patchwork`, and `ggtext`.
+
+```r
+install.packages("CharAnalysis")
+```
+
+For the latest in-development version, install from the `dev` branch. The
+current dev branch is v2.0.3, which corrects two factual errors in the package
+vignette and now live-renders the worked-example figures (see
+[`NEWS.md`](https://github.com/phiguera/CharAnalysis/blob/dev/CharAnalysis_2_0_R/NEWS.md)
+for the full change list). v2.0.3 is pending CRAN review; until it is
+accepted, the `dev` branch is the only place to obtain it.
 
 ```r
 # install.packages("devtools")
-devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
+devtools::install_github("phiguera/CharAnalysis",
+                         subdir = "CharAnalysis_2_0_R",
+                         ref    = "dev")
 ```
 
 See the [R package vignette](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_R/vignettes)
-for a full worked example on the bundled Code Lake dataset. This is a beta
-release — analytical outputs are validated against four reference datasets
-(Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
-at the [Issues tab](https://github.com/phiguera/CharAnalysis/issues).
+for a full worked example on the bundled Code Lake dataset. The R package is
+in the [experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+lifecycle stage: analytical outputs are validated against four reference
+datasets (Code Lake, Chickaree Lake, Silver Lake, Raven Lake), but the API
+may change as user feedback is incorporated. Please report any issues at the
+[Issues tab](https://github.com/phiguera/CharAnalysis/issues).
 
 **Option 2: Download and run locally in MATLAB** *(v2.0)*  
 Requires MATLAB R2019a or higher. No additional toolboxes are required.  
@@ -120,7 +135,7 @@ their institutional email.
 **Option 4: Standalone Windows application (Version 1.1)**  
 For users without a MATLAB license. Note that this version predates the Version
 2.0 update.  
-[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/README_CharAnalysis_standAlone.md)
+[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
 
 ### Choosing between R and MATLAB
 
@@ -129,7 +144,7 @@ quantitatively equivalent results on validated reference datasets. **R** is the
 dominant language in the paleoecological community and integrates more easily
 with downstream statistical analysis and publication-quality figures. **MATLAB**
 is the reference implementation and has been validated on the full suite of five
-benchmark datasets; the R package (v2.0.0) has been validated on four of those
+benchmark datasets; the R package has been validated on four of those
 five datasets (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Minor
 numerical differences in peak detection may occur between the two versions due
 to floating-point divergence in the Gaussian mixture model used for threshold
@@ -163,7 +178,7 @@ Questions and bug reports can be submitted via the
 
 If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
 the first study to apply the core analytical tools implemented in the program.
-If you used *CharAnalysis* v2.0 (MATLAB) or v2.0.0 (R) specifically, please
+If you used *CharAnalysis* v2.0 (MATLAB) or v2.0.x (R) specifically, please
 also cite the software:
 
 Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.
@@ -213,9 +228,9 @@ assistant by Anthropic. Claude assisted with code modernization, bug fixes,
 architecture redesign, and documentation. All code was reviewed and validated by
 the author against Version 1.1 reference outputs.
 
-The R package (v2.0.0) was developed with the assistance of Claude, an AI
-assistant by Anthropic. Claude assisted with the MATLAB-to-R translation,
-validation, and documentation. All code was reviewed and validated by the author
-against MATLAB v2.0 reference outputs.
+The R package was developed with the assistance of Claude, an AI assistant by
+Anthropic. Claude assisted with the MATLAB-to-R translation, validation, and
+documentation. All code was reviewed and validated by the author against MATLAB
+v2.0 reference outputs.
 
 ---
