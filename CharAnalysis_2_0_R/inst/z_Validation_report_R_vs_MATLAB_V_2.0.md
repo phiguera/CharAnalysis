@@ -1,14 +1,14 @@
-# CharAnalysis R v2.0 — Validation Report
+# *CharAnalysis* R v2.0 — Validation Report
 
 **Date:** April 2026  
-**Comparison:** CharAnalysis v2.0 (MATLAB) vs. CharAnalysis v2.0 (R)  
-**Reference files:** `tests/*_charResults.csv` (MATLAB outputs) and `tests/*_R_charResults.csv` (R outputs)
+**Comparison:** *CharAnalysis* v2.0 (MATLAB) vs. *CharAnalysis* v2.0 (R)  
+**Reference files:** `inst/validation/*_charResults.csv` (MATLAB outputs) and `inst/validation/*_R_charResults.csv` (R outputs)
 
 ---
 
 ## Overview
 
-This report documents the quantitative comparison of the R translation of CharAnalysis v2.0 against the MATLAB v2.0 reference outputs. Four datasets were used, covering a range of record lengths, sampling resolutions, ecosystems, and analysis configurations.
+This report documents the quantitative comparison of the R translation of *CharAnalysis* v2.0 against the MATLAB v2.0 reference outputs. Four datasets were used, covering a range of record lengths, sampling resolutions, ecosystems, and analysis configurations.
 
 All differences between R and MATLAB trace to two documented root causes described in the section below. All other pipeline stages (interpolation, moving-average smoothing, thresholding arithmetic, peak screening, FRI computation, Weibull fitting) produce outputs that agree to within floating-point noise.
 

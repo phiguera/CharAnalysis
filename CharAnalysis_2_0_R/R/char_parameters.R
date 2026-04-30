@@ -38,12 +38,15 @@
 #'
 #' @seealso [char_validate_params()], [char_pretreatment()], [CharAnalysis()]
 #'
+#' @export
+#'
 #' @examples
-#' \dontrun{
-#'   p <- char_parameters("CO_charParams.csv")
-#'   p$pretreatment$yrInterp   # interpolation interval (yr)
-#'   p$smoothing$method        # smoothing method index (1-5)
-#' }
+#' # Read a bundled example parameter file:
+#' params_file <- system.file("validation", "CO_charParams.csv",
+#'                            package = "CharAnalysis")
+#' p <- char_parameters(params_file)
+#' p$pretreatment$yrInterp   # interpolation interval (yr)
+#' p$smoothing$method        # smoothing method index (1-5)
 char_parameters <- function(file_name) {
 
   ext <- tolower(tools::file_ext(file_name))

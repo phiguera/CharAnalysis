@@ -1,61 +1,7 @@
-#' @noRd
-#' Post-processing: FRIs, fire frequency, Weibull statistics, output matrix
-#'
-#' Pure-computation post-processing step that follows peak identification.
-#' Mirrors \code{CharPostProcess.m} and \code{smoothFRI.m} from the MATLAB
-#' v2.0 codebase.  No figures are produced here; all computed values are
-#' returned for downstream plotting and file output.
-#'
-#' @param charcoal     Named list from [char_peak_id()] containing (among
-#'   others): \code{peak}, \code{ybpI}, \code{cmI}, \code{accI},
-#'   \code{accIS}, \code{countI}, \code{volI}, \code{conI},
-#'   \code{charPeaks} (\eqn{[N \times T]}), \code{charPeaksThresh}.
-#' @param pretreatment Named list with \code{yrInterp} and \code{zoneDiv}.
-#' @param peak_analysis Named list with \code{threshType}, \code{threshValues},
-#'   \code{minCountP}, and \code{peakFrequ}.
-#' @param char_thresh  Named list from [char_thresh_local()] or
-#'   [char_thresh_global()] containing \code{pos}, \code{neg}, \code{SNI},
-#'   \code{GOF}, and \code{minCountP}.
-#' @param smoothing    Named list with \code{yr} (used for smoothed FRI span).
-#'
-#' @return Named list with three components:
-#'   \describe{
-#'     \item{charcoal}{Input \code{charcoal} augmented with:
-#'       \code{peakInsig} (0/1, peaks failing min-count screen),
-#'       \code{peakMagnitude} (integrated C_peak above threshold, per peak),
-#'       \code{smoothedFireFrequ} (Lowess-smoothed fire frequency, peaks/ka),
-#'       \code{peaksFrequ} (raw sliding-window fire frequency, peaks/ka).}
-#'     \item{post}{Named list of intermediate results for plotting:
-#'       \code{peakIn}, \code{peakScreenIn}, \code{CharcoalCharPeaks},
-#'       \code{threshIn} (global only), \code{peak_mag}, \code{ff_sm},
-#'       \code{FRIyr}, \code{FRI}, \code{smFRIyr}, \code{smFRI},
-#'       \code{smFRIci}, \code{yis}, \code{FRI_params_zone}, \code{alpha},
-#'       \code{nBoot}.}
-#'     \item{char_results}{Numeric matrix (\eqn{N \times 33}): the full
-#'       output table written to CSV by [char_write_results()].  Column
-#'       order matches the MATLAB \code{charResults} matrix exactly.}
-#'   }
-#'
-#' @details
-#'   ## Smoothed FRI (\code{smooth_fri} helper)
-#'   A sliding window of width \code{peak_analysis$peakFrequ} yr steps every
-#'   100 yr from -70 to the maximum age.  Within each window the mean FRI and
-#'   bootstrapped (1-\code{alpha})x100 % CIs are computed, then the mean and
-#'   CI series are smoothed with \code{char_lowess}.  Mirrors
-#'   \code{smoothFRI.m}.
-#'
-#'   ## Weibull statistics
-#'   FRIs within each zone (\code{pretreatment$zoneDiv}) are binned (bin width
-#'   20 yr, edges 20-1000 yr) and a two-parameter Weibull is fitted to the bin
-#'   centres weighted by bin frequency, matching MATLAB's
-#'   \code{wblfit(centres, [], [], freq)}.  Bootstrap CIs use
-#'   \code{nBoot = 100} resamples of the raw FRIs.  Zones with \eqn{\leq 1}
-#'   FRI or max FRI > 5000 yr are left as -999.
-#'
-#' @seealso [char_peak_id()], [CharAnalysis()], [char_write_results()]
-#'
-#' Requires: char_lowess() from utils_lowess.R,
-#'           MASS package for fitdistr()
+# Post-processing: FRIs, fire frequency, Weibull statistics, output matrix
+#
+# Requires: char_lowess() from utils_lowess.R
+#           MASS package for fitdistr()
 
 # ---------------------------------------------------------------------------
 # HELPER: smooth_fri -- R port of smoothFRI.m  (internal, not exported)
@@ -136,6 +82,63 @@ smooth_fri <- function(yr, peaks, win_width,
 # ---------------------------------------------------------------------------
 # MAIN FUNCTION
 # ---------------------------------------------------------------------------
+
+#' Post-processing: FRIs, fire frequency, Weibull statistics, output matrix
+#'
+#' Pure-computation post-processing step that follows peak identification.
+#' Mirrors \code{CharPostProcess.m} and \code{smoothFRI.m} from the MATLAB
+#' v2.0 codebase.  No figures are produced here; all computed values are
+#' returned for downstream plotting and file output.
+#'
+#' @param charcoal     Named list from [char_peak_id()] containing (among
+#'   others): \code{peak}, \code{ybpI}, \code{cmI}, \code{accI},
+#'   \code{accIS}, \code{countI}, \code{volI}, \code{conI},
+#'   \code{charPeaks} (\eqn{[N \times T]}), \code{charPeaksThresh}.
+#' @param pretreatment Named list with \code{yrInterp} and \code{zoneDiv}.
+#' @param peak_analysis Named list with \code{threshType}, \code{threshValues},
+#'   \code{minCountP}, and \code{peakFrequ}.
+#' @param char_thresh  Named list from [char_thresh_local()] or
+#'   [char_thresh_global()] containing \code{pos}, \code{neg}, \code{SNI},
+#'   \code{GOF}, and \code{minCountP}.
+#' @param smoothing    Named list with \code{yr} (used for smoothed FRI span).
+#'
+#' @return Named list with three components:
+#'   \describe{
+#'     \item{charcoal}{Input \code{charcoal} augmented with:
+#'       \code{peakInsig} (0/1, peaks failing min-count screen),
+#'       \code{peakMagnitude} (integrated C_peak above threshold, per peak),
+#'       \code{smoothedFireFrequ} (Lowess-smoothed fire frequency, peaks/ka),
+#'       \code{peaksFrequ} (raw sliding-window fire frequency, peaks/ka).}
+#'     \item{post}{Named list of intermediate results for plotting:
+#'       \code{peakIn}, \code{peakScreenIn}, \code{CharcoalCharPeaks},
+#'       \code{threshIn} (global only), \code{peak_mag}, \code{ff_sm},
+#'       \code{FRIyr}, \code{FRI}, \code{smFRIyr}, \code{smFRI},
+#'       \code{smFRIci}, \code{yis}, \code{FRI_params_zone}, \code{alpha},
+#'       \code{nBoot}.}
+#'     \item{char_results}{Numeric matrix (\eqn{N \times 33}): the full
+#'       output table written to CSV by [char_write_results()].  Column
+#'       order matches the MATLAB \code{charResults} matrix exactly.}
+#'   }
+#'
+#' @details
+#'   ## Smoothed FRI (\code{smooth_fri} helper)
+#'   A sliding window of width \code{peak_analysis$peakFrequ} yr steps every
+#'   100 yr from -70 to the maximum age.  Within each window the mean FRI and
+#'   bootstrapped (1-\code{alpha})x100 % CIs are computed, then the mean and
+#'   CI series are smoothed with \code{char_lowess}.  Mirrors
+#'   \code{smoothFRI.m}.
+#'
+#'   ## Weibull statistics
+#'   FRIs within each zone (\code{pretreatment$zoneDiv}) are binned (bin width
+#'   20 yr, edges 20-1000 yr) and a two-parameter Weibull is fitted to the bin
+#'   centres weighted by bin frequency, matching MATLAB's
+#'   \code{wblfit(centres, [], [], freq)}.  Bootstrap CIs use
+#'   \code{nBoot = 100} resamples of the raw FRIs.  Zones with \eqn{\leq 1}
+#'   FRI or max FRI > 5000 yr are left as -999.
+#'
+#' @seealso [char_peak_id()], [CharAnalysis()], [char_write_results()]
+#'
+#' @noRd
 char_post_process <- function(charcoal, pretreatment, peak_analysis,
                                char_thresh, smoothing) {
 

@@ -44,12 +44,15 @@
 #'   [char_thresh_local()], [char_peak_id()], [char_post_process()]
 #'
 #' @examples
-#' \dontrun{
-#'   out <- CharAnalysis("CO_charParams.csv")
+#' \donttest{
+#'   # Run the full pipeline on the bundled example dataset:
+#'   params_file <- system.file("validation", "CO_charParams.csv",
+#'                              package = "CharAnalysis")
+#'   out <- CharAnalysis(params_file)
 #'   # Phase 2 outputs
-#'   head(data.frame(ageTop_i  = out$charcoal$ybpI,
-#'                   charAcc_i = out$charcoal$accI,
-#'                   charBkg_i = out$charcoal$accIS,
+#'   head(data.frame(ageTop_i   = out$charcoal$ybpI,
+#'                   charAcc_i  = out$charcoal$accI,
+#'                   charBkg_i  = out$charcoal$accIS,
 #'                   charPeak_i = out$charcoal$peak))
 #'   # Phase 3 outputs
 #'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])
@@ -205,8 +208,9 @@ CharAnalysis <- function(file_name = NULL) {
   # stored in results$save and can be inspected by the caller, but no file is
   # written automatically here (prevents accidental overwrites of reference data).
   message("(7) Analysis complete.")
-  message("    Save CSV:     char_write_results(out$char_results, out$site)")
+  message("    Save CSV:     char_write_results(out$char_results, out$site, out_dir = \"<your/path>\")")
   message("    All figures:  char_plot_all(out)  [Figs 1-2 only when allFigures = 1]")
+  message("                  char_plot_all(out, save = TRUE, out_dir = \"<your/path>\")  # save PDFs")
   message("    One figure:   char_plot_raw(out)            # Fig 1: C_raw, C_interp, C_back options")
   message("                  char_plot_thresh_diag(out)    # Fig 2: threshold diagnostics")
   message("                  char_plot_peaks(out)          # Fig 3: peak analysis")

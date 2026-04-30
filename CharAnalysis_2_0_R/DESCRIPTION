@@ -1,35 +1,23 @@
 Package: CharAnalysis
 Type: Package
-Title: Diagnostic and analytical tools for peak detection and fire-history
-    interpretations using high-resolution sediment-charcoal records
-Version: 2.0.0
-Date: 2026-04-07
+Title: Peak Detection and Fire History from Sediment-Charcoal Records
+Version: 2.0.3
+Date: 2026-04-29
 Authors@R: person("Philip", "Higuera",
     email   = "philip.higuera@umontana.edu",
     role    = c("aut", "cre"),
     comment = c(ORCID = "0000-0003-1278-4095"))
-Description: CharAnalysis is a freely available program for reconstructing
-    local fire histories from high-resolution, continuously sampled
-    lake-sediment charcoal records. It is designed specifically for
-    macroscopic charcoal records with contiguous sampling at fine enough
-    resolution to resolve individual fire events; it is not appropriate for
-    low-resolution or discontinuously sampled records.
- .
-     For records that meet the required criteria, CharAnalysis implements a
-    widely applied approach that decomposes a charcoal record into low- and
-    high-frequency components, including the ability to use locally defined
-    thresholds to separate fire signal from noise. This approach was first
-    applied in Higuera et al. (2008, 2009), and the assumptions and rationale
-    of the method are most thoroughly described in Higuera et al. (2010) and
-    Kelly et al. (2011), which are recommended reading before applying the
-    program.
- .
-     Since its original development in the mid-2000s, CharAnalysis has been
-    used in dozens of published studies to analyze sediment-charcoal records
-    on six continents. A selection of these application examples is listed in
-    the User's Guide. The entire codebase is distributed and well commented
-    — users are encouraged to look under the hood, understand what is going
-    on, and modify the program to suit their needs.
+Description: A program for reconstructing local fire histories from
+    high-resolution, continuously sampled lake-sediment charcoal records.
+    'CharAnalysis' decomposes a charcoal record into low- and high-frequency
+    components and uses locally defined thresholds to separate fire signal
+    from noise, following the approach of Higuera et al. (2009)
+    <doi:10.1890/07-2019.1>, with underlying assumptions and rationale
+    described in Higuera et al. (2010) <doi:10.1071/WF09134>. The package is
+    designed for macroscopic charcoal records with contiguous sampling fine
+    enough to resolve individual fire events, and is not appropriate for
+    low-resolution or discontinuously sampled records. See the package URL
+    for the User's Guide and application examples.
 License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/phiguera/CharAnalysis,

@@ -1,27 +1,39 @@
 ## *CharAnalysis*: Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records
 
-[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/) © 2004–2026\
+<!-- badges: start -->
+[![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+[![Lifecycle: experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+© 2004–2026\
 Philip Higuera\
 Professor, Department of Ecosystem and Conservation Sciences\
 University of Montana, Missoula, MT, USA\
 https://www.umt.edu/people/phiguera
 
-***CharAnalysis*** is a program for analyzing sediment-charcoal records when the goal is peak detection to reconstruct local fire history. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what's going on, and modify the program to suit individual needs.
+*CharAnalysis* is a program for analyzing sediment-charcoal records when the goal is peak detection to reconstruct local fire history. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what's going on, and modify the program to suit individual needs.
 
 ## Getting Started
 
-**Option 1: Install and run in R** *(v2.0.0 — beta release)*\
-Install the R package directly from GitHub. Requires R 4.0 or higher. Output
-figures require `ggplot2`, `patchwork`, and `ggtext`.
+**Option 1: Install and run in R**\
+Install from CRAN. Requires R 4.0 or higher. Output figures require
+`ggplot2`, `patchwork`, and `ggtext`.
+```r
+install.packages("CharAnalysis")
+```
+
+To install the in-development version directly from GitHub instead:
 ```r
 # install.packages("devtools")
 devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
 ```
 See the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
-for a full worked example on the bundled Code Lake dataset. This is a beta
-release — analytical outputs are validated against four reference datasets
-(Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Please report any issues
-at https://github.com/phiguera/CharAnalysis/issues.
+for a full worked example on the bundled Code Lake dataset. The R package is
+in the [experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+lifecycle stage: analytical outputs are validated against four reference
+datasets (Code Lake, Chickaree Lake, Silver Lake, Raven Lake), but the API
+may change as user feedback is incorporated. Please report any issues at
+https://github.com/phiguera/CharAnalysis/issues.
 
 **Option 2: Download and run locally in MATLAB**\
 Download the entire *CharAnalysis* program as a `.zip` or `tar.gz` archive from the
@@ -49,7 +61,7 @@ quantitatively equivalent results on validated reference datasets. **R** is the
 dominant language in the paleoecological community and integrates more easily with
 downstream statistical analysis and publication-quality figures. **MATLAB** is the
 reference implementation and has been validated on the full suite of five benchmark
-datasets; the R package (v2.0.0) has been validated on four of those five datasets
+datasets; the R package has been validated on four of those five datasets
 (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Minor numerical differences
 in peak detection may occur between the two versions due to floating-point
 divergence in the Gaussian mixture model used for threshold estimation; these
@@ -57,7 +69,7 @@ differences are small and do not affect qualitative fire-history interpretations
 
 ## Repository Contents
 ```
-CharAnalysis_2_0_R/            R package source code (v2.0.0, beta)
+CharAnalysis_2_0_R/            R package source code (v2.0.0)
 CharAnalysis_2_0_MATLAB/       MATLAB source code (v2.0)
 CharAnalysis_1_1_MATLAB/       MATLAB source code (Version 1.1)
 CharAnalysis_1_1_Windows/      Standalone Windows application (Version 1.1)
@@ -107,11 +119,15 @@ The modular architecture also lays the groundwork for the planned R translation 
 
 *Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
-## R Package v2.0.0 (beta, April 2026)
+## R Package v2.0 (April 2026)
 
 **CharAnalysis v2.0.0 is the first R implementation of CharAnalysis**, providing
 a fully validated, reproducible R workflow for the same analytical methods
-implemented in the MATLAB version.
+implemented in the MATLAB version. As of April 2026, the package is available
+from CRAN and is in the
+[experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+lifecycle stage. The API may evolve as users put it through its paces; please
+file any issues you encounter.
 
 Key features of the R package:
 - `CharAnalysis()` — single call runs the full five-step pipeline and returns a named list with S3 class `"CharAnalysis"`; `print()`, `summary()`, and `plot()` methods included.
@@ -125,7 +141,7 @@ Key features of the R package:
 
 If you use *CharAnalysis* in a publication, please cite Higuera et al. (2009),
 the first study to apply the core analytical tools implemented in *CharAnalysis*.
-If you used CharAnalysis v2.0 (MATLAB) or v2.0.0 (R) specifically, please also
+If you used *CharAnalysis* v2.0 (MATLAB) or v2.0.x (R) specifically, please also
 cite the software:
 
 [Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009.

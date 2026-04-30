@@ -9,8 +9,9 @@
 #'   \code{out$char_results} by [CharAnalysis()].
 #' @param site         Character string: site name, used to build the
 #'   output filename (\code{<site>_charResults.csv}).
-#' @param out_dir      Directory in which to create the file.  Defaults to
-#'   the current working directory.  Created if it does not exist.
+#' @param out_dir      Directory in which to create the file.  Required;
+#'   no default.  Created if it does not exist.  Use \code{tempdir()} for
+#'   a transient location, or supply a path of your choosing.
 #' @param digits       Number of significant digits for numeric output.
 #'   Default 7, matching MATLAB's \code{fprintf} default precision.
 #'   Use \code{NULL} for R's full double precision (15 digits).
@@ -75,18 +76,27 @@
 #' @seealso [char_post_process()], [CharAnalysis()]
 #'
 #' @examples
-#' \dontrun{
-#'   out <- CharAnalysis("CO_charParams.csv")
+#' \donttest{
+#'   # Run the pipeline on the bundled example and write results to tempdir:
+#'   params_file <- system.file("validation", "CO_charParams.csv",
+#'                              package = "CharAnalysis")
+#'   out <- CharAnalysis(params_file)
 #'   char_write_results(out$char_results, out$site,
-#'                    out_dir = "Results")
+#'                      out_dir = tempdir())
 #' }
 #' @export
 char_write_results <- function(char_results,
                                 site,
-                                out_dir = ".",
+                                out_dir,
                                 digits  = 7L) {
 
   # ---- Validate inputs -------------------------------------------------------
+  if (missing(out_dir) || is.null(out_dir))
+    stop("Please supply 'out_dir', the directory to write the CSV file. ",
+         "Use tempdir() for a transient location, or a path of your choosing.",
+         call. = FALSE)
+  if (!is.character(out_dir) || length(out_dir) != 1L || nchar(out_dir) == 0L)
+    stop("'out_dir' must be a non-empty character string.", call. = FALSE)
   if (!is.matrix(char_results) || ncol(char_results) != 33L)
     stop("char_results must be a numeric matrix with exactly 33 columns.")
   if (!is.character(site) || length(site) != 1L || nchar(site) == 0L)
