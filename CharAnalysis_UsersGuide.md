@@ -209,12 +209,8 @@ require `ggplot2`, `patchwork`, and `ggtext`.
 install.packages("CharAnalysis")
 ```
 
-To install the in-development version directly from GitHub instead:
-
-```r
-# install.packages("devtools")
-devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
-```
+For instructions on installing the in-development version from the `dev`
+branch on GitHub, see the [main README](README.md).
 
 See the R package vignette (`CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd`)
 for a full worked example, parameter descriptions, output descriptions, and a

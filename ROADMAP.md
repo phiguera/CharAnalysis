@@ -35,9 +35,12 @@ Install from CRAN:
 install.packages("CharAnalysis")
 ```
 
-Or for the in-development version, install from GitHub:
+For the latest in-development version, install from the `dev` branch on
+GitHub:
 ```r
-devtools::install_github("phiguera/CharAnalysis", subdir = "CharAnalysis_2_0_R")
+devtools::install_github("phiguera/CharAnalysis",
+                         subdir = "CharAnalysis_2_0_R",
+                         ref    = "dev")
 ```
 
 Possible future comparisons with related R packages that were developed based on
