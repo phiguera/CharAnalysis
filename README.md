@@ -85,7 +85,7 @@ consult the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro
 for R-specific installation, usage, and known differences from the MATLAB version.
 
 The original guide (v0.9, January 2009) is retained for reference as
-[ARCHIVED_UsersGuide_v_0.9_2009.pdf](ARCHIVED_UsersGuide_v_0.9_2009.pdf).
+[ARCHIVE_CharAnalysis_UsersGuide_v0.9_2009.pdf](ARCHIVE_CharAnalysis_UsersGuide_v0.9_2009.pdf).
 
 Planned future development is described in [ROADMAP.md](ROADMAP.md).
 
