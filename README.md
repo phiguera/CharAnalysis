@@ -33,7 +33,7 @@ devtools::install_github("phiguera/CharAnalysis",
                          subdir = "CharAnalysis_2_0_R",
                          ref    = "dev")
 ```
-See the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+See the [R package vignette](https://cran.r-project.org/web/packages/CharAnalysis/vignettes/CharAnalysis_intro.html)
 for a full worked example on the bundled Code Lake dataset. The R package is
 in the [experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 lifecycle stage: analytical outputs are validated against four reference
@@ -81,7 +81,7 @@ DataTemplates_and_Examples/    Template input files and Code Lake example datase
 The [User's Guide](CharAnalysis_UsersGuide.md) covers installation, data input,
 parameter selection, and a full description of all analytical choices and program
 output. It is written primarily for the MATLAB implementation. R users should
-consult the [R package vignette](CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd)
+consult the [R package vignette](https://cran.r-project.org/web/packages/CharAnalysis/vignettes/CharAnalysis_intro.html)
 for R-specific installation, usage, and known differences from the MATLAB version.
 
 The original guide (v0.9, January 2009) is retained for reference as
