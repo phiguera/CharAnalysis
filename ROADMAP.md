@@ -1,5 +1,5 @@
 # *CharAnalysis* Development Roadmap
-*Last updated: April 2026*
+*Last updated: May 2026*
 
 ---
 
