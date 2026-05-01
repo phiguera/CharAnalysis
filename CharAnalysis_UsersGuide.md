@@ -196,25 +196,26 @@ Updates are documented on the GitHub repository. If you encounter problems, plea
 
 ### 1. Download and Installation
 
-There are four ways to access *CharAnalysis*, suited to different users and needs.
+There are three ways to access *CharAnalysis*, suited to different users and needs.
 
 ---
 
 #### Option 1: Install and Run in R
 
-Install the R package from CRAN. Requires R 4.0 or higher. Output figures
-require `ggplot2`, `patchwork`, and `ggtext`.
+Install the R package from CRAN. Requires R 4.0 or higher.
 
 ```r
 install.packages("CharAnalysis")
 ```
 
-For instructions on installing the in-development version from the `dev`
-branch on GitHub, see the [main README](README.md).
+For installation of the in-development version from the GitHub `dev` branch,
+see the [main README](README.md). For a full worked example, parameter
+descriptions, output descriptions, and known numerical differences from the
+MATLAB implementation, consult the package vignette:
 
-See the R package vignette (`CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd`)
-for a full worked example, parameter descriptions, output descriptions, and a
-summary of known numerical differences from the MATLAB implementation.
+```r
+vignette("CharAnalysis_intro", package = "CharAnalysis")
+```
 
 ---
 
@@ -230,21 +231,22 @@ This is the recommended option for MATLAB users conducting analyses on their own
 
 **Download**
 
-Download the entire *CharAnalysis* program as a `.zip` or `tar.gz` archive from the project website at https://phiguera.github.io/CharAnalysis/, or clone the repository directly:
+Download the repository as a [`.zip`](https://github.com/phiguera/CharAnalysis/zipball/master) or [`tar.gz`](https://github.com/phiguera/CharAnalysis/tarball/master) archive, or clone it from the command line:
 
 ```
-https://github.com/phiguera/CharAnalysis
+git clone https://github.com/phiguera/CharAnalysis.git
 ```
 
-Cloning or downloading retrieves the entire repository. The Version 2.0 MATLAB
-code is located in the `CharAnalysis_2_0_MATLAB` subfolder. Example datasets and
-template files are located in the `DataTemplates_and_Examples` subfolder, and the
-version comparison script (`z_Compare_CharAnalysis_V1_V2.m`) is located in
-`CharAnalysis_2_0_MATLAB`.
+The archive contains the full repository, including both the MATLAB and R implementations. After unpacking, the only folders needed for MATLAB use are:
+
+- `CharAnalysis_2_0_MATLAB/` — Version 2.0 source code, including the version-comparison script `z_Compare_CharAnalysis_V1_V2.m`.
+- `DataTemplates_and_Examples/` — template input files and the bundled Code Lake example dataset.
+
+To browse the MATLAB folder online without downloading, see [`CharAnalysis_2_0_MATLAB` on GitHub](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_MATLAB).
 
 **Installation**
 
-1. After cloning or downloading, add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
+1. Add the `CharAnalysis_2_0_MATLAB` folder to your MATLAB search path:
    ```matlab
    addpath '.../CharAnalysis_2_0_MATLAB'
    ```
@@ -252,35 +254,21 @@ version comparison script (`z_Compare_CharAnalysis_V1_V2.m`) is located in
    ```matlab
    savepath
    ```
-3. You are now ready to use *CharAnalysis*.
 
 ---
 
-#### Option 3: Standalone Windows Application (Version 1.1)
-
-A standalone Windows executable (`.exe`) is available for users without a MATLAB license. This version is based on **Version 1.1** and predates the Version 2.0 update. Download and installation instructions are available at:
-
-https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md
-
-> **Important:** The standalone application requires the MATLAB Component
-> Runtime (MCR) to be installed on your computer. The MCR installer is
-> included with the download and needs to be run only once per computer.
-> On first startup, the program may take up to several minutes to open.
-
----
-
-#### Option 4: Try It Online via MATLAB Online
+#### Option 3: Try It Online via MATLAB Online
 
 Not sure if *CharAnalysis* is the right tool for your research? You can run the program instantly in your web browser on the bundled Code Lake example dataset — no installation required. Click the badge below or visit the GitHub repository page.
 
-[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=master&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
 
 Clicking this link clones the repository to your MATLAB Drive and opens *CharAnalysis* ready to run. A free MathWorks account is required. University users can log in with their institutional email address for full access.
 
 > **Note:** MATLAB Online is best suited for evaluating *CharAnalysis* on
-> the bundled example dataset. For analysis of your own data, Option 2
-> (local MATLAB) is recommended — uploading data files and editing
-> parameter files is more straightforward in the desktop environment.
+> the bundled example dataset. For analysis of your own data, install
+> locally via Option 1 (R) or Option 2 (MATLAB); managing input files
+> and parameter files is more straightforward in a desktop environment.
 > When running online, set `saveData = 0` and `saveFigures = 0` in the
 > parameter file to avoid file-write errors.
 
@@ -742,4 +730,3 @@ Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise in
 Long, C. J., C. Whitlock, P. J. Bartlein, and S. H. Millspaugh. 1998. A 9000 year fire history from the Oregon Coast Range based on a high-resolution charcoal study. *Canadian Journal of Forest Research* 28:774–787.
 
 Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.
-
