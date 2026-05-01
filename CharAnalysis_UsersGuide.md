@@ -1,4 +1,4 @@
-# *CharAnalysis* User's Guide
+**# *CharAnalysis* User's Guide
 
 **Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records**
 
@@ -43,7 +43,7 @@ https://phiguera.github.io/CharAnalysis
 
 *CharAnalysis* is freely available at https://github.com/phiguera/CharAnalysis. Since its original development in the mid-2000s, the program has been used in dozens of published studies to analyze sediment-charcoal records worldwide. The entire codebase is distributed and well commented — users are encouraged to look under the hood, understand what is going on, and modify the program to suit individual needs.
 
-*CharAnalysis* is available in both **MATLAB** (Version 2.0; the reference implementation) and **R** (Version 2.0; a direct translation). This guide is written primarily for the MATLAB version. R users should consult the R package vignette (`CharAnalysis_2_0_R/vignettes/CharAnalysis_intro.Rmd`) for R-specific installation, usage, and a description of known numerical differences between the two implementations.
+*CharAnalysis* is available in both **MATLAB** (Version 2.0; the reference implementation) and **R** (Version 2.0; a direct translation). This guide is written primarily for the MATLAB version. R users should consult the [R package vignette](https://cran.r-project.org/web/packages/CharAnalysis/vignettes/CharAnalysis_intro.html) for R-specific installation, usage, and a description of known numerical differences between the two implementations.
 
 The following two papers provide the most thorough background for the analyses
 employed in *CharAnalysis*, including the assumptions inherent in charcoal peak
@@ -729,4 +729,4 @@ Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise in
 
 Long, C. J., C. Whitlock, P. J. Bartlein, and S. H. Millspaugh. 1998. A 9000 year fire history from the Oregon Coast Range based on a high-resolution charcoal study. *Canadian Journal of Forest Research* 28:774–787.
 
-Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.
+Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.**
