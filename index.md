@@ -83,7 +83,7 @@ intervals and smoothed FRI curve (middle), and smoothed fire frequency (bottom).
 
 ## Getting Started
 
-There are four ways to access *CharAnalysis*, suited to different users and
+There are three ways to access *CharAnalysis*, suited to different users and
 needs.
 
 **Option 1: Install and run in R**  
@@ -108,7 +108,7 @@ devtools::install_github("phiguera/CharAnalysis",
                          ref    = "dev")
 ```
 
-See the [R package vignette](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_R/vignettes)
+See the [R package vignette](https://cran.r-project.org/web/packages/CharAnalysis/vignettes/CharAnalysis_intro.html)
 for a full worked example on the bundled Code Lake dataset. The R package is
 in the [experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 lifecycle stage: analytical outputs are validated against four reference
@@ -130,12 +130,7 @@ Run *CharAnalysis* instantly in your browser on the bundled Code Lake example
 dataset. A free MathWorks account is required; university users can log in with
 their institutional email.
 
-[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
-
-**Option 4: Standalone Windows application (Version 1.1)**  
-For users without a MATLAB license. Note that this version predates the Version
-2.0 update.  
-[Download and installation instructions](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=master&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
 
 ### Choosing between R and MATLAB
 
@@ -161,7 +156,7 @@ all analytical methods and choices, and documentation of all program output. It
 is written primarily for the MATLAB implementation.
 
 R users should consult the
-[R package vignette](https://github.com/phiguera/CharAnalysis/tree/master/CharAnalysis_2_0_R/vignettes)
+[R package vignette](https://cran.r-project.org/web/packages/CharAnalysis/vignettes/CharAnalysis_intro.html)
 for R-specific installation, usage, and known differences from the MATLAB
 version. After installing the package, the vignette is also accessible locally
 via `vignette("CharAnalysis_intro", package = "CharAnalysis")`.
