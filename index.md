@@ -162,7 +162,7 @@ version. After installing the package, the vignette is also accessible locally
 via `vignette("CharAnalysis_intro", package = "CharAnalysis")`.
 
 The original guide (v0.9, 2009) is retained as a historical reference:
-[ARCHIVED_UsersGuide_v_0.9_2009.pdf](https://github.com/phiguera/CharAnalysis/blob/master/ARCHIVED_UsersGuide_v_0.9_2009.pdf).
+[ARCHIVE_CharAnalysis_UsersGuide_v0.9_2009.pdf](https://github.com/phiguera/CharAnalysis/blob/master/ARCHIVE_CharAnalysis_UsersGuide_v0.9_2009.pdf).
 
 Questions and bug reports can be submitted via the
 [Issues tab](https://github.com/phiguera/CharAnalysis/issues) on GitHub.
