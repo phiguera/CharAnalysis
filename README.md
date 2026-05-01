@@ -2,7 +2,6 @@
 
 <!-- badges: start -->
 [![CC BY 4.0](https://licensebuttons.net/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
-[![Lifecycle: experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 © 2004–2026\
@@ -53,13 +52,7 @@ higher. No additional toolboxes are required. See the
 Not sure if *CharAnalysis* is the right tool for your research? Click the badge
 below to run the MATLAB version instantly in your browser on the bundled Code Lake
 example dataset — no installation required. A free MathWorks account is needed;
-university users can log in with their institutional email for full access. [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=main&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
-
-**Option 4: Download and run the standalone Windows application (Version 1.1)**\
-A standalone Windows executable (`.exe`) is available for users without a MATLAB
-license. Note that this version predates the Version 2.0 update. See the
-[standalone application readme](CharAnalysis_1_1_Windows/readme_CharAnalysis_standAlone.md)
-for download and installation instructions.
+university users can log in with their institutional email for full access. [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=phiguera/CharAnalysis&branch=master&file=CharAnalysis_2_0_MATLAB/CharAnalysis.m)
 
 ### Choosing between R and MATLAB
 
@@ -79,7 +72,7 @@ differences are small and do not affect qualitative fire-history interpretations
 CharAnalysis_2_0_R/            R package source code (v2.0.0)
 CharAnalysis_2_0_MATLAB/       MATLAB source code (v2.0)
 CharAnalysis_1_1_MATLAB/       MATLAB source code (Version 1.1)
-CharAnalysis_1_1_Windows/      Standalone Windows application (Version 1.1)
+CharAnalysis_1_1_Windows/      Retired standalone Windows build (Version 1.1)
 DataTemplates_and_Examples/    Template input files and Code Lake example dataset
 ```
 
@@ -127,6 +120,8 @@ The modular architecture also lays the groundwork for the planned R translation 
 *Version 2.0 was developed with the assistance of Claude, an AI assistant by Anthropic. Claude assisted with code modernization, bug fixes, architecture redesign, and documentation. All code was reviewed and validated by the author against Version 1.1 reference outputs.*
 
 ## R Package v2.0 (April 2026)
+
+[![Lifecycle: experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
 **CharAnalysis v2.0.0 is the first R implementation of CharAnalysis**, providing
 a fully validated, reproducible R workflow for the same analytical methods
