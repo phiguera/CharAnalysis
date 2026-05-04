@@ -1,4 +1,4 @@
-**# *CharAnalysis* User's Guide
+# *CharAnalysis* User's Guide
 
 **Diagnostic and analytical tools for peak detection and fire-history interpretations using high-resolution sediment-charcoal records**
 
@@ -208,10 +208,19 @@ Install the R package from CRAN. Requires R 4.0 or higher.
 install.packages("CharAnalysis")
 ```
 
-For installation of the in-development version from the GitHub `dev` branch,
-see the [main README](README.md). For a full worked example, parameter
-descriptions, output descriptions, and known numerical differences from the
-MATLAB implementation, consult the package vignette:
+For in-development features ahead of the next CRAN release, install from the
+`dev` branch on GitHub:
+
+```r
+# install.packages("devtools")
+devtools::install_github("phiguera/CharAnalysis",
+                         subdir = "CharAnalysis_2_0_R",
+                         ref    = "dev")
+```
+
+For a full worked example, parameter descriptions, output descriptions, and
+known numerical differences from the MATLAB implementation, consult the
+package vignette:
 
 ```r
 vignette("CharAnalysis_intro", package = "CharAnalysis")
@@ -729,4 +738,5 @@ Kelly, R.F., P.E. Higuera, C.M. Barrett, and F.S. Hu. 2011. A signal-to-noise in
 
 Long, C. J., C. Whitlock, P. J. Bartlein, and S. H. Millspaugh. 1998. A 9000 year fire history from the Oregon Coast Range based on a high-resolution charcoal study. *Canadian Journal of Forest Research* 28:774–787.
 
-Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.**
+Shiue, W., and L. Bain. 1982. Experiment size and power comparisons for two-sample Poisson tests. *Applied Statistics* 31:130–134.
+

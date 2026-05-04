@@ -21,12 +21,8 @@ Install from CRAN. Requires R 4.0 or higher. Output figures require
 install.packages("CharAnalysis")
 ```
 
-For the latest in-development version, install from the `dev` branch. The
-current dev branch is v2.0.3, which corrects two factual errors in the package
-vignette and now live-renders the worked-example figures (see
-[`NEWS.md`](CharAnalysis_2_0_R/NEWS.md) for the full change list). v2.0.3 is
-pending CRAN review; until it is accepted, the `dev` branch is the only place
-to obtain it.
+For in-development features ahead of the next CRAN release, install from the
+`dev` branch on GitHub:
 ```r
 # install.packages("devtools")
 devtools::install_github("phiguera/CharAnalysis",
