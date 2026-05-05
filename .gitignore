@@ -1,0 +1,17 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio per-user state
+.Rproj.user/
+
+# R CMD check artifacts
+*.Rcheck/
+
+# Stray temp files
+*.tmp
