@@ -1,8 +1,8 @@
-# CharAnalysis v2.0 Validation Report
+# *CharAnalysis* v2.0 Validation Report
 
 **Date:** March 30, 2026
-**Prepared by:** CharAnalysis Development Team
-**Comparison:** CharAnalysis v1.1 (MATLAB) vs. CharAnalysis v2.0 (MATLAB)
+**Prepared by:** *CharAnalysis* Development Team
+**Comparison:** *CharAnalysis* v1.1 (MATLAB) vs. *CharAnalysis* v2.0 (MATLAB)
 
 ---
 
