@@ -1,7 +1,7 @@
 Package: CharAnalysis
 Type: Package
 Title: Peak Detection and Fire History from Sediment-Charcoal Records
-Version: 2.0.3
+Version: 2.0.3.9000
 Date: 2026-04-29
 Authors@R: person("Philip", "Higuera",
     email   = "philip.higuera@umontana.edu",
