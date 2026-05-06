@@ -2,6 +2,57 @@
 
 Working document for the rplum integration project. Newest entries at the top.
 
+## Project goal
+
+For each sample (depth) in a charcoal record, compute P(peak) = the fraction of N posterior age-model realizations in which CharAnalysis identifies that sample as a peak, where N is on the order of 100 to 1000 draws from the age-depth posterior (rplum or comparable). The output is a sample-level posterior probability of peak rather than a binary classification, allowing users to distinguish robust peaks (high P) from age-marginal ones (low P).
+
+Intended scope of uncertainty propagation: chronological uncertainty as it flows through peak detection, including the threshold-chronology coupling. Different chronologies produce different smoothing window placements, which produce different local thresholds, which produce different peaks. P(peak) therefore reflects both age uncertainty and threshold variability propagated jointly through the algorithm. This is the desired behavior, not a limitation, and methods text describing CharAnalysis-with-uncertainty should be explicit about it.
+
+Out of scope for the initial integration: propagating uncertainty further downstream into fire return interval (FRI) distributions. That cascade (chronology uncertainty -> peak uncertainty -> FRI uncertainty) is a follow-up, with the peak-level posterior matrix providing a clean handoff to whatever the downstream FRI implementation looks like.
+
+(Section added 2026-05-06; revise here as scope evolves.)
+
+---
+
+## 2026-05-06 : architecture decision : source-agnostic core with rplum adapter (Option 3)
+
+### Decision
+Adopt a hybrid architecture in which the core peak-identification function takes a posterior age-depth matrix as input and is agnostic to its source.
+
+```r
+char_peak_id_uncertain(charcoal_data, age_posterior, params, ...)
+# age_posterior: matrix where rows = depths, columns = posterior draws
+```
+
+Provide a thin adapter for users who want to drive the workflow from rplum:
+
+```r
+age_posterior <- extract_age_posterior_rplum(rplum_object, depths)
+```
+
+And optionally a convenience wrapper that chains rplum and CharAnalysis for the common one-shot case:
+
+```r
+char_pipeline_with_rplum(rplum_object, charcoal_data, params, n_draws = 1000)
+```
+
+### Rationale
+Two alternative architectures were considered and rejected:
+
+1. **CharAnalysis wraps rplum end to end.** Adds rplum and rbacon as hard dependencies (both compile C++; rbacon depends on the external Bacon binary), which substantially raises install friction. Couples release cycles. Locks out users who use BChron, Clam, OxCal, or hand-built chronologies. Forces a poor iteration loop because every CharAnalysis parameter tweak triggers a rerun of millions of rplum MCMC iterations. Buries critical rplum priors (flux, supported 210Pb, accumulation rate, memory) behind a CharAnalysis API where they should not live.
+
+2. **Manual chronology export only, no rplum integration.** Reasonable but incomplete. Forces every user into a two-step workflow with no convenience path.
+
+Option 3 dominates: the core function works with any age-model output (including Phil's existing Matlab tool MCAgeDepth.m, which generates Monte Carlo age-depth iterations and predates rplum), the adapter handles the common rplum case, and `rplum` stays a Suggests dependency rather than Imports. This pattern is standard in R; tidymodels and brms use the same shape for source-specific extensions.
+
+### Implications for the kickoff design questions
+- Question 3 (additive vs. breaking API) is now resolved via the new function names. Existing `char_peak_id()` is untouched, so the integration is additive. Version bump at merge time will be 2.x minor unless something else in the implementation forces a breaking change.
+- Questions 1, 2, 4, and 5 remain open.
+
+### New considerations to track
+- `extract_age_posterior_rplum()` needs a clear specification of (a) which subset of MCMC draws to extract (after burn-in and thinning, per rplum's defaults or user override) and (b) how to handle the depth grid. rplum uses 1 cm internal sections by default; charcoal records often have irregular sample depths. Standard answer: interpolate rplum's posterior age-depth surface onto the charcoal sample depths.
+- A test using output from Phil's MCAgeDepth.m (or a synthetic posterior) will validate the source-agnostic claim before the rplum adapter is written. This is a good early task because it forces the input contract to be defined first.
+
 ---
 
 ## 2026-05-06 : project kickoff
