@@ -3,7 +3,7 @@
 ---
 This document describes planned future development of *CharAnalysis*. Items are
 listed in approximate priority order. It is not yet determined whether additional
-development beyond the R translation will occur in MATLAB, R, or both.
+development beyond the R translation will occur in R only or in both R and MATLAB.
 ---
 ## 1. R Translation ✓ *Complete — v2.0 (April 2026)*
 *CharAnalysis* v2.0 is a direct R translation of the MATLAB v2.0 implementation,
