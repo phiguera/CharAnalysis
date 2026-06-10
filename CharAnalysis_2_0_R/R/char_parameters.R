@@ -108,6 +108,52 @@ char_parameters <- function(file_name) {
   }
 
   # =========================================================================
+  # VALIDATE PARSED PARAMETER VECTOR
+  # Catch NA values at required positions before they propagate silently and
+  # produce cryptic errors downstream. Named vector maps label -> row position
+  # (1-based, after the header row).
+  # =========================================================================
+  required_pos <- c(
+    yrInterp     =  9L, transform    = 10L,
+    smoMethod    = 11L, smoYr        = 12L,
+    cPeak        = 13L, threshType   = 14L,
+    threshMethod = 15L, minCountP    = 20L,
+    peakFrequ    = 21L
+  )
+  na_pos <- required_pos[is.na(char_params[required_pos])]
+  if (length(na_pos) > 0L) {
+    stop(
+      "char_parameters: required parameter(s) are missing or non-numeric ",
+      "in column 3 of your params file:\n",
+      paste0("  ", names(na_pos), "  (row ", na_pos, " after the header)\n",
+             collapse = ""),
+      "Common causes:\n",
+      "  1. A blank cell instead of a numeric value in column 3.\n",
+      "  2. File re-saved from Excel in a non-English locale that uses ",
+      "semicolons as the CSV delimiter — open the file in a text editor and ",
+      "confirm it uses commas. If not, re-save via File > Save As > ",
+      "CSV UTF-8 (comma delimited).\n",
+      "  3. Rows added or removed relative to the template layout — rebuild ",
+      "from an unedited template_charParams.csv and change values only.\n",
+      "  4. Incomplete package installation — try reinstalling:\n",
+      "     remotes::install_github(\"phiguera/CharAnalysis\", ",
+      "subdir = \"CharAnalysis_2_0_R\")"
+    )
+  }
+
+  # Require at least 2 valid zoneDiv values (sentinels and NAs already present
+  # in the raw vector; stripping happens below, so check the raw vector here).
+  valid_zone_div <- char_params[1:8]
+  valid_zone_div <- valid_zone_div[!is.na(valid_zone_div) & valid_zone_div != -9999]
+  if (length(valid_zone_div) < 2L) {
+    stop(
+      "char_parameters: fewer than 2 valid zoneDiv values found in rows 1-8 ",
+      "of the params file. At least two values (record start and end) are ",
+      "required. Fill unused slots with -9999, not blank cells."
+    )
+  }
+
+  # =========================================================================
   # UNPACK PARAMETER VECTOR INTO NAMED LISTS
   # Positions 1-25 match the charParams worksheet rows 2-26 in the .xlsx
   # template, identical to the MATLAB layout.

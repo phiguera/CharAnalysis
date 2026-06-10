@@ -22,6 +22,32 @@
 char_validate_params <- function(char_data, pretreatment, smoothing,
                                   peak_analysis, results) {
 
+  # 0. Required scalar parameters must be non-NA ----------------------------
+  # char_parameters() normally guarantees this; guard here for callers that
+  # construct parameter lists directly.
+  scalar_params <- list(
+    "pretreatment$yrInterp"      = pretreatment$yrInterp,
+    "smoothing$method"           = smoothing$method,
+    "smoothing$yr"               = smoothing$yr,
+    "peak_analysis$cPeak"        = peak_analysis$cPeak,
+    "peak_analysis$threshType"   = peak_analysis$threshType,
+    "peak_analysis$threshMethod" = peak_analysis$threshMethod,
+    "peak_analysis$minCountP"    = peak_analysis$minCountP,
+    "peak_analysis$peakFrequ"    = peak_analysis$peakFrequ
+  )
+  na_params <- names(scalar_params)[
+    vapply(scalar_params, function(x) anyNA(x), logical(1L))
+  ]
+  if (length(na_params) > 0L) {
+    stop(
+      "char_validate_params: required parameter(s) are NA: ",
+      paste(na_params, collapse = ", "), ".\n",
+      "  This usually means the params file was not read correctly. ",
+      "See the char_parameters() error message for specific row numbers ",
+      "and likely causes."
+    )
+  }
+
   # 1. At least 6 columns ---------------------------------------------------
   if (ncol(char_data) < 6L) {
     stop("char_validate_params: char_data must have at least 6 columns ",
