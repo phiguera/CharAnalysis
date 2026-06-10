@@ -29,12 +29,22 @@
 #'   basename with the trailing \code{_charParams.csv} (15 characters) removed,
 #'   mirroring MATLAB's \code{fileName(1:end-15)} idiom.
 #'
-#'   **Parameter vector layout**: column 3 ("Parameters") of the CSV, rows
-#'   2-26 (25 data rows after the header), maps to positions 1-25 of the
-#'   internal \code{charParams} vector exactly as in the MATLAB codebase.
-#'   Unused \code{zoneDiv} slots are filled with \code{-9999} in the CSV
-#'   (sentinel) or \code{NaN} in Excel; both are stripped before the list is
-#'   returned.
+#'   **Parameter parsing (label-anchored).** Each parameter is located by the
+#'   label in the "Variable" column (column 2), not by a fixed row position.
+#'   A multi-row parameter (e.g. \code{zoneDiv}, \code{threshValues}) is written
+#'   on its labeled row plus any number of continuation rows whose "Variable"
+#'   cell is blank; the label is carried down across those blanks.  All values
+#'   for a given label are taken from the "Parameters" column (column 3).  This
+#'   means the number of \code{zoneDiv} rows is free to vary, and the values
+#'   below it are no longer shifted by the size of the \code{zoneDiv} block,
+#'   which was the failure mode of the earlier position-based reader.  Unused
+#'   \code{zoneDiv} slots may be left blank or set to the sentinel \code{-9999}
+#'   (CSV) or \code{NaN} (Excel); all are stripped before the list is returned.
+#'
+#'   Required scalar parameters must each resolve to exactly one numeric value.
+#'   If any required label is missing, misspelled, or has a non-numeric
+#'   "Parameters" cell, the function stops with a message naming the offending
+#'   row(s) rather than letting an \code{NA} propagate to a downstream check.
 #'
 #' @seealso [char_validate_params()], [char_pretreatment()], [CharAnalysis()]
 #'
@@ -52,22 +62,27 @@ char_parameters <- function(file_name) {
   ext <- tolower(tools::file_ext(file_name))
 
   # =========================================================================
-  # EXCEL PATH (.xls / .xlsx)
+  # READ RAW PARAMETER TABLE
+  # Each branch produces two vectors of equal length:
+  #   var_col : the "Variable" labels (column 2)
+  #   val_col : the numeric "Parameters" values (column 3)
+  # plus char_data and site.
   # =========================================================================
   if (ext %in% c("xls", "xlsx")) {
 
-    # Charcoal data sheet
+    # -- Charcoal data sheet --------------------------------------------------
     char_data_raw <- readxl::read_excel(file_name, sheet = "charData",
                                         col_names = TRUE)
     char_data        <- as.matrix(char_data_raw[, seq_len(6L)])
     storage.mode(char_data) <- "double"
 
-    # Parameter column: rows 2-26, column C (numeric values)
-    params_raw  <- readxl::read_excel(file_name, sheet = "charParams",
-                                      range = "C2:C26", col_names = FALSE)
-    char_params <- as.numeric(unlist(params_raw))
+    # -- Parameter sheet: columns B (Variable) and C (Parameters), rows 2-26 --
+    params_raw <- readxl::read_excel(file_name, sheet = "charParams",
+                                     range = "B2:C26", col_names = FALSE)
+    var_col <- as.character(params_raw[[1L]])
+    val_col <- suppressWarnings(as.numeric(params_raw[[2L]]))
 
-    # Site name from cell G1 of the charData sheet
+    # -- Site name from cell G1 of the charData sheet -------------------------
     site_raw <- readxl::read_excel(file_name, sheet = "charData",
                                    range = "G1:G1", col_names = FALSE)
     site <- if (!is.na(site_raw[[1L]][1L])) {
@@ -78,18 +93,14 @@ char_parameters <- function(file_name) {
       "UnknownSite"
     }
 
-  # =========================================================================
-  # CSV PATH
-  # =========================================================================
   } else {
 
-    # Site name: strip the trailing '_charParams.csv' (15 chars) from the
-    # base filename, matching MATLAB's  site = fileName(1:end-15)  idiom.
+    # -- Site name: strip the trailing '_charParams.csv' (15 chars) -----------
     base_name <- basename(file_name)
     site      <- substr(base_name, 1L, nchar(base_name) - 15L)
     dir_path  <- dirname(file_name)
 
-    # Companion charcoal data file
+    # -- Companion charcoal data file -----------------------------------------
     data_file <- file.path(dir_path, paste0(site, "_charData.csv"))
     if (!file.exists(data_file)) {
       stop("char_parameters: companion data file not found: ", data_file)
@@ -98,58 +109,110 @@ char_parameters <- function(file_name) {
                                            stringsAsFactors = FALSE))
     storage.mode(char_data) <- "double"
 
-    # Parameter file: skip header, read 25 data rows.
-    # Column 3 ("Parameters") contains the numeric values; all other columns
-    # are discarded.  suppressWarnings because some rows may have empty strings
-    # in the numeric column (handled cleanly by as.numeric -> NA).
-    params_df   <- read.csv(file_name, header = TRUE,
-                            stringsAsFactors = FALSE, nrows = 25L)
-    char_params <- suppressWarnings(as.numeric(params_df[[3L]]))
+    # -- Parameter file: column 2 (Variable), column 3 (Parameters) -----------
+    # suppressWarnings because blank/text value cells become NA via as.numeric.
+    params_df <- read.csv(file_name, header = TRUE, stringsAsFactors = FALSE)
+    var_col   <- as.character(params_df[[2L]])
+    val_col   <- suppressWarnings(as.numeric(params_df[[3L]]))
   }
 
   # =========================================================================
-  # UNPACK PARAMETER VECTOR INTO NAMED LISTS
-  # Positions 1-25 match the charParams worksheet rows 2-26 in the .xlsx
-  # template, identical to the MATLAB layout.
+  # LABEL-ANCHORED LOOKUP
+  # Carry each label down over blank continuation rows, then fetch all values
+  # belonging to a given label.
+  # =========================================================================
+  var_col <- trimws(var_col)
+  var_col[is.na(var_col)] <- ""
+  for (i in seq_along(var_col)) {
+    if (i > 1L && var_col[i] == "") var_col[i] <- var_col[i - 1L]
+  }
+
+  getv <- function(label) val_col[var_col == label]
+
+  # =========================================================================
+  # FAIL FAST ON MISSING / UNREADABLE REQUIRED PARAMETERS
+  # Each required label must resolve to exactly one numeric value.  A missing
+  # label yields length 0; a blank or non-numeric cell yields NA.  Catch both
+  # here, with the offending row(s) named, instead of letting NA reach a
+  # downstream if() and trigger "missing value, need TRUE/FALSE".
+  # =========================================================================
+  required <- list(
+    yrInterpolate           = getv("yrInterpolate"),
+    transform               = getv("transform"),
+    method                  = getv("method"),
+    yr                      = getv("yr"),
+    cPeak                   = getv("cPeak"),
+    threshType              = getv("threshType"),
+    threshMethod            = getv("threshMethod"),
+    minCountP               = getv("minCountP"),
+    peakFrequ               = getv("peakFrequ"),
+    `Cbackground sensitivity` = getv("Cbackground sensitivity"),
+    saveFigures             = getv("saveFigures"),
+    saveData                = getv("saveData")
+  )
+  bad <- names(required)[vapply(required,
+                                function(x) length(x) == 0L || is.na(x[1L]),
+                                logical(1L))]
+
+  thresh_values <- getv("threshValues")
+  thresh_values <- thresh_values[!is.na(thresh_values)]
+  if (length(thresh_values) == 0L) bad <- c(bad, "threshValues")
+
+  if (length(bad) > 0L) {
+    stop("char_parameters: could not read a numeric value for parameter ",
+         "row(s): ", paste(bad, collapse = ", "), ".\n",
+         "  Check that each label in the 'Variable' column matches the ",
+         "template exactly\n  and that its 'Parameters' cell contains a ",
+         "number.", call. = FALSE)
+  }
+
+  # =========================================================================
+  # UNPACK INTO NAMED LISTS
   # =========================================================================
 
-  # -- Pretreatment (positions 1-10) ----------------------------------------
-  zone_div <- char_params[1:8]
+  # -- Pretreatment ---------------------------------------------------------
+  zone_div <- getv("zoneDiv")
   zone_div <- zone_div[!is.na(zone_div) & zone_div != -9999]  # strip sentinels
 
   pretreatment <- list(
     zoneDiv   = zone_div,
-    yrInterp  = char_params[9L],
-    transform = char_params[10L]
+    yrInterp  = getv("yrInterpolate")[1L],
+    transform = getv("transform")[1L]
   )
 
-  # -- Smoothing (positions 11-12) ------------------------------------------
+  # -- Smoothing ------------------------------------------------------------
   smoothing <- list(
-    method = char_params[11L],
-    yr     = char_params[12L]
+    method = getv("method")[1L],
+    yr     = getv("yr")[1L]
   )
 
-  # -- PeakAnalysis (positions 13-22) ---------------------------------------
+  # -- PeakAnalysis ---------------------------------------------------------
+  # Keep up to four threshold values; the last is used for peak plotting and
+  # analysis, matching the MATLAB convention.
+  thresh_values <- thresh_values[seq_len(min(4L, length(thresh_values)))]
+
   peak_analysis <- list(
-    cPeak        = char_params[13L],
-    threshType   = char_params[14L],
-    threshMethod = char_params[15L],
-    threshValues = char_params[16:19],
-    minCountP    = char_params[20L],
-    peakFrequ    = char_params[21L],
-    bkgSens      = char_params[22L]
+    cPeak        = getv("cPeak")[1L],
+    threshType   = getv("threshType")[1L],
+    threshMethod = getv("threshMethod")[1L],
+    threshValues = thresh_values,
+    minCountP    = getv("minCountP")[1L],
+    peakFrequ    = getv("peakFrequ")[1L],
+    bkgSens      = getv("Cbackground sensitivity")[1L]
   )
 
-  # -- Results (positions 23-25) --------------------------------------------
-  all_figs <- if (length(char_params) >= 25L && !is.na(char_params[25L])) {
-    char_params[25L]
+  # -- Results --------------------------------------------------------------
+  # allFigures is optional; default to 1 (show all diagnostic figures).
+  all_figs_raw <- getv("allFigures")
+  all_figs <- if (length(all_figs_raw) >= 1L && !is.na(all_figs_raw[1L])) {
+    all_figs_raw[1L]
   } else {
-    1  # default: show all diagnostic figures
+    1
   }
 
   results <- list(
-    saveFigures = char_params[23L],
-    save        = char_params[24L],
+    saveFigures = getv("saveFigures")[1L],
+    save        = getv("saveData")[1L],
     allFigures  = all_figs
   )
 
