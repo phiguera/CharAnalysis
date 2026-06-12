@@ -1,3 +1,18 @@
+# *CharAnalysis* 2.0.4 (development version)
+
+## Bug fixes
+
+- `char_post_process()` now handles the global-threshold path
+  (`threshType = 1`) correctly. Previously a global run errored in
+  post-processing with `subscript out of bounds`, because the number of
+  reported threshold columns was taken from `ncol(charPeaks)` (the full
+  positive candidate-threshold grid, ~hundreds of columns) instead of the
+  number of `threshValues`, and the single global negative-threshold
+  column was indexed as though it had one column per `threshValue`. Both
+  the column count and the negative-threshold index are now derived from
+  the number of `threshValues`. Local-threshold results are unchanged.
+  This path was not previously exercised end to end.
+
 # *CharAnalysis* 2.0.3
 
 Patch release with substantive vignette improvements and several

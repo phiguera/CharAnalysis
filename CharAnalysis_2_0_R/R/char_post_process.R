@@ -145,7 +145,13 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
   r        <- pretreatment$yrInterp
   zone_div <- pretreatment$zoneDiv
   N        <- length(charcoal$ybpI)
-  T_thresh <- ncol(charcoal$charPeaks)
+  # Number of threshValue columns to report. For LOCAL thresholds this equals
+  # ncol(charPeaks). For GLOBAL thresholds char_peak_id() evaluates peaks across
+  # the full positive candidate-threshold grid, so ncol(charPeaks) is much
+  # larger than the number of threshValues; the global branch below maps those
+  # columns back to the threshValues via thresh_in. Use the threshValues count
+  # so both paths index char_thresh$pos (N x nThreshValues) correctly.
+  T_thresh <- length(peak_analysis$threshValues)
   alpha    <- 0.05
   n_boot   <- 100L
 
@@ -497,7 +503,9 @@ char_post_process <- function(charcoal, pretreatment, peak_analysis,
     charcoal$accIS,
     charcoal$peak,
     char_thresh$pos,              # [N x T_thresh] -- 4 columns (9-12)
-    char_thresh$neg[, T_thresh],  # final-threshold negative column (13)
+    # Local neg is [N x nThreshValues]; global neg is a single [N x 1] mirror
+    # column. Clamp the index so both paths return the final-threshold negative.
+    char_thresh$neg[, min(T_thresh, ncol(char_thresh$neg))],  # negative thresh (13)
     sni_col,                      # 14
     char_thresh$GOF,              # 15  (GOF vector; NA for global)
     charcoal_charpeaks,           # [N x T_thresh] peaks 1-4 (16-19)
