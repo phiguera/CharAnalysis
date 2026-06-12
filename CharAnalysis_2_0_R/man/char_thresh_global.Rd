@@ -11,7 +11,8 @@ char_thresh_global(
   site = NULL,
   results = NULL,
   plot_data = 0L,
-  bkg_sens_in = 0L
+  bkg_sens_in = 0L,
+  thresh_bins = NULL
 )
 }
 \arguments{
@@ -30,7 +31,20 @@ symmetry).}
 
 \item{plot_data}{0/1 flag; ignored in R.}
 
-\item{bkg_sens_in}{0/1 flag; ignored in R (no sensitivity loop).}
+\item{bkg_sens_in}{0/1 flag; ignored in R (retained for API symmetry with
+the MATLAB \code{CharThreshGlobal}).  In MATLAB this flag told the function
+to reuse Figure 2's axis limits for the candidate-threshold bins during the
+background-sensitivity loop.  In R the same effect is achieved explicitly
+via \code{thresh_bins} (below), so this flag has no behavioural role.}
+
+\item{thresh_bins}{Optional numeric vector of candidate threshold bins.  When
+\code{NULL} (default), bins are computed as 251 equally-spaced values
+spanning the C_peak range, exactly as before (so existing behaviour is
+unchanged).  When supplied, these bins are used verbatim instead.  This is
+the explicit R realisation of MATLAB's \code{bkgSensIn} mechanism: it lets
+\code{\link[=char_bkg_sensitivity]{char_bkg_sensitivity()}} hold the threshold
+grid fixed across smoothing windows so the resulting peak-count surface is
+rectangular.}
 }
 \value{
 Named list \code{char_thresh} with elements:

@@ -42,6 +42,10 @@ Named list with the following elements:
     \item{char_results}{Numeric matrix (\eqn{N \times 33}) matching the
       MATLAB \code{charResults} output exactly (alias of
       \code{post$char_results}).}
+    \item{bkg_sensitivity}{Present only when \code{peak_analysis$bkgSens == 1}
+      in the parameter file.  The list returned by [char_bkg_sensitivity()]
+      (window grid, peak-count surface, SNI/GOF, FRI summaries, and the
+      figure).}
   }
 }
 \description{
@@ -66,5 +70,6 @@ all intermediate and final results as a single named list.
 \seealso{
 [char_parameters()], [char_validate_params()],
   [char_pretreatment()], [char_smooth()], [char_thresh_global()],
-  [char_thresh_local()], [char_peak_id()], [char_post_process()]
+  [char_thresh_local()], [char_peak_id()], [char_post_process()],
+  [char_bkg_sensitivity()]
 }

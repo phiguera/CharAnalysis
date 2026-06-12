@@ -1,5 +1,28 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## New features
+
+- New function `char_bkg_sensitivity()` ports the background-window
+  sensitivity analysis from the MATLAB v2.0 `bkgCharSensitivity.m`
+  (Figure 10). It re-runs the smoothing -> C_peak -> threshold ->
+  peak-identification pipeline across a range of background smoothing
+  windows and summarises the result. On the global-threshold path it
+  produces a filled-contour surface of peaks identified versus threshold
+  and window width; on the local-threshold path it produces a four-panel
+  diagnostic (noise goodness-of-fit, signal-to-noise index, summed median
+  SNI + GOF, and mean fire-return interval with peak count). Figures use
+  `ggplot2`/`patchwork`, consistent with the other `char_plot_*` figures,
+  and save as a single PDF.
+- `CharAnalysis()` now honours the `bkgSens` parameter (parameter-file
+  row 23). When `bkgSens == 1` the sensitivity analysis runs automatically
+  and its results are attached to the returned object as
+  `out$bkg_sensitivity`; the figure is shown only when `allFigures == 1`
+  and, like the other figures, is never auto-saved.
+- `char_thresh_global()` gains an optional `thresh_bins` argument
+  (default `NULL`, preserving previous behaviour). It lets the threshold
+  grid be held fixed across smoothing windows, the explicit R realisation
+  of MATLAB's `bkgSensIn` mechanism. No change to existing results.
+
 ## Bug fixes
 
 - `char_post_process()` now handles the global-threshold path

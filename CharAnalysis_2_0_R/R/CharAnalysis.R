@@ -37,11 +37,16 @@
 #'     \item{char_results}{Numeric matrix (\eqn{N \times 33}) matching the
 #'       MATLAB \code{charResults} output exactly (alias of
 #'       \code{post$char_results}).}
+#'     \item{bkg_sensitivity}{Present only when \code{peak_analysis$bkgSens == 1}
+#'       in the parameter file.  The list returned by [char_bkg_sensitivity()]
+#'       (window grid, peak-count surface, SNI/GOF, FRI summaries, and the
+#'       figure).}
 #'   }
 #'
 #' @seealso [char_parameters()], [char_validate_params()],
 #'   [char_pretreatment()], [char_smooth()], [char_thresh_global()],
-#'   [char_thresh_local()], [char_peak_id()], [char_post_process()]
+#'   [char_thresh_local()], [char_peak_id()], [char_post_process()],
+#'   [char_bkg_sensitivity()]
 #'
 #' @examples
 #' \donttest{
@@ -219,6 +224,7 @@ CharAnalysis <- function(file_name = NULL) {
   message("                  char_plot_fri(out)            # Fig 6: FRI distributions")
   message("                  char_plot_fire_history(out)   # Fig 7: continuous fire history")
   message("                  char_plot_zones(out)          # Fig 8: CHAR zone comparisons")
+  message("    Sensitivity:  char_bkg_sensitivity(out)     # Fig 10: C_background window sensitivity")
 
   # Assemble and return ---------------------------------------------------------
   out <- list(
@@ -234,6 +240,25 @@ CharAnalysis <- function(file_name = NULL) {
     char_results  = char_results
   )
   class(out) <- c("CharAnalysis", "list")
+
+  # (7) Background-window sensitivity analysis (optional) -----------------------
+  # Gated by the params file: peak_analysis$bkgSens (CSV row 23, position 22).
+  # Mirrors CharAnalysis.m step (7). Numeric results are always computed when
+  # bkgSens == 1; the figure is shown only when allFigures == 1 (matching how
+  # Figs 1-2 are handled), and is never auto-saved (saving is explicit, like
+  # CSV output and the other figures).
+  if (isTRUE(out$peak_analysis$bkgSens == 1L)) {
+    message("(7) Running C_background sensitivity analysis (bkgSens = 1)...")
+    out$bkg_sensitivity <- char_bkg_sensitivity(out, save = FALSE,
+                                                verbose = TRUE)
+    if (isTRUE(out$results$allFigures == 1L) &&
+        !is.null(out$bkg_sensitivity$fig)) {
+      print(out$bkg_sensitivity$fig)
+    }
+    message("      ...done. Save the figure with: ",
+            "char_bkg_sensitivity(out, save = TRUE, out_dir = \"<your/path>\")")
+  }
+
   out
 }
 

@@ -17,3 +17,7 @@ Thumbs.db
 *.tmp
 _PROJECT.md
 CLAUDE.md
+
+# Generated MATLAB reference arrays for the R background-sensitivity test
+# (regenerate with CharAnalysis_2_0_MATLAB/z_dump_bkgSens_refs.m)
+bkgSens_refs/
