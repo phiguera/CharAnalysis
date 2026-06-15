@@ -10,7 +10,7 @@ utils::globalVariables(c(
 #' Re-runs the core CharAnalysis peak-detection pipeline across a range of
 #' background (low-frequency) smoothing windows and summarises how the results
 #' change with that choice.  Mirrors \code{bkgCharSensitivity.m} from the MATLAB
-#' v2.0 codebase (Figure 10).
+#' v2.0 codebase (Figure 5).
 #'
 #' For each candidate window width the function repeats the four core stages:
 #' [char_smooth()] -> compute C_peak -> [char_thresh_global()] or
@@ -263,7 +263,7 @@ char_bkg_sensitivity <- function(out, save = FALSE, out_dir = NULL,
     } else {
       if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
       path <- file.path(out_dir,
-                        paste0(site, "_10_sensitivity_to_C_background.pdf"))
+                        paste0(site, "_05_sensitivity_to_C_background.pdf"))
       ggplot2::ggsave(path, plot = fig, width = width, height = height,
                       units = "in", device = "pdf")
       message("Saved: ", path)
@@ -300,7 +300,7 @@ char_bkg_sensitivity <- function(out, save = FALSE, out_dir = NULL,
 }
 
 # Global threshold: filled-contour surface of peaks vs (threshold, window).
-# Mirrors MATLAB Figure 10 contourf() with the inverted-gray colormap and the
+# Mirrors MATLAB Figure 10 (R: Figure 5) contourf() with the inverted-gray colormap and the
 # x-axis truncated to the lower half of the threshold range.
 .bkg_sens_plot_global <- function(z, bk_smooth, thresh_bins, site) {
 
@@ -329,7 +329,7 @@ char_bkg_sensitivity <- function(out, save = FALSE, out_dir = NULL,
     .char_theme()
 }
 
-# Local threshold: 2 x 2 diagnostic panels.  Mirrors MATLAB Figure 10
+# Local threshold: 2 x 2 diagnostic panels.  Mirrors MATLAB Figure 10 (R: Figure 5)
 # subplots (a)-(d).
 .bkg_sens_plot_local <- function(z, SNI_i, GOF_i, mFRI, bk_smooth, site) {
 
