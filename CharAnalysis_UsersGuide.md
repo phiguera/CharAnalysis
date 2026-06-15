@@ -620,6 +620,8 @@ Output data are saved to a `CharResults` worksheet (.xlsx) or file (.csv) when `
 
 Output figures provide a detailed look at what the program is doing numerically and display publication-quality summaries of charcoal series and peak-analysis results. All time-series plots (except Figure 2) are scaled horizontally based on the amount of time analyzed. Up to 10 figures are produced depending on parameter choices.
 
+> **Note for R users:** The R package reorganizes output figures into diagnostic (Figs. 1–5) and analytical (Figs. 6–9) categories, and renumbers them accordingly. Figure numbers in the R package do not correspond directly to the MATLAB figure numbers described below. See the R package vignette (`vignette("CharAnalysis_intro")`) for R-specific figure descriptions and the `NEWS.md` file for the full renumbering table.
+
 ---
 
 **Figure 1: C<sub>raw</sub> and C<sub>interpolated</sub>; smoothing options**

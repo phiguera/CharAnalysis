@@ -157,83 +157,144 @@ sum(out$charcoal$charPeaks[, 4], na.rm = TRUE)
 
 ---
 
+### Recommended workflow: parameter evaluation before interpretation
+
+CharAnalysis separates figures into diagnostic and analytical categories for a reason: the diagnostic figures are tools for deciding whether and how to interpret the analytical figures, not just documentation of what the program did. Working through them in order matters.
+
+**Step 1: Assess interpolation and background smoothing (Figs 1 and 3)**
+
+Inspect Fig 1 (`char_plot_raw()`) and Fig 3 (`char_plot_peaks()`) together. The central question is whether the background trend tracks genuine low-frequency variation in charcoal accumulation without fitting the peaks you are trying to detect. A smoothing window that is too narrow absorbs peaks into the background; one that is too wide misses meaningful low-frequency variation.
+
+```r
+out <- CharAnalysis(params_file, plots = FALSE)
+char_plot_raw(out)    # Fig 1: compare smoothing methods and window widths
+char_plot_peaks(out)  # Fig 3: assess background fit and peak residuals
+```
+
+Adjust `smoothing$yr` and `smoothing$method` in the parameter file, re-run, and repeat until the background behavior is appropriate for the record.
+
+**Step 2: Evaluate signal quality before proceeding (Fig 4)**
+
+Before examining any fire-history results, inspect Fig 4 (`char_plot_sni()`). The signal-to-noise index (SNI; Kelly et al. 2011) quantifies whether the charcoal record has sufficient contrast between fire-event peaks and background noise to support statistically reliable peak detection. The recommended minimum is SNI > 3.0.
+
+```r
+char_plot_sni(out)   # Fig 4: SNI time series and distribution
+```
+
+**If SNI falls below 3.0 for substantial portions of the record, peak detection in those intervals is not well justified.** This is not a minor caveat. Fire events identified in low-SNI intervals cannot be distinguished from noise with confidence, and fire-history statistics derived from them — fire-return intervals, fire frequency, zone comparisons — should not be interpreted without explicit acknowledgment of this limitation. The `CharAnalysis()` console flags this condition when it occurs; take it seriously.
+
+When SNI is < 3, consider: (1) adjusting the smoothing window (wider windows often increase SNI by better separating signal from noise), (2) restricting interpretation to the portion of the record where SNI > 3.0, or (3) reconsidering whether peak analysis is the appropriate method for this record.
+
+**Step 3: Examine threshold diagnostics if needed (Fig 2)**
+
+Fig 2 (`char_plot_thresh_diag()`) shows how the threshold is determined. For the local-threshold path (`threshType = 2`), it displays a 5×5 grid of sliding windows, each showing the C~peak~ distribution, fitted noise component, and threshold value — useful for identifying windows where the noise model fits poorly. For the global-threshold path (`threshType = 1`), it shows a single histogram of C~peak~ values with the fitted noise distribution and selected threshold. The local-path version is computationally slower and most useful when Fig 4 suggests threshold instability; it is not necessary to examine on every run.
+
+```r
+char_plot_thresh_diag(out)   # Fig 2: threshold diagnostics
+```
+
+**Step 4: Generate analytical figures once diagnostics are satisfactory (Figs 6–9)**
+
+Only after the background, SNI, and threshold diagnostics are acceptable should you proceed to the analytical figures.
+
+```r
+char_plot_analysis(out)   # Figs 6-9: zone comparisons, cumulative peaks, FRI distributions, fire history
+```
+
+---
+
 ### Output figures
 
-*CharAnalysis* provides eight publication-quality ggplot2 figures. The five analytical figures (3, 5, 6, 7, 8) summarise the fire-history analysis at progressively higher levels of integration; the three diagnostic figures (1, 2, 4) support inspection of the pretreatment, smoothing, and threshold-determination steps. Each figure is produced by its own `char_plot_*()` function; the convenience wrapper `char_plot_all()` writes the five analytical figures to PDF in one call. The figures below render live from the Code Lake analysis just produced.
+*CharAnalysis* provides nine publication-quality ggplot2 figures organized into two categories. **Diagnostic figures (1-5)** support parameter selection and evaluation; they are produced automatically by `CharAnalysis()` (when `plots = TRUE`, the default) and can be regenerated at any time with `char_plot_diagnostic(out)`. **Analytical figures (6-9)** support fire-history interpretation and are produced by an explicit call to `char_plot_analysis(out)`. Each figure is also produced by its own `char_plot_*()` function for fine-grained control.
 
 The figures require the **ggplot2**, **patchwork**, and **ggtext** packages, all in `Suggests`. If any of these is unavailable in the current R environment the figure chunks below will be skipped silently.
 
-#### Figure 1 — Smoothing options for C~background~
+#### Diagnostic figures (Figs 1-5)
 
-`char_plot_raw()` is the diagnostic figure for the pretreatment and smoothing steps. It overlays the raw CHAR series, the resampled (interpolated) CHAR at the constant time-step set by `yrInterp`, and the C~background~ curves produced by all five smoothing methods (1: lowess; 2: robust lowess; 3: moving average; 4: moving median; 5: moving mode) over the user-specified smoothing window. Inspecting these alternatives helps assess whether the chosen smoothing method is well-behaved on the record at hand and whether the smoothing window is appropriate.
+##### Figure 1 — Smoothing options for C~background~
+
+`char_plot_raw()` overlays the raw CHAR series, the resampled (interpolated) CHAR at the constant time-step set by `yrInterp`, and the C~background~ curves produced by all five smoothing methods over the user-specified smoothing window. Inspecting these alternatives helps assess whether the chosen smoothing method is well-behaved on the record at hand and whether the smoothing window is appropriate.
 
 ```{r fig1, eval = PLOT_OK, fig.width = 7, fig.height = 5}
 char_plot_raw(out)
 ```
 
-#### Figure 2 — Local threshold determination diagnostics
+##### Figure 2 — Threshold determination diagnostics
 
-`char_plot_thresh_diag()` shows how the local threshold is determined within sliding windows along the record. The figure is organized as a 5×5 grid of windows, each panel showing the empirical C~peak~ distribution within that window, the fitted noise component (Gaussian or Gaussian mixture, per `threshMethod`), and the resulting threshold value at the working percentile. This diagnostic is useful for confirming that the local threshold algorithm is behaving sensibly across the full record, and for spotting any windows where the noise model fits poorly.
+`char_plot_thresh_diag()` shows how the local threshold is determined within sliding windows along the record. The figure is organized as a 5×5 grid of windows, each panel showing the empirical C~peak~ distribution within that window, the fitted noise component (Gaussian or Gaussian mixture, per `threshMethod`), and the resulting threshold value at the working percentile.
 
 ```{r fig2, eval = PLOT_OK, fig.width = 8, fig.height = 8}
 char_plot_thresh_diag(out)
 ```
 
-#### Figure 3 — C~interp~, C~background~, and C~peak~
+##### Figure 3 — C~interp~, C~background~, and C~peak~
 
-`char_plot_peaks()` is the diagnostic figure for the peak-detection step. The top panel shows the resampled charcoal accumulation rate (CHAR, black bars) with the fitted C~background~ trend overlaid as a grey line. The bottom panel shows the C~peak~ residual series with the positive and negative threshold lines (red), identified fire events (+ symbols), and candidate peaks that failed the minimum-count significance screen (grey dots). This is typically the first figure to inspect when assessing whether the smoothing window and threshold settings are appropriate for a given record.
+`char_plot_peaks()` shows the resampled CHAR with the fitted C~background~ trend (top panel) and the C~peak~ series with threshold lines, identified fire events, and screened candidates (bottom panel). This is typically the first figure to inspect when evaluating smoothing window and threshold settings.
 
 ```{r fig3, eval = PLOT_OK, fig.width = 7, fig.height = 6}
 char_plot_peaks(out)
 ```
 
-#### Figure 5 — Cumulative peaks through time
+##### Figure 4 — Threshold sensitivity and SNI
 
-`char_plot_cumulative()` shows the cumulative count of identified fire events plotted against age. The slope of the curve at any point reflects the instantaneous fire frequency: steeper slopes indicate higher fire frequency, gentler slopes lower fire frequency. Visible changes in slope identify periods of regime change in the record.
+`char_plot_sni()` shows sensitivity of peak identification to alternative threshold values and the signal-to-noise index (SNI) through time and as a distribution. The SNI dashed reference line at 3.0 marks the Kelly et al. (2011) minimum for reliable peak detection.
 
-```{r fig5, eval = PLOT_OK, fig.width = 7, fig.height = 4}
+```{r fig4, eval = PLOT_OK, fig.width = 9, fig.height = 6}
+char_plot_sni(out)
+```
+
+#### Analytical figures (Figs 6-9)
+
+##### Figure 6 — Between-zone CHAR comparisons
+
+`char_plot_zones()` tests whether raw charcoal accumulation differs between user-defined stratigraphic zones. The left panel shows empirical cumulative distribution functions of raw CHAR within each zone, with pairwise two-sample Kolmogorov-Smirnov p-values annotated. The right panel shows box plots of raw CHAR by zone.
+
+```{r fig6, eval = PLOT_OK, fig.width = 8, fig.height = 4}
+char_plot_zones(out)
+```
+
+##### Figure 7 — Cumulative peaks through time
+
+`char_plot_cumulative()` shows the cumulative count of identified fire events plotted against age. Changes in slope identify periods of regime change in fire frequency.
+
+```{r fig7, eval = PLOT_OK, fig.width = 7, fig.height = 4}
 char_plot_cumulative(out)
 ```
 
-#### Figure 6 — FRI distributions by zone
+##### Figure 8 — FRI distributions by zone
 
-`char_plot_fri()` summarises the distribution of fire-return intervals (FRIs) within each user-defined stratigraphic zone. Each panel shows a histogram of FRIs in 20-year bins, normalised to proportions of the zone's FRI population. A two-parameter Weibull probability density function is overlaid where the Kolmogorov-Smirnov goodness-of-fit test passes (p > 0.10 for n < 30; p > 0.05 for n ≥ 30). Weibull scale (*b*) and shape (*c*) parameters, mean FRI, and sample size are annotated on each panel.
+`char_plot_fri()` summarises the distribution of fire-return intervals (FRIs) within each user-defined zone. Each panel shows a histogram normalised to proportions, with a Weibull PDF overlaid where the KS goodness-of-fit test passes. Weibull scale (*b*) and shape (*c*) parameters, mean FRI, and sample size are annotated on each panel.
 
-```{r fig6, eval = PLOT_OK, fig.width = 7, fig.height = 5}
+```{r fig8, eval = PLOT_OK, fig.width = 7, fig.height = 5}
 char_plot_fri(out)
 ```
 
-#### Figure 7 — Continuous fire history
+##### Figure 9 — Continuous fire history
 
-`char_plot_fire_history()` is the integrated fire-history summary, with three stacked panels sharing a common time axis. The top panel shows peak magnitude (integrated C~peak~ above threshold, pieces cm^-2^ peak^-1^) for each fire event. The middle panel shows fire-return intervals through time as filled squares, with the smoothed mean FRI curve (black line) and bootstrapped 95% confidence ribbon (grey). The bottom panel shows lowess-smoothed fire frequency (fires per 1000 yr), the most common single summary in fire-history publications.
+`char_plot_fire_history()` is the integrated fire-history summary: peak magnitude (top), fire-return intervals through time with smoothed mean FRI and bootstrapped 95% CI (middle), and lowess-smoothed fire frequency (bottom).
 
-```{r fig7, eval = PLOT_OK, fig.width = 7, fig.height = 8}
+```{r fig9, eval = PLOT_OK, fig.width = 7, fig.height = 8}
 char_plot_fire_history(out)
-```
-
-#### Figure 8 — Between-zone CHAR comparisons
-
-`char_plot_zones()` tests whether raw charcoal accumulation differs between user-defined stratigraphic zones. The left panel shows empirical cumulative distribution functions of raw CHAR within each zone, with pairwise two-sample Kolmogorov-Smirnov p-values annotated. The right panel shows box plots (10th, 25th, 50th, 75th, 90th percentiles) of raw CHAR by zone, allowing direct visual comparison of central tendency and spread.
-
-```{r fig8, eval = PLOT_OK, fig.width = 8, fig.height = 4}
-char_plot_zones(out)
 ```
 
 #### Saving all figures to PDF
 
-`char_plot_all()` saves all five figures to PDF in one call. `out_dir` is required when `save = TRUE`. The example below writes to a temporary directory so it runs on any system; in your own work you would substitute a path of your choosing.
+`char_plot_diagnostic()` and `char_plot_analysis()` each accept `save = TRUE` and `out_dir` to save their respective figure sets. `char_plot_all()` saves all nine figures in one call.
 
 ```{r save-figs, eval = FALSE}
 char_plot_all(out, save = TRUE, out_dir = tempdir())
 # Saves to tempdir():
+#   CO_01_pretreatment.pdf           (Fig 1, when allFigures = 1)
+#   CO_02_threshold_determination.pdf (Fig 2, when allFigures = 1)
 #   CO_03_CHAR_analysis.pdf
-#   CO_05_cumulative_peaks.pdf
-#   CO_06_FRI_distributions.pdf
-#   CO_07_continuous_fire_hx.pdf
-#   CO_08_zone_comparisons.pdf
+#   CO_04_threshold_sensitivity_SNI.pdf
+#   CO_06_zone_comparisons.pdf
+#   CO_07_cumulative_peaks.pdf
+#   CO_08_FRI_distributions.pdf
+#   CO_09_continuous_fire_hx.pdf
 ```
 
-> **Note:** Figures 9 (threshold sensitivity detail) and 10 (multi-site comparisons) from the MATLAB v2.0 interface are not implemented in this R package. Figure 4 (`char_plot_sni()`, sensitivity to alternative threshold values and signal-to-noise index) is implemented but not displayed in this vignette; call it directly on the `out` object to inspect.
+> **Note:** The threshold-details figure (MATLAB Fig. 9) is not implemented in the R package. The background-sensitivity figure (Fig. 5, `char_bkg_sensitivity()`) is produced only when `bkgSens = 1` in the parameter file and is not shown here.
 
 ---
 

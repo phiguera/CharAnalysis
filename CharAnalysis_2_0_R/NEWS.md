@@ -1,6 +1,45 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Breaking changes
+
+Output figures are reorganized into **diagnostic** (Figs 1-5) and
+**analytical** (Figs 6-9) categories. Figure numbers and PDF filenames have
+changed from the previous release. MATLAB figure numbering is unaffected; see
+the User's Guide (Section 7.2) for a note on the R/MATLAB divergence.
+
+| Figure | Function | Previous number |
+|--------|----------|-----------------|
+| 1 | `char_plot_raw()` | 1 (unchanged) |
+| 2 | `char_plot_thresh_diag()` | 2 (unchanged) |
+| 3 | `char_plot_peaks()` | 3 (unchanged) |
+| 4 | `char_plot_sni()` | 4 (unchanged) |
+| **5** | `char_bkg_sensitivity()` | **10** |
+| **6** | `char_plot_zones()` | **8** |
+| **7** | `char_plot_cumulative()` | **5** |
+| **8** | `char_plot_fri()` | **6** |
+| **9** | `char_plot_fire_history()` | **7** |
+
+PDF filenames saved via `char_plot_all()` or the new wrappers reflect the new
+numbers (e.g. `site_05_sensitivity_to_C_background.pdf`,
+`site_06_zone_comparisons.pdf`).
+
+The `allFigures` parameter (parameter-file row 25) is still read without error
+but has no effect on figure output in the R package. All diagnostic figures
+(Figs 1-5) are now produced whenever `char_plot_diagnostic()` is called.
+Use `plots = FALSE` in `CharAnalysis()` to suppress automatic figure output.
+
 ## New features
+
+- Two new wrapper functions expose the diagnostic/analytical split directly:
+  `char_plot_diagnostic(out)` produces Figs 1-5 (parameter evaluation);
+  `char_plot_analysis(out)` produces Figs 6-9 (fire-history interpretation).
+  `char_plot_all()` is retained as a convenience wrapper that calls both.
+
+- `CharAnalysis()` gains a `plots` argument (default `TRUE`). When `TRUE`,
+  diagnostic figures (Figs 1-5) are produced automatically at the end of the
+  pipeline via `char_plot_diagnostic()`. Set `plots = FALSE` to suppress all
+  automatic figure output in scripts or batch jobs. Analytical figures are
+  always produced by an explicit call to `char_plot_analysis(out)`.
 
 - `CharAnalysis()` now emits a styled advisory (via the `cli` package) at the
   end of all console output when the signal-to-noise index (SNI) falls below
@@ -15,7 +54,7 @@
 
 - New function `char_bkg_sensitivity()` ports the background-window
   sensitivity analysis from the MATLAB v2.0 `bkgCharSensitivity.m`
-  (Figure 10). It re-runs the smoothing -> C_peak -> threshold ->
+  (MATLAB Figure 10; R Figure 5). It re-runs the smoothing -> C_peak -> threshold ->
   peak-identification pipeline across a range of background smoothing
   windows and summarises the result. On the global-threshold path it
   produces a filled-contour surface of peaks identified versus threshold
@@ -27,8 +66,8 @@
 - `CharAnalysis()` now honours the `bkgSens` parameter (parameter-file
   row 23). When `bkgSens == 1` the sensitivity analysis runs automatically
   and its results are attached to the returned object as
-  `out$bkg_sensitivity`; the figure is shown only when `allFigures == 1`
-  and, like the other figures, is never auto-saved.
+  `out$bkg_sensitivity`; the figure (Fig 5) is shown automatically when
+  `plots = TRUE` (default) in `CharAnalysis()`, and is never auto-saved.
 - `char_thresh_global()` gains an optional `thresh_bins` argument
   (default `NULL`, preserving previous behaviour). It lets the threshold
   grid be held fixed across smoothing windows, the explicit R realisation
@@ -60,7 +99,7 @@ behaviour or to any function signature.
   cleanly if any is missing.
 - Two diagnostic figures, `char_plot_raw()` (Fig. 1) and
   `char_plot_thresh_diag()` (Fig. 2), are now included in the
-  vignette alongside the analytical figures (Figs. 3, 5, 6, 7, 8).
+  vignette alongside the other figures.
 - A new bundled parameter file `CO_compensated_charParams.csv`
   (with companion `CO_compensated_charData.csv`) is shipped in
   `inst/validation/`. It is identical to the standard `CO_charParams.csv`
@@ -166,9 +205,11 @@ floating-point arithmetic differently in R and MATLAB, causing slightly
 different threshold values in some local windows. Peak counts differ by
 10–20% across validated datasets, with the direction varying by dataset.
 
-**Figures 9 and 10.** The threshold-sensitivity detail plot (Fig. 9) and
-multi-site comparison plot (Fig. 10) from the MATLAB interface are not
-implemented in this R package.
+**MATLAB figures not implemented in R.** The threshold-sensitivity detail
+plot (MATLAB Fig. 9) and multi-site comparison plot (MATLAB Fig. 10) are
+not implemented in this R package. The background-sensitivity analysis
+(MATLAB Fig. 10) is implemented as `char_bkg_sensitivity()` (R Fig. 5)
+but produces a different layout than the MATLAB version.
 
 **Smoothed FRI column (col 23).** The R package computes smoothed
 fire-return intervals in this column; MATLAB v2.0 stores NaN.

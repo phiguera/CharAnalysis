@@ -11,14 +11,15 @@ released to CRAN in April 2026. The package is in the
 [experimental](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 lifecycle stage; the API may evolve as user feedback is incorporated.
 The R package (`CharAnalysis_2_0_R/`) reproduces the full five-step analytical
-pipeline and all eight output figures. Key design choices:
+pipeline and nine output figures organized into diagnostic (Figs 1-5) and
+analytical (Figs 6-9) categories. Key design choices:
 - **Quantitative equivalence**: validated against MATLAB v2.0 on four benchmark
   datasets (Code Lake, Chickaree Lake, Silver Lake, Raven Lake). Known numerical
   differences are documented in `NEWS.md` and `inst/z_Validation_report_R_vs_MATLAB_V_2.0.md`.
 - **GMM implementation**: the Gaussian mixture model threshold uses a direct port
   of the MATLAB `GaussianMixture.m` EM algorithm rather than an existing R package,
   preserving numerical comparability with the reference implementation.
-- **Figures**: eight publication-quality ggplot2 figures mirroring the MATLAB output.
+- **Figures**: nine publication-quality ggplot2 figures; `char_plot_diagnostic()` (Figs 1-5) and `char_plot_analysis()` (Figs 6-9) separate parameter-evaluation from fire-history interpretation.
 - **API**: snake_case function names (`char_plot_peaks()`, `char_write_results()`,
   etc.) following R community conventions; the top-level entry point `CharAnalysis()`
   retains its original name for continuity.
