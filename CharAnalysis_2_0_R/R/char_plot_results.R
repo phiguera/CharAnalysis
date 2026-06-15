@@ -1,31 +1,40 @@
 #' CharAnalysis output figures
 #'
-#' Nine output figures mirroring the MATLAB CharAnalysis v2.0 plots.
-#' Function names follow R snake_case conventions.
+#' Nine output figures organized into diagnostic (Figs 1-5) and analytical
+#' (Figs 6-9) categories. Function names follow R snake_case conventions.
 #'
 #' \describe{
-#'   \item{[char_plot_raw()]}{Figure 1 (allFigures only):
+#'   \item{[char_plot_diagnostic()]}{Diagnostic wrapper (Figs 1-5): produces
+#'     all figures that support parameter selection and evaluation.
+#'     Fig 5 (\code{char_bkg_sensitivity()}) is shown only when the
+#'     background-sensitivity analysis was run (\code{bkgSens = 1}).
+#'     The \code{allFigures} parameter in the parameter file is read but
+#'     has no effect on figure output in the R package.}
+#'   \item{[char_plot_analysis()]}{Analytical wrapper (Figs 6-9): produces
+#'     all figures that support fire-history interpretation.}
+#'   \item{[char_plot_raw()]}{Figure 1:
 #'     C_raw, C_interpolated, and C_background smoothing options.}
-#'   \item{[char_plot_thresh_diag()]}{Figure 2 (allFigures only):
-#'     Local threshold determination diagnostics (5x5 window grid).}
+#'   \item{[char_plot_thresh_diag()]}{Figure 2:
+#'     Threshold determination diagnostics (5x5 window grid).}
 #'   \item{[char_plot_peaks()]}{Figure 3: Resampled CHAR with
 #'     background trend (top) and C_peak with thresholds and peak markers (bottom).}
 #'   \item{[char_plot_sni()]}{Figure 4: Sensitivity to alternative
 #'     thresholds and signal-to-noise index.}
-#'   \item{[char_plot_cumulative()]}{Figure 5: Cumulative peaks through time.}
-#'   \item{[char_plot_fri()]}{Figure 6: FRI distributions by
+#'   \item{[char_plot_zones()]}{Figure 6: Between-zone comparisons
+#'     of raw CHAR distributions (CDF and box plots).}
+#'   \item{[char_plot_cumulative()]}{Figure 7: Cumulative peaks through time.}
+#'   \item{[char_plot_fri()]}{Figure 8: FRI distributions by
 #'     zone with Weibull model fits.}
-#'   \item{[char_plot_fire_history()]}{Figure 7: Peak magnitude (top),
+#'   \item{[char_plot_fire_history()]}{Figure 9: Peak magnitude (top),
 #'     FRIs through time with smoothed FRI and CI ribbon (middle), and smoothed
 #'     fire frequency (bottom).}
-#'   \item{[char_plot_zones()]}{Figure 8: Between-zone comparisons
-#'     of raw CHAR distributions (CDF and box plots).}
-#'   \item{[char_plot_all()]}{Convenience wrapper: produces all figures and
-#'     optionally saves them as PDF files.}
+#'   \item{[char_plot_all()]}{Convenience wrapper: calls
+#'     \code{char_plot_diagnostic()} then \code{char_plot_analysis()} and
+#'     optionally saves all figures as PDF files.}
 #' }
 #'
 #' @name char_plot
-#' @aliases char_plot_raw char_plot_thresh_diag char_plot_peaks char_plot_sni char_plot_cumulative char_plot_fri char_plot_fire_history char_plot_zones char_plot_all
+#' @aliases char_plot_diagnostic char_plot_analysis char_plot_raw char_plot_thresh_diag char_plot_peaks char_plot_sni char_plot_cumulative char_plot_fri char_plot_fire_history char_plot_zones char_plot_all
 #'
 #' @param out Named list returned by [CharAnalysis()].  Must contain
 #'   \code{charcoal}, \code{pretreatment}, \code{peak_analysis},
@@ -39,26 +48,37 @@
 #'
 #' @return
 #'   Individual figure functions each return a \pkg{patchwork} / \pkg{ggplot2}
-#'   object.  \code{char_plot_all()} returns a named list of all figure objects.
+#'   object invisibly.  Wrapper functions (\code{char_plot_diagnostic()},
+#'   \code{char_plot_analysis()}, \code{char_plot_all()}) return a named list
+#'   of figure objects invisibly.
 #'
 #' @details
 #'   Requires the \pkg{ggplot2} package.  Multi-panel layout uses
 #'   \pkg{patchwork} if available; otherwise panels are printed separately
 #'   with a message.
 #'
-#' @seealso [CharAnalysis()], [char_post_process()]
+#'   The intended workflow is: run \code{CharAnalysis()} (which automatically
+#'   produces diagnostic figures when \code{plots = TRUE}), inspect and adjust
+#'   parameters as needed, then call \code{char_plot_analysis()} once satisfied
+#'   to generate the fire-history interpretation figures.
+#'
+#' @seealso [CharAnalysis()], [char_bkg_sensitivity()], [char_post_process()]
 #'
 #' @examples
 #' \donttest{
 #'   # Run pipeline on the bundled example dataset, then plot:
 #'   params_file <- system.file("validation", "CO_charParams.csv",
 #'                              package = "CharAnalysis")
-#'   out <- CharAnalysis(params_file)
-#'   char_plot_peaks(out)
-#'   char_plot_fire_history(out)
+#'   out <- CharAnalysis(params_file, plots = FALSE)
+#'   # Diagnostic figures (parameter evaluation):
+#'   char_plot_diagnostic(out)
+#'   # Analytical figures (fire-history interpretation):
+#'   char_plot_analysis(out)
 #'   # Individual figures can also be called directly:
-#'   char_plot_sni(out)
-#'   char_plot_fri(out)
+#'   char_plot_peaks(out)     # Fig 3
+#'   char_plot_sni(out)       # Fig 4
+#'   char_plot_fri(out)       # Fig 8
+#'   char_plot_fire_history(out)  # Fig 9
 #'   # Save all figures to PDF in a temporary directory:
 #'   char_plot_all(out, save = TRUE, out_dir = tempdir())
 #' }
@@ -1657,6 +1677,135 @@ char_plot_sni <- function(out) {
 
 
 # =============================================================================
+# char_plot_diagnostic  --  diagnostic figure wrapper (Figs 1-5)
+# =============================================================================
+
+#' @rdname char_plot
+#' @export
+char_plot_diagnostic <- function(out, save = FALSE, out_dir = NULL,
+                                  width = 11, height = 8.5) {
+
+  .require_ggplot2()
+
+  if (isTRUE(save)) {
+    if (is.null(out_dir))
+      stop("When save = TRUE, please supply 'out_dir' for the saved PDFs. ",
+           "Use tempdir() for a transient location, or a path of your choosing.",
+           call. = FALSE)
+    if (!is.character(out_dir) || length(out_dir) != 1L || nchar(out_dir) == 0L)
+      stop("'out_dir' must be a non-empty character string.", call. = FALSE)
+  }
+
+  # Fig 1: C_raw / C_resampled / C_background options (auto-prints internally)
+  fig1 <- char_plot_raw(out)
+
+  # Fig 2: threshold determination diagnostics (auto-prints internally)
+  fig2 <- char_plot_thresh_diag(out)
+
+  # Fig 3: C_interp / C_background / C_peak (always shown)
+  fig3 <- char_plot_peaks(out)
+  if (!is.null(fig3)) print(fig3)
+
+  # Fig 4: threshold sensitivity and SNI (auto-prints internally)
+  fig4 <- char_plot_sni(out)
+
+  # Fig 5: C_background window sensitivity (only when bkgSens was run)
+  fig5 <- out$bkg_sensitivity$fig
+  if (!is.null(fig5)) print(fig5)
+
+  if (save) {
+    if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+    site <- out$site
+    figs <- list(
+      list(fig = fig1, name = "01_pretreatment"),
+      list(fig = fig2, name = "02_threshold_determination"),
+      list(fig = fig3, name = "03_CHAR_analysis"),
+      list(fig = fig4, name = "04_threshold_sensitivity_SNI"),
+      list(fig = fig5, name = "05_sensitivity_to_C_background")
+    )
+    for (f in figs) {
+      if (!is.null(f$fig)) {
+        path <- file.path(out_dir, paste0(site, "_", f$name, ".pdf"))
+        ggplot2::ggsave(path, plot = f$fig, width = width, height = height,
+                        units = "in", device = "pdf")
+        message("Saved: ", path)
+      }
+    }
+  }
+
+  invisible(list(
+    fig_pretreatment  = fig1,
+    fig_threshold     = fig2,
+    fig_char          = fig3,
+    fig_threshold_sni = fig4,
+    fig_bkg_sens      = fig5
+  ))
+}
+
+# =============================================================================
+# char_plot_analysis  --  analytical figure wrapper (Figs 6-9)
+# =============================================================================
+
+#' @rdname char_plot
+#' @export
+char_plot_analysis <- function(out, save = FALSE, out_dir = NULL,
+                                width = 11, height = 8.5) {
+
+  .require_ggplot2()
+
+  if (isTRUE(save)) {
+    if (is.null(out_dir))
+      stop("When save = TRUE, please supply 'out_dir' for the saved PDFs. ",
+           "Use tempdir() for a transient location, or a path of your choosing.",
+           call. = FALSE)
+    if (!is.character(out_dir) || length(out_dir) != 1L || nchar(out_dir) == 0L)
+      stop("'out_dir' must be a non-empty character string.", call. = FALSE)
+  }
+
+  # Fig 6: between-zone CHAR comparisons (sets context for zone-specific results)
+  fig6 <- char_plot_zones(out)
+  if (!is.null(fig6)) print(fig6)
+
+  # Fig 7: cumulative peaks through time
+  fig7 <- char_plot_cumulative(out)
+  if (!is.null(fig7)) print(fig7)
+
+  # Fig 8: FRI distributions by zone with Weibull fits
+  fig8 <- char_plot_fri(out)
+  if (!is.null(fig8)) print(fig8)
+
+  # Fig 9: continuous fire history (peak magnitude, FRIs, fire frequency)
+  fig9 <- char_plot_fire_history(out)
+  if (!is.null(fig9)) print(fig9)
+
+  if (save) {
+    if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+    site <- out$site
+    figs <- list(
+      list(fig = fig6, name = "06_zone_comparisons"),
+      list(fig = fig7, name = "07_cumulative_peaks"),
+      list(fig = fig8, name = "08_FRI_distributions"),
+      list(fig = fig9, name = "09_continuous_fire_hx")
+    )
+    for (f in figs) {
+      if (!is.null(f$fig)) {
+        path <- file.path(out_dir, paste0(site, "_", f$name, ".pdf"))
+        ggplot2::ggsave(path, plot = f$fig, width = width, height = height,
+                        units = "in", device = "pdf")
+        message("Saved: ", path)
+      }
+    }
+  }
+
+  invisible(list(
+    fig_zones        = fig6,
+    fig_cumulative   = fig7,
+    fig_fri_dist     = fig8,
+    fig_fire_history = fig9
+  ))
+}
+
+# =============================================================================
 # char_plot_all  --  produce and optionally save all figures
 # =============================================================================
 
@@ -1675,54 +1824,12 @@ char_plot_all <- function(out, save = FALSE, out_dir = NULL, width = 11, height 
       stop("'out_dir' must be a non-empty character string.", call. = FALSE)
   }
 
-  all_figs <- isTRUE(out$results$allFigures == 1L)
+  diag <- char_plot_diagnostic(out, save = save, out_dir = out_dir,
+                                width = width, height = height)
+  anly <- char_plot_analysis(out,  save = save, out_dir = out_dir,
+                              width = width, height = height)
 
-  fig1 <- if (all_figs) char_plot_raw(out) else NULL
-  fig2 <- if (all_figs) char_plot_thresh_diag(out) else NULL
-  fig3 <- char_plot_peaks(out)
-  fig4 <- char_plot_sni(out)
-  fig5 <- char_plot_cumulative(out)
-  fig6 <- char_plot_fri(out)
-  fig7 <- char_plot_fire_history(out)
-  fig8 <- char_plot_zones(out)
-
-  for (fig in list(fig3, fig4, fig5, fig6, fig7, fig8)) {
-    if (!is.null(fig)) print(fig)
-  }
-
-  if (save) {
-    if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-    site <- out$site
-    figs <- list(
-      list(fig = fig1, name = "01_pretreatment"),
-      list(fig = fig2, name = "02_threshold_determination"),
-      list(fig = fig3, name = "03_CHAR_analysis"),
-      list(fig = fig4, name = "04_threshold_sensitivity_SNI"),
-      list(fig = fig5, name = "05_cumulative_peaks"),
-      list(fig = fig6, name = "06_FRI_distributions"),
-      list(fig = fig7, name = "07_continuous_fire_hx"),
-      list(fig = fig8, name = "08_zone_comparisons")
-    )
-    for (f in figs) {
-      if (!is.null(f$fig)) {
-        path <- file.path(out_dir, paste0(site, "_", f$name, ".pdf"))
-        ggplot2::ggsave(path, plot = f$fig, width = width, height = height,
-                        units = "in", device = "pdf")
-        message("Saved: ", path)
-      }
-    }
-  }
-
-  invisible(list(
-    fig_pretreatment       = fig1,
-    fig_threshold          = fig2,
-    fig_char               = fig3,
-    fig_threshold_sni      = fig4,
-    fig_cumulative         = fig5,
-    fig_fri_dist           = fig6,
-    fig_fire_history       = fig7,
-    fig_zones              = fig8
-  ))
+  invisible(c(diag, anly))
 }
 
 # =============================================================================

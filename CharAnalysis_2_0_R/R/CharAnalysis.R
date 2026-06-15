@@ -62,8 +62,18 @@
 #'   # Phase 3 outputs
 #'   sum(out$charcoal$charPeaks[, ncol(out$charcoal$charPeaks)])
 #' }
+#' @param plots Logical.  If \code{TRUE} (default), all diagnostic figures
+#'   (Figs 1-5) are produced automatically at the end of the pipeline via
+#'   \code{\link{char_plot_diagnostic}}.  Fig 5 is shown only when the
+#'   background-sensitivity analysis was run (\code{bkgSens = 1}).  The
+#'   \code{allFigures} parameter in the parameter file is read but has no
+#'   effect on figure output in the R package.  Set \code{plots = FALSE} to
+#'   suppress all automatic figure output, e.g. in scripts or batch jobs.
+#'   Analytical figures (Figs 6-9) are always produced by calling
+#'   \code{\link{char_plot_analysis}(out)} explicitly.
+#'
 #' @export
-CharAnalysis <- function(file_name = NULL) {
+CharAnalysis <- function(file_name = NULL, plots = TRUE) {
 
   # If no file supplied, open an interactive picker (mirrors MATLAB behaviour
   # of prompting when CharAnalysis is called with no argument).
@@ -115,16 +125,6 @@ CharAnalysis <- function(file_name = NULL) {
                            params$smoothing,
                            params$results,
                            plot_data = 0L)
-
-  # Figure 1 (allFigures only): C_raw / C_resampled / C_background options.
-  # Mirrors MATLAB CharPretreatment.m subplot 1 + CharSmooth.m subplot 2.
-  if (isTRUE(params$results$allFigures == 1L)) {
-    mini_out <- list(charcoal     = charcoal,
-                     pretreatment = pre$pretreatment,
-                     smoothing    = params$smoothing,
-                     site         = params$site)
-    char_plot_raw(mini_out)
-  }
 
   # Guard: cannot compute ratio C_peak when background contains a zero.
   # Mirrors CharAnalysis.m lines 119-121.
@@ -201,18 +201,6 @@ CharAnalysis <- function(file_name = NULL) {
     }
   }
 
-  # Figure 2 (allFigures only): threshold determination diagnostics.
-  # Mirrors MATLAB CharThreshGlobal.m (single panel) or
-  # CharThreshLocal.m (5x5 grid of local window distributions).
-  if (isTRUE(params$results$allFigures == 1L)) {
-    mini_out2 <- list(charcoal      = charcoal,
-                      char_thresh   = char_thresh,
-                      peak_analysis = params$peak_analysis,
-                      pretreatment  = pre$pretreatment,
-                      site          = params$site)
-    char_plot_thresh_diag(mini_out2)
-  }
-
   # (5) Identify peaks ----------------------------------------------------------
   # Mirrors CharAnalysis.m step (5): CharPeakID()
   message("(5) Identifying peaks and applying minimum-count screening...")
@@ -244,17 +232,18 @@ CharAnalysis <- function(file_name = NULL) {
   # written automatically here (prevents accidental overwrites of reference data).
   message("(7) Analysis complete.")
   message("    Save CSV:     char_write_results(out$char_results, out$site, out_dir = \"<your/path>\")")
-  message("    All figures:  char_plot_all(out)  [Figs 1-2 only when allFigures = 1]")
-  message("                  char_plot_all(out, save = TRUE, out_dir = \"<your/path>\")  # save PDFs")
-  message("    One figure:   char_plot_raw(out)            # Fig 1: C_raw, C_interp, C_back options")
+  message("    Diagnostic:   char_plot_diagnostic(out)     # Figs 1-5 [Fig 5 only when bkgSens = 1]")
+  message("    Analytical:   char_plot_analysis(out)       # Figs 6-9: zone comparisons, cumulative peaks, FRI, fire history")
+  message("    All + save:   char_plot_all(out, save = TRUE, out_dir = \"<your/path>\")  # save all PDFs")
+  message("    Individual:   char_plot_raw(out)            # Fig 1: C_raw, C_interp, C_back options")
   message("                  char_plot_thresh_diag(out)    # Fig 2: threshold diagnostics")
-  message("                  char_plot_peaks(out)          # Fig 3: peak analysis")
+  message("                  char_plot_peaks(out)          # Fig 3: C_interp, C_back, and C_peak")
   message("                  char_plot_sni(out)            # Fig 4: threshold sensitivity and SNI")
-  message("                  char_plot_cumulative(out)     # Fig 5: cumulative peaks")
-  message("                  char_plot_fri(out)            # Fig 6: FRI distributions")
-  message("                  char_plot_fire_history(out)   # Fig 7: continuous fire history")
-  message("                  char_plot_zones(out)          # Fig 8: CHAR zone comparisons")
-  message("    Sensitivity:  char_bkg_sensitivity(out)     # Fig 10: C_background window sensitivity")
+  message("                  char_bkg_sensitivity(out)     # Fig 5: C_background window sensitivity")
+  message("                  char_plot_zones(out)          # Fig 6: CHAR zone comparisons")
+  message("                  char_plot_cumulative(out)     # Fig 7: cumulative peaks")
+  message("                  char_plot_fri(out)            # Fig 8: FRI distributions")
+  message("                  char_plot_fire_history(out)   # Fig 9: continuous fire history")
 
   # Emit SNI advisory last, after all other output, so it is not buried.
   if (!is.null(sni_advisory)) {
@@ -282,19 +271,22 @@ CharAnalysis <- function(file_name = NULL) {
   # (7) Background-window sensitivity analysis (optional) -----------------------
   # Gated by the params file: peak_analysis$bkgSens (CSV row 23, position 22).
   # Mirrors CharAnalysis.m step (7). Numeric results are always computed when
-  # bkgSens == 1; the figure is shown only when allFigures == 1 (matching how
-  # Figs 1-2 are handled), and is never auto-saved (saving is explicit, like
-  # CSV output and the other figures).
+  # bkgSens == 1; the figure is stored in out$bkg_sensitivity$fig and displayed
+  # via char_plot_diagnostic() below when plots = TRUE.  Saving is explicit via
+  # char_bkg_sensitivity(out, save = TRUE, out_dir = "<path>").
   if (isTRUE(out$peak_analysis$bkgSens == 1L)) {
     message("(7) Running C_background sensitivity analysis (bkgSens = 1)...")
     out$bkg_sensitivity <- char_bkg_sensitivity(out, save = FALSE,
                                                 verbose = TRUE)
-    if (isTRUE(out$results$allFigures == 1L) &&
-        !is.null(out$bkg_sensitivity$fig)) {
-      print(out$bkg_sensitivity$fig)
-    }
-    message("      ...done. Save the figure with: ",
-            "char_bkg_sensitivity(out, save = TRUE, out_dir = \"<your/path>\")")
+    message("      ...done.")
+  }
+
+  # Diagnostic figures (Figs 1-5) ----------------------------------------------
+  # Produced automatically when plots = TRUE (default).  Set plots = FALSE to
+  # suppress in scripts or batch jobs.  Analytical figures (Figs 6-9) are
+  # always produced by calling char_plot_analysis(out) explicitly.
+  if (isTRUE(plots)) {
+    char_plot_diagnostic(out)
   }
 
   out

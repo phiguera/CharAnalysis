@@ -1,7 +1,7 @@
 # =============================================================================
 # test_bkg_sensitivity.R
 # Validation of char_bkg_sensitivity() against the MATLAB v2.0
-# bkgCharSensitivity.m (Figure 10).
+# bkgCharSensitivity.m (MATLAB Figure 10; R Figure 5).
 #
 # Datasets:
 #   CO local   (Code Lake, threshType = 2; 2x2 diagnostic path)
