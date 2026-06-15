@@ -65,7 +65,7 @@ The analysis branches on \code{peak_analysis$threshType}:
   \item{Global threshold (\code{threshType = 1})}{Produces a filled-contour
     surface of the number of peaks identified as a function of the candidate
     threshold (C_peak units, x) and the smoothing-window width (yr, y).  The
-    threshold grid is held fixed across windows (see below) so the surface
+    threshold grid is held fixed across windows (see Details) so the surface
     is rectangular.}
   \item{Local threshold (\code{threshType = 2})}{Produces a four-panel
     diagnostic: (a) noise goodness-of-fit (KS p-value) by window, (b)
@@ -74,7 +74,8 @@ The analysis branches on \code{peak_analysis$threshType}:
     fire-return interval +/- SD with the peak count on a second axis.}
 }
 
-## Window range (mirrors MATLAB)
+
+  ## Window range (mirrors MATLAB)
   The maximum window is \code{min(1000, floor(max(age)/100) * 100)} so it
   stays shorter than the record.  The minimum window is 100 yr on the global
   path, or \code{30 * yrInterp} floored to the nearest 100 yr (clamped to
@@ -83,7 +84,7 @@ The analysis branches on \code{peak_analysis$threshType}:
   errors when \code{30 * yrInterp} falls outside 100-600; here it is clamped
   and a short record that yields \code{bkgMin > bkgMax} raises a clear error.)
 
-## Fixed threshold grid (global path)
+  ## Fixed threshold grid (global path)
   In MATLAB the global-threshold contour relies on \code{bkgSensIn = 1}, which
   makes \code{CharThreshGlobal} reuse Figure 2's axis limits so every window
   shares one candidate-threshold grid.  Here that coupling is made explicit:
@@ -104,5 +105,5 @@ The analysis branches on \code{peak_analysis$threshType}:
 }
 \seealso{
 [CharAnalysis()], [char_smooth()], [char_thresh_global()],
-[char_thresh_local()], [char_peak_id()]
+  [char_thresh_local()], [char_peak_id()]
 }

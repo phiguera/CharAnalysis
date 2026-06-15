@@ -42,9 +42,8 @@ via \code{thresh_bins} (below), so this flag has no behavioural role.}
 spanning the C_peak range, exactly as before (so existing behaviour is
 unchanged).  When supplied, these bins are used verbatim instead.  This is
 the explicit R realisation of MATLAB's \code{bkgSensIn} mechanism: it lets
-\code{\link[=char_bkg_sensitivity]{char_bkg_sensitivity()}} hold the threshold
-grid fixed across smoothing windows so the resulting peak-count surface is
-rectangular.}
+[char_bkg_sensitivity()] hold the threshold grid fixed across smoothing
+windows so the resulting peak-count surface is rectangular.}
 }
 \value{
 Named list \code{char_thresh} with elements:

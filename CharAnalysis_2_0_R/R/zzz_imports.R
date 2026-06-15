@@ -6,8 +6,7 @@
 
 #' @importFrom MASS fitdistr
 #' @importFrom graphics hist
-#' @importFrom stats approx approxfun dnorm ks.test lowess median pnorm
-#'   pweibull qnorm quantile sd var
+#' @importFrom stats approx approxfun dnorm ks.test lowess median pnorm pweibull qnorm quantile sd var
 #' @importFrom utils read.csv write.table
 #' @importFrom zoo rollapply
 NULL

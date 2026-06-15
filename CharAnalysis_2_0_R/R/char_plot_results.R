@@ -25,10 +25,7 @@
 #' }
 #'
 #' @name char_plot
-#' @aliases char_plot_raw char_plot_thresh_diag
-#'   char_plot_peaks char_plot_sni
-#'   char_plot_cumulative char_plot_fri
-#'   char_plot_fire_history char_plot_zones char_plot_all
+#' @aliases char_plot_raw char_plot_thresh_diag char_plot_peaks char_plot_sni char_plot_cumulative char_plot_fri char_plot_fire_history char_plot_zones char_plot_all
 #'
 #' @param out Named list returned by [CharAnalysis()].  Must contain
 #'   \code{charcoal}, \code{pretreatment}, \code{peak_analysis},
