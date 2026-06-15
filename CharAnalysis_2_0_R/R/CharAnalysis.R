@@ -171,6 +171,36 @@ CharAnalysis <- function(file_name = NULL) {
   }
   message("      ...done.")
 
+  # SNI advisory: warn when any portion of the record has SNI < 3.0 ----------
+  # Kelly et al. (2011) show that SNI > 3 consistently identifies records
+  # appropriate for peak detection; values below this threshold indicate
+  # portions of the record where peak detection may be unreliable.
+  # Stored here and emitted at the end of step 7 so it appears after all
+  # other output. Placed here (not inside char_thresh_local/global) to avoid
+  # repeated firing during char_bkg_sensitivity().
+  sni_advisory <- NULL
+  if (!is.null(char_thresh$SNI)) {
+    if (params$peak_analysis$threshType == 1L) {
+      if (!is.na(char_thresh$SNI) && char_thresh$SNI < 3.0) {
+        sni_advisory <- sprintf(
+          "The record-wide SNI is %.2f, below the minimum value of 3.0 recommended by Kelly et al. (2011) to identify records suitable for peak detection. Carefully consider whether and how to interpret this record.",
+          char_thresh$SNI
+        )
+      }
+    } else {
+      valid_sni <- char_thresh$SNI[!is.na(char_thresh$SNI)]
+      if (length(valid_sni) > 0L) {
+        pct_below <- mean(valid_sni < 3.0) * 100
+        if (pct_below > 0) {
+          sni_advisory <- sprintf(
+            "%.1f%% of samples have an SNI < 3.0, the minimum value recommended by Kelly et al. (2011) to identify records suitable for peak detection. Carefully consider whether and how to interpret portions of this record with SNI < 3.0.",
+            pct_below
+          )
+        }
+      }
+    }
+  }
+
   # Figure 2 (allFigures only): threshold determination diagnostics.
   # Mirrors MATLAB CharThreshGlobal.m (single panel) or
   # CharThreshLocal.m (5x5 grid of local window distributions).
@@ -225,6 +255,14 @@ CharAnalysis <- function(file_name = NULL) {
   message("                  char_plot_fire_history(out)   # Fig 7: continuous fire history")
   message("                  char_plot_zones(out)          # Fig 8: CHAR zone comparisons")
   message("    Sensitivity:  char_bkg_sensitivity(out)     # Fig 10: C_background window sensitivity")
+
+  # Emit SNI advisory last, after all other output, so it is not buried.
+  if (!is.null(sni_advisory)) {
+    message("")
+    cli::cli_text(cli::col_red("CAUTION"))
+    cli::cli_alert_danger(sni_advisory)
+    cli::cli_alert_info("Run {.code char_plot_sni(out)} to visualize the SNI series and identify which portion(s) of the record fall below the threshold.")
+  }
 
   # Assemble and return ---------------------------------------------------------
   out <- list(

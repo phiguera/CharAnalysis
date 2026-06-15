@@ -26,6 +26,7 @@ BugReports: https://github.com/phiguera/CharAnalysis/issues
 Depends:
     R (>= 4.0.0)
 Imports:
+    cli,
     MASS,
     graphics,
     stats,
@@ -39,4 +40,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

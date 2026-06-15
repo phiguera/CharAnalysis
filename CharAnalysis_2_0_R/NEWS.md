@@ -2,6 +2,17 @@
 
 ## New features
 
+- `CharAnalysis()` now emits a styled advisory (via the `cli` package) at the
+  end of all console output when the signal-to-noise index (SNI) falls below
+  3.0, the minimum value recommended by Kelly et al. (2011) to identify records
+  suitable for peak detection. For the local-threshold path (`threshType != 1`)
+  the message reports the percentage of samples below the threshold; for the
+  global-threshold path (`threshType = 1`) it reports the single record-wide
+  SNI value. In both cases the user is directed to `char_plot_sni(out)` for a
+  visual assessment. The advisory is rendered with a red bordered block and
+  colour-coded bullets (`cli_alert_danger` / `cli_alert_info`), with graceful
+  plain-text fallback in environments that do not support ANSI colour.
+
 - New function `char_bkg_sensitivity()` ports the background-window
   sensitivity analysis from the MATLAB v2.0 `bkgCharSensitivity.m`
   (Figure 10). It re-runs the smoothing -> C_peak -> threshold ->
