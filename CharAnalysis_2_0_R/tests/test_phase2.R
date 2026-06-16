@@ -59,14 +59,19 @@ if (!exists("CHAR_R_ROOT")) {
   if (!dir.exists(CHAR_R_ROOT)) CHAR_R_ROOT <- getwd()
 }
 
-source(file.path(CHAR_R_ROOT, "R", "charLowess.R"))
-source(file.path(CHAR_R_ROOT, "R", "GaussianMixture.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharParameters.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharValidateParams.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharPretreatment.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharSmooth.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharThreshGlobal.R"))
-source(file.path(CHAR_R_ROOT, "R", "CharThreshLocal.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_lowess.R"))
+source(file.path(CHAR_R_ROOT, "R", "gaussian_mixture.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_parameters.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_validate_params.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_pretreatment.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_smooth.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_thresh_global.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_thresh_local.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_peak_id.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_post_process.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_write_results.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_bkg_sensitivity.R"))
+source(file.path(CHAR_R_ROOT, "R", "char_plot_results.R"))
 source(file.path(CHAR_R_ROOT, "R", "CharAnalysis.R"))
 
 MATLAB_DIR <- file.path(CHAR_R_ROOT, "..", "CharAnalysis_2_0_MATLAB")
@@ -84,7 +89,7 @@ run_phase2_validation <- function(dataset_label, params_csv, matlab_csv) {
 
   # Run full pipeline (Phases 1-2)
   cat("Running CharAnalysis()...\n")
-  r_out <- suppressMessages(CharAnalysis(params_csv))
+  r_out <- suppressMessages(CharAnalysis(params_csv, plots = FALSE))
   cat("Done.\n\n")
 
   # Load MATLAB reference CSV
@@ -236,7 +241,7 @@ print_sample_rows <- function(r_out, matlab_csv,
 # =============================================================================
 
 r_full <- suppressMessages(
-  CharAnalysis(file.path(MATLAB_DIR, "CO_charParams.csv"))
+  CharAnalysis(file.path(MATLAB_DIR, "CO_charParams.csv"), plots = FALSE)
 )
 
 cat("\n--- Sample rows (visual inspection) ---\n")

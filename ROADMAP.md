@@ -1,5 +1,5 @@
 # *CharAnalysis* Development Roadmap
-*Last updated: May 2026*
+*Last updated: June 2026*
 ---
 This document describes planned future development of *CharAnalysis*. Items are
 listed in approximate priority order. It is not yet determined whether additional
@@ -39,23 +39,23 @@ Possible future comparisons with related R packages that were developed based on
 - `tapas`: https://github.com/wfinsinger/tapas
 - `CharcoalFireReconstructionR`: https://github.com/rglueckler/CharcoalFireReconstructionR
 ---
-## 2. Record-quality diagnostics and user guidance
+## 2. Record-quality diagnostics and user guidance ✓ *Complete — v2.0.4 (development)*
 
-Improve guidance on interpreting peak detection results in light of record
-quality, focused on the Signal-to-Noise Index (SNI; Kelly et al. 2011):
+Implemented in the `dev` branch (June 2026):
 
-- Update the R vignette to highlight SNI as a first-step diagnostic to consult
-  before moving forward with peak detection and interpretation. The vignette
-  should make the rationale explicit: peak detection is only justified where
-  the high-frequency component of the record is well separated from background
-  noise.
-- Have the R implementation return a console warning when portions of the
-  record have SNI < 3 (the threshold proposed by Kelly et al. 2011). The
-  warning is advisory, not blocking: the analyst retains the final decision.
-  Suggested wording: `"x% of the record has SNI < 3; carefully consider
-  whether peak analysis is appropriate in these sections."` The warning
-  should be issued from within the function that computes SNI (the R
-  equivalent of `CharThreshLocal.m`), not from a new diagnostic script.
+- **SNI advisory**: `CharAnalysis()` now emits a `cli`-styled advisory at the
+  end of all console output when SNI falls below 3.0 (Kelly et al. 2011). On
+  the local-threshold path it reports the percentage of samples below the
+  threshold; on the global path it reports the record-wide SNI value. The
+  advisory is rendered with a red bordered block and colour-coded bullets, with
+  graceful plain-text fallback. It is placed in `CharAnalysis()` (not inside
+  `char_thresh_local/global`) so it does not fire repeatedly during
+  `char_bkg_sensitivity()` runs. `cli` added to `Imports` in DESCRIPTION.
+- **Vignette guidance**: a "Recommended workflow" section (Step 2) now
+  instructs analysts to inspect `char_plot_sni()` (Fig 4) before proceeding to
+  any fire-history figures. The rationale — peak detection is only appropriate
+  where SNI > 3.0 — is stated explicitly, with guidance on adjusting smoothing
+  windows or restricting interpretation when SNI is low.
 
 ---
 ## 3. Chronological Uncertainty
