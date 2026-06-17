@@ -237,3 +237,9 @@ message(sprintf("ensemble$peaks_matrix : %d steps x %d iterations",
 message(sprintf("ensemble$prob_peak    : range [%.3f, %.3f]",
                 min(ensemble$prob_peak, na.rm = TRUE),
                 max(ensemble$prob_peak, na.rm = TRUE)))
+
+
+# ---- save results ---------------------------------------------------
+out_path <- "CharAnalysis_2_0_R/tests/CH10_ensemble_results.rds"
+saveRDS(ensemble, out_path)
+message(sprintf("Saved ensemble to: %s", out_path))

@@ -1,5 +1,23 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Development scripts (ROADMAP Section 3 — Chronological Uncertainty)
+
+Three exploratory scripts added to `tests/` (not yet exported functions):
+
+- **`char_run_ensemble.R`**: runs the CharAnalysis pipeline across an N-member
+  age-depth ensemble. Saves output as `CH10_ensemble_results.rds`.
+- **`run_ensemble_analysis.R`**: nearest-neighbor peak matching that computes
+  P(peak) and timing confidence intervals for each reference peak.
+  Matching half-window = max(mean Weibull mFRI / 2, `yrInterp`); a
+  reference-peak-first loop guarantees P(peak) ≤ 1.0.
+- **`plot_ensemble_figure.R`**: four-panel ensemble figure. Panel (c) shows
+  a beeswarm of circles sized by P(peak) on a universal fixed 5-bin scale
+  (0–20, 21–40, 41–60, 61–80, 81–100%). Panel (d) shows jittered 95% CI bars on peak timing
+  with a dot at the reference peak age. See script header for full methods.
+
+Applied to CH10 (Chickaree Lake): 59 reference peaks, P(peak) 0.58–1.00,
+typical 95% CI widths 40–80 yr.
+
 ## Breaking changes
 
 Output figures are reorganized into **diagnostic** (Figs 1-5) and

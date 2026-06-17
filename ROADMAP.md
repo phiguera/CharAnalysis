@@ -58,7 +58,8 @@ Implemented in the `dev` branch (June 2026):
   windows or restricting interpretation when SNI is low.
 
 ---
-## 3. Chronological Uncertainty
+## 3. Chronological Uncertainty — *In progress (development, June 2026)*
+
 Incorporate methods for propagating chronological uncertainty into the
 characterization of fire events. Development will take into account existing
 approaches formalized in the following R packages, both of which were developed
@@ -66,6 +67,65 @@ based on *CharAnalysis* Version 1.1, and will include communication with those
 developers:
 - `tapas`: https://github.com/wfinsinger/tapas
 - `CharcoalFireReconstructionR`: https://github.com/rglueckler/CharcoalFireReconstructionR
+
+### Completed (June 2026, development scripts in `tests/`)
+
+**`char_run_ensemble.R`** — runs the full CharAnalysis pipeline across a
+user-supplied N-member age-depth chronology ensemble (default N = 1000).
+Each iteration substitutes one ensemble chronology into the pipeline and
+records the peak-detection result on a common time grid. Outputs a
+`CharEnsemble` list with `peaks_matrix` (time steps × iterations),
+`charPeak_matrix`, `charBkg_matrix`, `prob_peak`, and associated metadata.
+Results are saved as an RDS for use across sessions. The bottleneck is the
+GMM threshold step; 1000 iterations take approximately 16 minutes on a
+standard laptop.
+
+**`run_ensemble_analysis.R`** — nearest-neighbor peak matching that assigns
+ensemble detections to reference peaks. For each reference peak *k* and each
+iteration *i*, the single closest detected age within a half-window of
+max(mean Weibull mFRI / 2, `yrInterp`) is assigned to *k*. The
+reference-peak-first loop guarantees at most one detection per peak per
+iteration, so P(peak) = n_detected / N ≤ 1.0. Outputs `CH10_peak_summaries.csv`
+with P(peak), 95% CI on peak timing, n_detected, mean and median detected age,
+and ±SD for each reference peak.
+
+**`plot_ensemble_figure.R`** — four-panel ensemble figure. Panels (c) and (d)
+are the new analytical panels:
+
+- **Panel (c): P(peak) beeswarm.** Each reference peak is shown as one circle
+  at its reference age (x-axis), sized by P(peak) using a universal fixed
+  5-bin scale (0–20, 21–40, 41–60, 61–80, 81–100% of iterations). Circles
+  are jittered vertically with a greedy beeswarm algorithm to prevent overlap.
+  P(peak) quantifies detection robustness: a peak identified in ≥80% of
+  ensemble iterations is robust to chronological uncertainty; one identified
+  in <60% of iterations may be an artifact of the single best-estimate
+  chronology and warrants caution in interpretation.
+
+- **Panel (d): 95% CI on peak timing.** For each reference peak, the 2.5th
+  and 97.5th percentiles of detected ages across the ensemble define the
+  95% confidence interval on absolute timing. A dot marks the reference
+  peak age. Bars are vertically jittered to prevent overlap. Typical CI
+  widths for CH10 are 40–80 yr, reflecting a well-constrained age model.
+
+Applied to the CH10 (Chickaree Lake) record: 59 reference peaks identified;
+P(peak) range 0.584–1.000; 80% of peaks have P ≥ 0.90. The lowest-probability
+cluster (2420–2500 cal yr BP, P = 0.58–0.80) coincides with three closely
+spaced events, where chronological uncertainty causes detections to shift
+among peaks.
+
+### Pending
+
+- Package `char_run_ensemble()` as an exported function with full Roxygen
+  documentation and input validation.
+- Build an interface to `rbacon` (and eventually `rplum` for 210Pb records)
+  to replace the `MC_AgeDepth.m` MATLAB workflow as the chronology source.
+- Write a dedicated vignette (`vignettes/chronological_uncertainty.Rmd`)
+  covering rationale, the matching algorithm, interpretation guidance, and
+  a worked CH10 example. This is the intended home for the detailed methods
+  currently documented in `tests/plot_ensemble_figure.R`.
+- Coordinate with `tapas` and `CharcoalFireReconstructionR` developers.
+- Consider parallelisation (`parallel::parLapply`) to reduce the ~16 min
+  runtime.
 ---
 ## 4. Regional Synthesis
 
