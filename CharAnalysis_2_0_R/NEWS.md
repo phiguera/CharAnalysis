@@ -2,21 +2,56 @@
 
 ## Development scripts (ROADMAP Section 3 — Chronological Uncertainty)
 
-Three exploratory scripts added to `tests/` (not yet exported functions):
+Three exploratory scripts in `tests/` (not yet exported functions), substantially
+updated in the 2026-06-19 session:
 
-- **`char_run_ensemble.R`**: runs the CharAnalysis pipeline across an N-member
-  age-depth ensemble. Saves output as `CH10_ensemble_results.rds`.
-- **`run_ensemble_analysis.R`**: nearest-neighbor peak matching that computes
-  P(peak) and timing confidence intervals for each reference peak.
-  Matching half-window = max(mean Weibull mFRI / 2, `yrInterp`); a
-  reference-peak-first loop guarantees P(peak) ≤ 1.0.
-- **`plot_ensemble_figure.R`**: four-panel ensemble figure. Panel (c) shows
-  a beeswarm of circles sized by P(peak) on a universal fixed 5-bin scale
-  (0–20, 21–40, 41–60, 61–80, 81–100%). Panel (d) shows jittered 95% CI bars on peak timing
-  with a dot at the reference peak age. See script header for full methods.
+**`char_run_ensemble.R`** — runs the CharAnalysis pipeline across an N-member
+age-depth chronology ensemble and orchestrates the full workflow:
 
-Applied to CH10 (Chickaree Lake): 59 reference peaks, P(peak) 0.58–1.00,
-typical 95% CI widths 40–80 yr.
+- **Parallel processing** via `parallel::parLapply` (socket clusters; works on
+  Windows and Mac). Default: `detectCores() - 1` cores. Benchmark: ~15 min on
+  1 core, ~2 min on 19 cores (20-core Windows laptop). Progress is reported
+  every 100 iterations in minutes; a startup message describes the speedup and
+  how to adjust `n_cores`.
+- **`save_results` switch** (0 = interactive prompt, 1 = auto-save) controls
+  saving of the ensemble RDS, the peak age uncertainty CSV, and the figure PDF
+  together via a single flag — suitable for interactive use or batch/multi-site
+  scripts.
+- Automatically sources `run_ensemble_analysis.R` and `plot_ensemble_figure.R`
+  at the end of each run. All output filenames derived from the site name in the
+  params file (generic, not hardcoded to CH10).
+
+**`run_ensemble_analysis.R`** — nearest-neighbor peak matching that computes
+detection frequency and timing confidence intervals for each reference peak.
+Matching half-window = max(mean Weibull mFRI / 2, `yrInterp`); a
+reference-peak-first loop guarantees detection frequency ≤ 100%. Skips the
+reference `CharAnalysis()` run and ensemble RDS load if those objects are
+already in the workspace (e.g., when sourced from `char_run_ensemble.R`).
+
+**`plot_ensemble_figure.R`** — three-panel ensemble figure (previously four panels):
+
+- Panel (a): CHAR / C_background / peak ID from the reference run.
+- Panel (b): SNI time series with the SNI = 3.0 advisory threshold.
+- Panel (c, new): **detection frequency (%) on the y-axis** and **95% CI on
+  peak timing as horizontal bars** on the x-axis (dot at reference peak age).
+  Combines the information previously shown in separate beeswarm (c) and CI-bar
+  (d) panels into a single display. Y-axis is data-adaptive: floored to the
+  nearest 25% below the minimum observed detection frequency, with a dashed
+  reference line at 50%.
+
+Column name normalization: if `peak_summaries` is loaded from the CSV
+(charResults-style names), the script renames columns to R-friendly names
+automatically, so the fast-path workflow (load CSV, source script) requires
+no manual renaming.
+
+**New output file: `{site}_peakAgeUncertainty.csv`** (replaces `CH10_peak_summaries.csv`):
+charResults-style column names with units in parentheses; detection frequency
+stored as % (1 decimal); mean and median ages rounded to the nearest year;
+`n_iter` stored as a column so the file is self-contained (no RDS needed to
+regenerate the figure); no row-number column.
+
+Applied to CH10 (Chickaree Lake): 59 reference peaks, detection frequency
+58–100% (80% of peaks ≥ 90%), typical 95% CI widths 40–80 yr.
 
 ## Breaking changes
 
