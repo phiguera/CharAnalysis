@@ -53,6 +53,10 @@ chron_file  <- "CharAnalysis_2_0_R/tests/CH10_MCAgeDepth_1000_chronologies_2026_
 # To run sequentially (no parallel), set: n_cores <- 1
 n_cores <- max(1L, parallel::detectCores() - 1L)
 
+# NOTE: parallel workers load the *installed* CharAnalysis package.
+# If you have made recent changes to the package source, install first:
+#   devtools::install("CharAnalysis_2_0_R", quiet = TRUE, upgrade = FALSE)
+
 # Save results and figure to disk?
 # 0 = prompt at end of run (default, interactive use)
 # 1 = save automatically without prompting (use for batch/multi-site scripts)
@@ -310,6 +314,22 @@ for (i in seq_len(n_iter)) {
 }
 
 
+# ---- per-depth chronological uncertainty ribbon ---------------------
+# One row per depth in the chronology matrix.
+# median_age  : median calibrated age across iterations (cal yr BP)
+# ci95_lo/hi  : 2.5th and 97.5th percentile ages across iterations
+# ci95_width  : full 95% CI width (yr)  -- used in the uncertainty ribbon panel
+message("Computing per-depth chronological uncertainty (95% CI)...")
+chron_mat_ages <- as.matrix(chron_mat[, -1L])
+chron_ci <- data.frame(
+  depth_cm   = chron_depths,
+  median_age = apply(chron_mat_ages, 1L, median),
+  ci95_lo    = apply(chron_mat_ages, 1L, quantile, probs = 0.025),
+  ci95_hi    = apply(chron_mat_ages, 1L, quantile, probs = 0.975)
+)
+chron_ci$ci95_width <- chron_ci$ci95_hi - chron_ci$ci95_lo
+
+
 # ---- assemble ensemble object ---------------------------------------
 ensemble <- list(
   peaks_matrix    = peaks_matrix,
@@ -319,7 +339,8 @@ ensemble <- list(
   age_grid        = common_grid,
   iter_age_grids  = iter_age_grids,
   n_iter          = n_iter,
-  params          = params
+  params          = params,
+  chron_ci        = chron_ci      # per-depth CI ribbon (stored so plot works from RDS)
 )
 class(ensemble) <- c("CharEnsemble", "list")
 

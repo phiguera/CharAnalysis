@@ -1,6 +1,6 @@
 # plot_ensemble_figure.R
 # -----------------------------------------------------------------------
-# Three-panel ensemble figure summarizing chronological uncertainty in
+# Four-panel ensemble figure summarizing chronological uncertainty in
 # peak detection for a single charcoal record.
 #
 # RATIONALE
@@ -28,42 +28,55 @@
 #
 # PANEL DESCRIPTIONS AND METHODS
 # --------------------------------
-# Panel (a) — CHAR time series
+# Panel (a) -- CHAR time series
 #   Replicates char_plot_sni() panel (a): interpolated charcoal
 #   accumulation rate (CHAR), background curve, and positive/negative
 #   thresholds from the reference (single-chronology) run. Peak
 #   identifications from the reference run are shown as crosses.
 #
-# Panel (b) — Signal-to-noise index (SNI)
+# Panel (b) -- Signal-to-noise index (SNI)
 #   SNI time series from the reference run; dashed line at SNI = 3.0
 #   (Kelly et al. 2011 threshold for reliable peak detection).
 #
-# Panel (c) — Detection frequency and timing uncertainty (combined)
-#   One point + horizontal bar per reference peak.
-#   x = cal yr BP (same axis as panels a and b)
+# Panel (c) -- Chronological uncertainty ribbon
+#   One vertical bar per depth sample, centred at y = 0.
+#   x = median calibrated age of the sample across the ensemble
+#   y = symmetric 95% CI: bars extend from -(ci95_width / 2) to
+#       +(ci95_width / 2) around zero.
+#   Conveys where in the record age uncertainty is largest; this should
+#   predict where timing CIs in panel (d) are widest. Requires
+#   ensemble$chron_ci (computed in char_run_ensemble.R and stored in the
+#   RDS); panel is skipped with a message if the object is absent.
+#
+# Panel (d) -- Detection frequency and timing uncertainty (combined)
+#   One point + horizontal bar per peak (reference and ensemble-only).
+#   x = cal yr BP (same axis as panels a-c)
 #   y = detection frequency (% of ensemble iterations identifying this peak)
 #   horizontal bar = 95% CI on detected peak age across all iterations
-#   dot = reference peak age from the single best-estimate chronology run
+#
+#   Reference peaks (detected in the median-chronology run):
+#     filled black circles
+#   Ensemble-only peaks (detected in >= orphan_thresh % of iterations but
+#     NOT in the reference run):
+#     open circles (white fill, black outline)
 #
 #   The y-axis lower limit is data-adaptive: floored to the nearest 25%
-#   below the minimum observed detection frequency. This preserves visual
-#   resolution for the observed range while keeping the axis honest.
+#   below the minimum observed detection frequency across both peak types.
 #   Override with y_floor (line marked below) for cross-record comparisons
 #   (e.g., set y_floor <- 0 for a 0-100% scale).
 #
 #   Matching algorithm (run_ensemble_analysis.R):
-#     For each reference peak k (k = 1 … n_peaks) and each ensemble
-#     iteration i (i = 1 … N):
+#     For each reference peak k (k = 1 ... n_peaks) and each ensemble
+#     iteration i (i = 1 ... N):
 #       1. Find all time steps with peaks_matrix[t, i] == 1.
 #       2. Identify the single closest detected age to the reference
 #          peak age.
-#       3. If that distance ≤ half-window, assign the detected age to
-#          peak k for iteration i.
-#     The half-window = max(mean_mFRI / 2, yrInterp), where mean_mFRI
-#     is the Weibull mean fire-return interval averaged across zones
-#     (from out$post$FRI_params_zone[, 2]).  The reference-peak-first
-#     loop guarantees at most one detection per reference peak per
-#     iteration, so detection frequency ≤ 100%.
+#       3. If that distance <= half-window, assign the detected age to
+#          peak k for iteration i; mark the grid cell as claimed.
+#     The half-window = max(mean_mFRI / 2, yrInterp). Unclaimed detections
+#     are pooled into prob_orphan; contiguous clusters above orphan_thresh
+#     become ensemble-only peak candidates (neutral term -- does not assert
+#     false-negative status without further evidence).
 #
 # FUTURE WORK
 # -----------
@@ -72,10 +85,13 @@
 # Write a dedicated vignette (vignettes/chronological_uncertainty.Rmd)
 # covering rationale, algorithm details, and worked CH10 example.
 #
-# Requires in workspace: out, peak_summaries
+# Requires in workspace: out, peak_summaries (and optionally orphan_summaries)
 #
 # peak_summaries can be loaded from the saved CSV (fast path, no re-analysis):
-#   peak_summaries <- read.csv("CharAnalysis_2_0_R/tests/CH10_peakAgeUncertainty.csv")
+#   ps_raw <- read.csv("CharAnalysis_2_0_R/tests/CH10_peakAgeUncertainty.csv")
+#   peak_summaries   <- ps_raw[ps_raw$type == "reference",    ]
+#   orphan_summaries <- ps_raw[ps_raw$type == "ensemble_only", ]
+#   if (nrow(orphan_summaries) == 0) orphan_summaries <- NULL
 # The CSV contains n_iter so the figure title is self-contained.
 #
 # out must come from a reference CharAnalysis run (panels a and b):
@@ -109,9 +125,12 @@ if (!exists("out") || !exists("peak_summaries")) {
   message("Using existing 'out' and 'peak_summaries' from workspace.")
 }
 
+# orphan_summaries is optional; set to NULL if absent
+if (!exists("orphan_summaries")) orphan_summaries <- NULL
+
 # ---- Normalize peak_summaries column names ----------------------------
-# If peak_summaries was loaded from the CSV (charResults-style names),
-# rename to R-friendly names used throughout this script.
+# If loaded from the CSV (charResults-style names), rename to R-friendly
+# names used throughout this script.
 csv_to_r <- c(
   "age Top_i (yr BP)"       = "ref_age",
   "n ensemble (iterations)" = "n_iter",
@@ -125,39 +144,50 @@ csv_to_r <- c(
   "CI95 lo (yr BP)"         = "ci95_lo",
   "CI95 hi (yr BP)"         = "ci95_hi"
 )
-needs_rename <- intersect(names(csv_to_r), names(peak_summaries))
-if (length(needs_rename) > 0L) {
-  names(peak_summaries)[match(needs_rename, names(peak_summaries))] <-
-    csv_to_r[needs_rename]
-  # prob column in CSV is already %; convert back to 0-1 for internal use
-  if ("prob" %in% names(peak_summaries) && max(peak_summaries$prob, na.rm = TRUE) > 1)
-    peak_summaries$prob <- peak_summaries$prob / 100
-  message("peak_summaries: CSV column names normalised to R-friendly names.")
+
+normalize_colnames <- function(df) {
+  needs_rename <- intersect(names(csv_to_r), names(df))
+  if (length(needs_rename) > 0L) {
+    names(df)[match(needs_rename, names(df))] <- csv_to_r[needs_rename]
+    # prob column in CSV is already %; convert back to 0-1 for internal use
+    if ("prob" %in% names(df) && max(df$prob, na.rm = TRUE) > 1)
+      df$prob <- df$prob / 100
+    message("Column names normalised to R-friendly names.")
+  }
+  df
+}
+
+peak_summaries <- normalize_colnames(peak_summaries)
+
+# If orphan_summaries came from the CSV (split by type column), normalize too
+if (!is.null(orphan_summaries)) {
+  orphan_summaries <- normalize_colnames(orphan_summaries)
 }
 
 # ---- Common axis parameters (match existing CharAnalysis figures) -----
-charcoal     <- out$charcoal
-char_thresh  <- out$char_thresh
+charcoal      <- out$charcoal
+char_thresh   <- out$char_thresh
 peak_analysis <- out$peak_analysis
-pretreatment <- out$pretreatment
-post         <- out$post
-site         <- out$site
+pretreatment  <- out$pretreatment
+post          <- out$post
+site          <- out$site
 
-zone_div    <- pretreatment$zoneDiv
-x_ticks     <- seq(0, max(zone_div, na.rm = TRUE), by = 1000)
-x_minor     <- seq(0, max(zone_div, na.rm = TRUE), by = 500)
-x_lims      <- c(max(zone_div, na.rm = TRUE), min(zone_div, na.rm = TRUE))
-transform   <- pretreatment$transform
-cPeak       <- peak_analysis$cPeak
+zone_div  <- pretreatment$zoneDiv
+x_ticks   <- seq(0, max(zone_div, na.rm = TRUE), by = 1000)
+x_minor   <- seq(0, max(zone_div, na.rm = TRUE), by = 500)
+x_lims    <- c(max(zone_div, na.rm = TRUE), min(zone_div, na.rm = TRUE))
+transform <- pretreatment$transform
+cPeak     <- peak_analysis$cPeak
 
-has_ggtext  <- requireNamespace("ggtext", quietly = TRUE)
-y_lbl_axis  <- if (has_ggtext) ggtext::element_markdown() else element_text()
+has_ggtext <- requireNamespace("ggtext", quietly = TRUE)
+y_lbl_axis <- if (has_ggtext) ggtext::element_markdown() else element_text()
 y_lbl <- if (has_ggtext) {
   switch(as.character(transform),
     "1" = "log CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)",
     "2" = "ln CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)",
          "CHAR (# cm<sup>-2</sup> yr<sup>-1</sup>)")
 } else "CHAR (# cm^-2 yr^-1)"
+
 
 # ---- Panel (a): CHAR + background + peaks ----------------------------
 x  <- charcoal$ybpI
@@ -250,8 +280,11 @@ pa <- pa +
   theme(axis.title.y = y_lbl_axis,
         axis.title.x = element_blank(),
         axis.text.x  = element_blank()) +
-  labs(title = paste0(site,
-    " (a) C_interpolated, C_background, and peak ID (+)"), y = y_lbl)
+  labs(title = if (has_ggtext) {
+    paste0(site, " (a) C<sub>interpolated</sub>, C<sub>background</sub>, and peak ID (+)")
+  } else {
+    paste0(site, " (a) C_interpolated, C_background, and peak ID (+)")
+  }, y = y_lbl)
 if (has_ggtext) pa <- pa + theme(plot.title = ggtext::element_markdown())
 
 
@@ -263,7 +296,7 @@ y_tick_sni <- pretty(c(0, max(sni_series, na.rm = TRUE)), n = 4)
 y_lim_sni  <- c(0, max(y_tick_sni))
 
 p_sni <- ggplot(df_sni, aes(x = x, y = sni)) +
-  geom_line(colour = "black", linewidth = 0.7) +
+  geom_line(colour = "black", linewidth = 1.2) +
   geom_hline(yintercept = 3, linetype = "dashed") +
   scale_x_reverse(limits = x_lims, breaks = x_ticks,
     minor_breaks = x_minor, labels = x_ticks / 1000,
@@ -274,35 +307,126 @@ p_sni <- ggplot(df_sni, aes(x = x, y = sni)) +
   theme_classic() +
   theme(axis.title.x = element_blank(),
         axis.text.x  = element_blank()) +
-  labs(y = "SNI", title = "(b) Signal-to-noise index")
+  labs(y = "SNI", title = "(c) Signal-to-noise index")
 
 
-# ---- Panel (c): Detection frequency vs. timing CI (combined) ---------
-# y = detection frequency (% of ensemble iterations); x = cal yr BP
-# horizontal bar = 95% CI on detected peak age
-# dot = reference peak age from the single best-estimate chronology run
+# ---- Panel (c): Chronological uncertainty ribbon ---------------------
+# Requires ensemble$chron_ci (written by char_run_ensemble.R and saved to
+# the RDS). If absent (e.g., older RDS before this feature was added),
+# the panel is replaced with a placeholder and a message is shown.
 #
-# Y-axis lower limit is data-adaptive: floored to the nearest 25% below
-# the minimum observed detection frequency. To override for cross-record
-# comparisons, set y_floor manually (e.g., y_floor <- 0 or y_floor <- 50).
-df_comb   <- peak_summaries
-df_comb$det_freq <- df_comb$prob * 100  # convert to percent
+# Each depth sample is drawn as a vertical segment centred at y = 0,
+# extending from -(ci95_width / 2) to +(ci95_width / 2). Reading: at any
+# given median age on the x-axis, the segment height shows how wide the
+# age uncertainty is at that point in the record.
+
+chron_ci_avail <- exists("ensemble") && !is.null(ensemble$chron_ci)
+
+if (chron_ci_avail) {
+  # Sort by median_age so geom_line connects points in x order
+  df_cc    <- ensemble$chron_ci[order(ensemble$chron_ci$median_age), ]
+  df_cc$hw <- df_cc$ci95_width / 2
+  y_max_cc <- max(df_cc$hw, na.rm = TRUE)
+  y_lim_cc <- c(-y_max_cc * 1.05, y_max_cc * 1.05)
+  y_br_cc  <- pretty(c(0, y_max_cc), n = 3)
+  y_br_cc  <- sort(unique(c(-rev(y_br_cc[-1L]), y_br_cc)))
+
+  p_chron_ci <- ggplot(df_cc, aes(x = median_age)) +
+    geom_hline(yintercept = 0, colour = "black", linewidth = 0.3) +
+    geom_line(aes(y =  hw), colour = "black", linewidth = 1.0) +
+    geom_line(aes(y = -hw), colour = "black", linewidth = 1.0) +
+    scale_x_reverse(limits = x_lims, breaks = x_ticks,
+      minor_breaks = x_minor, labels = x_ticks / 1000,
+      expand = expansion(0)) +
+    guides(x = guide_axis(minor.ticks = TRUE)) +
+    scale_y_continuous(limits = y_lim_cc, breaks = y_br_cc,
+      expand = expansion(0)) +
+    theme_classic() +
+    labs(x = "cal. yr BP (x 1000)",
+         y = "95% CI (± yr)",
+         title = "(d) Chronological uncertainty (95% CI)")
+
+} else {
+  message("ensemble$chron_ci not found -- panel (c) will be a placeholder.")
+  message("  Re-run char_run_ensemble.R to regenerate the RDS with chron_ci.")
+  p_chron_ci <- ggplot() +
+    annotate("text", x = 0.5, y = 0.5,
+             label = "Chronological uncertainty ribbon\nnot available\n(re-run char_run_ensemble.R)",
+             hjust = 0.5, vjust = 0.5, size = 3, colour = "grey50") +
+    theme_void() +
+    labs(title = "(d) Chronological uncertainty (95% CI)")
+}
+
+
+# ---- Panel (d): Detection frequency + timing uncertainty (combined) ---
+# Three peak categories, each with a distinct shape and fill:
+#   Reference peaks          -- filled black circle  (shape 21, fill black)
+#   Ensemble-only, near-ref  -- open circle          (shape 21, fill white)
+#   Ensemble-only, indep.    -- open diamond         (shape 23, fill white)
+# Independent ensemble-only peaks are also labelled with their age (cal yr BP).
+#
+# The y-axis lower limit is data-adaptive: floored to the nearest 25%
+# below the minimum observed detection frequency across all peak types.
+# Override y_floor here for cross-record comparisons (e.g., y_floor <- 0).
+
+df_ref           <- peak_summaries
+df_ref$det_freq  <- df_ref$prob * 100
+df_ref$peak_type <- "Reference peak"
+
+if (!is.null(orphan_summaries) && nrow(orphan_summaries) > 0L) {
+  df_orp          <- orphan_summaries
+  df_orp$det_freq <- df_orp$prob * 100
+  df_orp$peak_type <- ifelse(
+    !is.na(df_orp$proximity) & df_orp$proximity == "independent",
+    "Ensemble-only: independent",
+    "Ensemble-only: near reference"
+  )
+  df_all <- rbind(
+    df_ref[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")],
+    df_orp[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")]
+  )
+} else {
+  df_all <- df_ref[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")]
+}
+
 n_iter_lbl <- if ("n_iter" %in% names(peak_summaries))
                 unique(peak_summaries$n_iter)[1L] else "N"
 
-y_floor <- floor(min(df_comb$det_freq) / 25) * 25  # data-adaptive; override here if needed
-y_ceil  <- 105
-y_breaks <- seq(y_floor, 100, by = 25)
-cap_ht_pct <- (y_ceil - y_floor) * 0.02  # end-cap height scales with y range
+y_data_floor <- floor(min(df_all$det_freq, na.rm = TRUE) / 25) * 25
+legend_space <- 15    # percentage points of extra y-axis space below data for in-panel legend
+                      # increase if legend text is clipped; decrease if gap is too large
+y_floor      <- y_data_floor - legend_space
+y_ceil       <- 105
+y_breaks     <- seq(y_data_floor, 100, by = 25)  # ticks on data range only
+cap_ht_pct   <- (y_ceil - y_floor) * 0.02
 
-p_combined <- ggplot(df_comb, aes(y = det_freq)) +
-  geom_errorbarh(aes(xmin = ci95_lo, xmax = ci95_hi),
-                 height = cap_ht_pct,
-                 colour = "grey30", linewidth = 0.7) +
-  geom_point(aes(x = ref_age),
-             shape = 16L, size = 2.0, colour = "black") +
+peak_type_levels <- c("Reference peak",
+                      "Ensemble-only: near reference",
+                      "Ensemble-only: independent")
+df_all$peak_type <- factor(df_all$peak_type, levels = peak_type_levels)
+
+# Subset independent orphans for age labels
+df_indp <- df_all[df_all$peak_type == "Ensemble-only: independent", ]
+
+p_combined <- ggplot(df_all, aes(y = det_freq, colour = peak_type)) +
+  geom_errorbar(aes(y = det_freq, xmin = ci95_lo, xmax = ci95_hi),
+                width = cap_ht_pct, linewidth = 0.7,
+                show.legend = FALSE) +
+  geom_point(aes(x = ref_age, shape = peak_type, fill = peak_type),
+             size = 2.2, stroke = 0.9) +
   geom_hline(yintercept = 50, linetype = "dashed",
-             colour = "grey50", linewidth = 0.5) +
+             colour = "grey50", linewidth = 0.5)
+
+# Age labels on independent orphans (above the point, age in cal yr BP)
+if (nrow(df_indp) > 0L) {
+  p_combined <- p_combined +
+    geom_text(data = df_indp,
+              aes(x = ref_age, label = paste0(round(ref_age), " yr BP")),
+              vjust = -0.8, hjust = 0.5, size = 2.5, colour = "black",
+              show.legend = FALSE)
+}
+
+p_combined <- p_combined +
   scale_x_reverse(limits = x_lims, breaks = x_ticks,
                   minor_breaks = x_minor, labels = x_ticks / 1000,
                   expand = expansion(0)) +
@@ -310,23 +434,57 @@ p_combined <- ggplot(df_comb, aes(y = det_freq)) +
   scale_y_continuous(limits = c(y_floor, y_ceil),
                      breaks = y_breaks,
                      expand = expansion(0)) +
+  scale_shape_manual(values = c("Reference peak"               = 21L,
+                                "Ensemble-only: near reference" = 21L,
+                                "Ensemble-only: independent"    = 23L)) +
+  scale_fill_manual(values  = c("Reference peak"               = "black",
+                                "Ensemble-only: near reference" = "white",
+                                "Ensemble-only: independent"    = "white")) +
+  scale_colour_manual(values = c("Reference peak"               = "black",
+                                 "Ensemble-only: near reference" = "black",
+                                 "Ensemble-only: independent"    = "black")) +
+  guides(shape  = guide_legend(title = NULL,
+                               override.aes = list(size = 2.5),
+                               nrow = 1L),
+         fill   = guide_legend(title = NULL, nrow = 1L),
+         colour = guide_legend(title = NULL, nrow = 1L)) +
   theme_classic() +
-  labs(x = "cal. yr BP (x 1000)",
-       y = "Detection frequency (%)",
-       title = paste0("(c) Detection frequency and timing uncertainty",
+  # Legend placed inside panel, lower-left corner (oldest end of record,
+  # below the data range). legend_space above controls how much room is made.
+  theme(legend.position        = c(0.02, 0.02),
+        legend.justification   = c(0, 0),
+        legend.key             = element_blank(),
+        legend.background      = element_rect(fill = "white", colour = "grey80",
+                                              linewidth = 0.3),
+        legend.margin          = margin(3, 5, 3, 5),
+        legend.text            = element_text(size = 7.5),
+        axis.title.x           = element_blank(),
+        axis.text.x            = element_blank()) +
+  labs(y     = "Detection frequency (%)",
+       title = paste0("(b) Detection frequency and timing uncertainty",
                       "  (95% CI, ", n_iter_lbl, "-chronology ensemble)"))
 
 
 # ---- Assemble --------------------------------------------------------
-fig <- pa / p_sni / p_combined +
-  plot_layout(heights = c(3, 1, 1.5))
+fig <- pa / p_combined / p_sni / p_chron_ci +
+  plot_layout(heights = c(1.5, 1.5, 0.8, 0.8))
 
 print(fig)
+grDevices::dev.flush()   # ensure figure reaches the display before any subsequent errors
 
 
 # ---- Save PDF --------------------------------------------------------
-if (save_pdf == 1L) {
-  out_pdf <- sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_figure.pdf", site)
-  ggsave(out_pdf, plot = fig, width = 7, height = 10, units = "in")
-  message(sprintf("Saved: %s", out_pdf))
+if (isTRUE(save_pdf) || identical(save_pdf, 1L)) {
+  out_pdf <- file.path(
+    getwd(),
+    sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_figure.pdf", site)
+  )
+  tryCatch({
+    ggsave(out_pdf, plot = fig, width = 7, height = 10, units = "in")
+    message(sprintf("Saved: %s", out_pdf))
+  }, error = function(e) {
+    message(sprintf("Could not save PDF: %s", conditionMessage(e)))
+    message("  Is the file open in a PDF viewer? Close it and re-run ggsave().")
+    message(sprintf("  Target path: %s", out_pdf))
+  })
 }
