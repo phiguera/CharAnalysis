@@ -125,8 +125,9 @@ if (!exists("out") || !exists("peak_summaries")) {
   message("Using existing 'out' and 'peak_summaries' from workspace.")
 }
 
-# orphan_summaries is optional; set to NULL if absent
-if (!exists("orphan_summaries")) orphan_summaries <- NULL
+# orphan_summaries and secondary_summaries are optional; set to NULL if absent
+if (!exists("orphan_summaries"))    orphan_summaries    <- NULL
+if (!exists("secondary_summaries")) secondary_summaries <- NULL
 
 # ---- Normalize peak_summaries column names ----------------------------
 # If loaded from the CSV (charResults-style names), rename to R-friendly
@@ -369,25 +370,35 @@ if (chron_ci_avail) {
 # below the minimum observed detection frequency across all peak types.
 # Override y_floor here for cross-record comparisons (e.g., y_floor <- 0).
 
+plot_cols        <- c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")
+
 df_ref           <- peak_summaries
 df_ref$det_freq  <- df_ref$prob * 100
 df_ref$peak_type <- "Reference peak"
+df_parts         <- list(df_ref[, plot_cols])
 
 if (!is.null(orphan_summaries) && nrow(orphan_summaries) > 0L) {
-  df_orp          <- orphan_summaries
-  df_orp$det_freq <- df_orp$prob * 100
-  df_orp$peak_type <- ifelse(
-    !is.na(df_orp$proximity) & df_orp$proximity == "independent",
-    "Ensemble-only: independent",
-    "Ensemble-only: near reference"
-  )
-  df_all <- rbind(
-    df_ref[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")],
-    df_orp[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")]
-  )
-} else {
-  df_all <- df_ref[, c("ref_age", "det_freq", "ci95_lo", "ci95_hi", "peak_type")]
+  df_orp           <- orphan_summaries
+  df_orp$det_freq  <- df_orp$prob * 100
+  df_orp$peak_type <- "Ensemble-only: independent"
+  df_parts <- c(df_parts, list(df_orp[, plot_cols]))
 }
+
+if (!is.null(secondary_summaries) && nrow(secondary_summaries) > 0L) {
+  df_sec           <- secondary_summaries
+  df_sec$det_freq  <- df_sec$prob * 100
+  df_sec$peak_type <- "Ensemble-only: near reference"
+  # Use ±match_halfwin as the x-axis bar rather than 95% CI.
+  # The CI on secondary peaks reflects detection coherence (a filter criterion),
+  # not chronological uncertainty in the same sense as for reference peaks.
+  # The matching window is the honest bound: the event falls within ±match_halfwin
+  # of the adjacent reference peak.
+  df_sec$ci95_lo   <- df_sec$ref_age - df_sec$match_halfwin
+  df_sec$ci95_hi   <- df_sec$ref_age + df_sec$match_halfwin
+  df_parts <- c(df_parts, list(df_sec[, plot_cols]))
+}
+
+df_all <- do.call(rbind, df_parts)
 
 n_iter_lbl <- if ("n_iter" %in% names(peak_summaries))
                 unique(peak_summaries$n_iter)[1L] else "N"
@@ -400,13 +411,17 @@ y_ceil       <- 105
 y_breaks     <- seq(y_data_floor, 100, by = 25)  # ticks on data range only
 cap_ht_pct   <- (y_ceil - y_floor) * 0.02
 
-peak_type_levels <- c("Reference peak",
-                      "Ensemble-only: near reference",
-                      "Ensemble-only: independent")
-df_all$peak_type <- factor(df_all$peak_type, levels = peak_type_levels)
+# Rename peak types to include CI description for legend
+label_map <- c(
+  "Reference peak"               = "Reference peak (+/- 95% CI)",
+  "Ensemble-only: near reference" = "Ensemble-only: near reference (+/- matching window)",
+  "Ensemble-only: independent"    = "Ensemble-only: independent (+/- 95% CI)"
+)
+df_all$peak_type <- factor(label_map[as.character(df_all$peak_type)],
+                           levels = label_map)
 
 # Subset independent orphans for age labels
-df_indp <- df_all[df_all$peak_type == "Ensemble-only: independent", ]
+df_indp <- df_all[df_all$peak_type == "Ensemble-only: independent (+/- 95% CI)", ]
 
 p_combined <- ggplot(df_all, aes(y = det_freq, colour = peak_type)) +
   geom_errorbar(aes(y = det_freq, xmin = ci95_lo, xmax = ci95_hi),
@@ -434,15 +449,15 @@ p_combined <- p_combined +
   scale_y_continuous(limits = c(y_floor, y_ceil),
                      breaks = y_breaks,
                      expand = expansion(0)) +
-  scale_shape_manual(values = c("Reference peak"               = 21L,
-                                "Ensemble-only: near reference" = 21L,
-                                "Ensemble-only: independent"    = 23L)) +
-  scale_fill_manual(values  = c("Reference peak"               = "black",
-                                "Ensemble-only: near reference" = "white",
-                                "Ensemble-only: independent"    = "white")) +
-  scale_colour_manual(values = c("Reference peak"               = "black",
-                                 "Ensemble-only: near reference" = "black",
-                                 "Ensemble-only: independent"    = "black")) +
+  scale_shape_manual(values = c("Reference peak (+/- 95% CI)"                        = 21L,
+                                "Ensemble-only: near reference (+/- matching window)" = 21L,
+                                "Ensemble-only: independent (+/- 95% CI)"             = 23L)) +
+  scale_fill_manual(values  = c("Reference peak (+/- 95% CI)"                        = "black",
+                                "Ensemble-only: near reference (+/- matching window)" = "white",
+                                "Ensemble-only: independent (+/- 95% CI)"             = "white")) +
+  scale_colour_manual(values = c("Reference peak (+/- 95% CI)"                        = "black",
+                                 "Ensemble-only: near reference (+/- matching window)" = "black",
+                                 "Ensemble-only: independent (+/- 95% CI)"             = "black")) +
   guides(shape  = guide_legend(title = NULL,
                                override.aes = list(size = 2.5),
                                nrow = 1L),
@@ -461,8 +476,8 @@ p_combined <- p_combined +
         axis.title.x           = element_blank(),
         axis.text.x            = element_blank()) +
   labs(y     = "Detection frequency (%)",
-       title = paste0("(b) Detection frequency and timing uncertainty",
-                      "  (95% CI, ", n_iter_lbl, "-chronology ensemble)"))
+       title = paste0("(b) Detection frequency and timing uncertainty  (",
+                      n_iter_lbl, "-chronology ensemble)"))
 
 
 # ---- Assemble --------------------------------------------------------

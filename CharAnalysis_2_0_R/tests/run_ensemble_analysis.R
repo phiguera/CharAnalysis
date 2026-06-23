@@ -22,7 +22,11 @@ setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1
 if (!exists("out")) {
   message("Loading package...")
   devtools::load_all("CharAnalysis_2_0_R")
-  params_file <- "CharAnalysis_2_0_R/inst/validation/CH10_charParams.csv"
+  if (!exists("params_file")) {
+    stop("'out' not found and 'params_file' not set.\n",
+         "  Set params_file <- 'path/to/MySite_charParams.csv' before sourcing,\n",
+         "  or source char_run_ensemble.R instead (which sets params_file).")
+  }
   message("Running reference CharAnalysis...")
   out <- CharAnalysis(params_file, plots = FALSE)
 } else {
@@ -246,30 +250,157 @@ if (any(is_cand, na.rm = TRUE)) {
     if (dists[nearest] <= match_halfwin_k[nearest]) "near_reference" else "independent"
   })
 
-  n_orphans <- nrow(orphan_summaries)
+  # Keep only independent orphans; near-reference cases handled by Section 7b.
+  orphan_summaries <- orphan_summaries[orphan_summaries$proximity == "independent", ]
+  if (nrow(orphan_summaries) == 0L) orphan_summaries <- NULL
+  n_indp    <- if (is.null(orphan_summaries)) 0L else nrow(orphan_summaries)
+  n_orphans <- n_indp
 
-  # Warn if any two orphan clusters have overlapping windows (age sharing risk)
-  if (n_orphans > 1L) {
-    for (j1 in seq_len(n_orphans - 1L)) {
-      for (j2 in (j1 + 1L):n_orphans) {
-        gap <- abs(orphan_rep_ages[j1] - orphan_rep_ages[j2])
-        if (gap < orphan_halfwins[j1] + orphan_halfwins[j2]) {
+  # Warn if any two independent orphan clusters have overlapping windows
+  if (n_indp > 1L) {
+    indp_ages <- orphan_summaries$ref_age
+    indp_wins <- orphan_summaries$match_halfwin
+    for (j1 in seq_len(n_indp - 1L)) {
+      for (j2 in (j1 + 1L):n_indp) {
+        if (abs(indp_ages[j1] - indp_ages[j2]) < indp_wins[j1] + indp_wins[j2]) {
           message(sprintf(
-            "  NOTE: orphan clusters at %.0f and %.0f cal yr BP are within each other's\n        search windows. These may represent a single peak shifted in time\n        by age-model uncertainty rather than two distinct peaks.",
-            orphan_rep_ages[j1], orphan_rep_ages[j2]))
+            "  NOTE: independent orphan clusters at %.0f and %.0f cal yr BP are within\n        each other's search windows and may represent a single shifted event.",
+            indp_ages[j1], indp_ages[j2]))
         }
       }
     }
   }
 
-  n_near <- sum(orphan_summaries$proximity == "near_reference")
-  n_indp <- sum(orphan_summaries$proximity == "independent")
-
 } else {
   orphan_summaries <- NULL
   n_orphans        <- 0L
-  n_near           <- 0L
   n_indp           <- 0L
+}
+
+
+# ---- 7b. Secondary detections within reference windows -----------------
+# Many ensemble iterations detect more peaks than the reference run. The
+# matching loop claims only the NEAREST detection per reference peak per
+# iteration; additional detections within the same window are left unclaimed
+# in orphan_matrix. Because these secondary detections are scattered across
+# different time steps by chronological uncertainty, they rarely cluster
+# enough at any single time step to exceed orphan_thresh in the time-step-
+# based orphan scan above.
+#
+# This section aggregates unclaimed detections at the WINDOW level: for
+# each reference peak k and each iteration i, find unclaimed detections
+# within +/- match_halfwin_k of ref_peak_ages[k] and take the one furthest
+# from the reference peak age. If >= orphan_thresh of iterations contribute
+# a secondary detection near reference peak k, it is flagged as an
+# ensemble-only peak of proximity "near_reference".
+#
+# ref_age in the output is the median detected age of the secondary
+# detections (not the reference peak age), showing where the secondary
+# event actually clusters.
+
+secondary_assgn    <- list()
+secondary_rep_ages <- numeric(0)   # median detected age (reported as ref_age)
+secondary_halfwins <- numeric(0)
+
+for (k in seq_len(n_peaks)) {
+  win_k  <- match_halfwin_k[k]
+  age_lo <- ref_peak_ages[k] - win_k
+  age_hi <- ref_peak_ages[k] + win_k
+  in_win <- which(age_grid >= age_lo & age_grid <= age_hi)
+
+  sec_ages <- numeric(0)
+  for (i in seq_len(n_iter)) {
+    unm_idx <- in_win[which(orphan_matrix[in_win, i] == 1L)]
+    if (length(unm_idx) == 0L) next
+    ages_unm <- age_grid[unm_idx]
+    furthest <- ages_unm[which.max(abs(ages_unm - ref_peak_ages[k]))]
+    sec_ages <- c(sec_ages, furthest)
+  }
+
+  if (length(sec_ages) / n_iter >= orphan_thresh) {
+    secondary_assgn    <- c(secondary_assgn, list(sec_ages))
+    secondary_rep_ages <- c(secondary_rep_ages, median(sec_ages))
+    secondary_halfwins <- c(secondary_halfwins, win_k)
+  }
+}
+
+# ---- 7b (merging pass): collapse overlapping secondary candidates -------
+# Candidates from adjacent reference windows can overlap, producing multiple
+# entries for what is ecologically a single secondary event. Sort by median
+# age, then greedily merge any candidate whose median falls within mFRI_floor
+# of the running group median. After merging, recompute the group median from
+# all pooled detected ages.
+# Note: if the same iteration contributed a detection to two overlapping
+# windows, it will appear twice in the merged pool. Detection frequency is
+# therefore a slight overestimate for merged events; it is capped at 100%.
+
+if (length(secondary_assgn) > 0L) {
+
+  # Sort oldest-to-youngest (decreasing age BP = older first)
+  ord                <- order(secondary_rep_ages, decreasing = TRUE)
+  secondary_assgn    <- secondary_assgn[ord]
+  secondary_rep_ages <- secondary_rep_ages[ord]
+  secondary_halfwins <- secondary_halfwins[ord]
+
+  merged_assgn    <- list()
+  merged_rep_ages <- numeric(0)
+  merged_halfwins <- numeric(0)
+
+  k <- 1L
+  while (k <= length(secondary_assgn)) {
+    grp_ages <- secondary_assgn[[k]]
+    grp_hw   <- secondary_halfwins[k]
+
+    # Absorb the next candidate if its median falls within mFRI_floor of
+    # the current group's running median
+    while (k + 1L <= length(secondary_assgn)) {
+      if (abs(secondary_rep_ages[k + 1L] - median(grp_ages)) <= mFRI_floor) {
+        k        <- k + 1L
+        grp_ages <- c(grp_ages, secondary_assgn[[k]])
+        grp_hw   <- max(grp_hw, secondary_halfwins[k])
+      } else {
+        break
+      }
+    }
+
+    merged_assgn    <- c(merged_assgn, list(grp_ages))
+    merged_rep_ages <- c(merged_rep_ages, median(grp_ages))
+    merged_halfwins <- c(merged_halfwins, grp_hw)
+    k <- k + 1L
+  }
+
+  # Re-apply threshold after merging (merged pool can only grow, but check
+  # ensures consistency if any group somehow fell below after deduplication)
+  keep <- sapply(merged_assgn,
+                 function(v) min(length(v), n_iter) / n_iter >= orphan_thresh)
+  secondary_assgn    <- merged_assgn[keep]
+  secondary_rep_ages <- merged_rep_ages[keep]
+  secondary_halfwins <- merged_halfwins[keep]
+}
+
+if (length(secondary_assgn) > 0L) {
+  secondary_summaries               <- make_peak_summary(secondary_assgn,
+                                                         secondary_rep_ages, n_iter)
+  # Cap prob at 1.0 in case of double-counting from overlapping windows
+  secondary_summaries$prob          <- pmin(secondary_summaries$prob, 1.0)
+  secondary_summaries$type          <- "ensemble_only"
+  secondary_summaries$proximity     <- "near_reference"
+  secondary_summaries$match_halfwin <- round(secondary_halfwins, 1)
+
+  # Coherence filter: retain only candidates whose 95% CI spans < 50% of the
+  # full matching window. ci_frac = ci95_width / (2 * match_halfwin).
+  # Values near 1.0 indicate detections scattered across the entire window
+  # (noise); values < 0.5 indicate genuine temporal clustering at a
+  # consistent age (real secondary event).
+  ci_frac <- (secondary_summaries$ci95_hi - secondary_summaries$ci95_lo) /
+               (secondary_summaries$match_halfwin * 2)
+  secondary_summaries <- secondary_summaries[ci_frac < 0.5, ]
+  if (nrow(secondary_summaries) == 0L) secondary_summaries <- NULL
+
+  n_secondary <- if (is.null(secondary_summaries)) 0L else nrow(secondary_summaries)
+} else {
+  secondary_summaries <- NULL
+  n_secondary         <- 0L
 }
 
 
@@ -298,13 +429,9 @@ build_out_df <- function(ps) {
   )
 }
 
-all_summaries <- if (!is.null(orphan_summaries)) {
-  rbind(peak_summaries, orphan_summaries)
-} else {
-  peak_summaries
-}
-# Sort by age descending (oldest first, consistent with charResults convention)
-all_summaries <- all_summaries[order(all_summaries$ref_age, decreasing = TRUE), ]
+all_summaries <- rbind(peak_summaries, orphan_summaries, secondary_summaries)
+# Sort young-to-old (smallest age BP at top, consistent with charResults convention)
+all_summaries <- all_summaries[order(all_summaries$ref_age, decreasing = FALSE), ]
 
 out_df <- build_out_df(all_summaries)
 
@@ -356,10 +483,21 @@ message(sprintf(
   min(ref_peak_ages), max(ref_peak_ages)
 ))
 
-# -- 9a. Peak timing SD --------------------------------------------------
+# -- (a) Detection frequency and matching window -------------------------
+det_freq_pct <- peak_summaries$prob * 100
+hw           <- peak_summaries$match_halfwin   # half-window (± yr) per peak
+message(sprintf(
+  "\n(a) Detection frequency (%% of %d iterations):\n      Median: %.1f%%  |  range: %.1f - %.1f%%  (N = %d peaks)\n      >= 90%%: %d peaks  |  >= 75%%: %d peaks  |  >= 50%%: %d peaks\n    Matching window (+/- yr around each reference peak age):\n      Median: +/- %.0f yr  |  range: +/- %.0f to +/- %.0f yr\n      Note: window = max(mean mFRI / 2, yrInterp, ci95_width / 2); wide windows\n            may absorb potential ensemble-only peaks near reference peaks.",
+  ensemble$n_iter,
+  median(det_freq_pct), min(det_freq_pct), max(det_freq_pct), n_peaks,
+  sum(det_freq_pct >= 90), sum(det_freq_pct >= 75), sum(det_freq_pct >= 50),
+  median(hw), min(hw), max(hw)
+))
+
+# -- (b) Peak timing SD --------------------------------------------------
 ref_sd <- peak_summaries$sd_age[!is.na(peak_summaries$sd_age)]
 message(sprintf(
-  "\n(a) Reference peak timing uncertainty (1 SD, chronological uncertainty only)
+  "\n(b) Reference peak timing uncertainty (1 SD, chronological uncertainty only)
       Median SD : %.0f yr  |  range: %.0f - %.0f yr  (N = %d peaks)",
   median(ref_sd), min(ref_sd), max(ref_sd), length(ref_sd)
 ))
@@ -390,7 +528,16 @@ if (n_zones > 1L) {
 # -diff()). Requires >= 2 detected peaks per zone/record to contribute
 # a FRI estimate.
 
-message("\n(b) Mean FRI (chronological uncertainty | reference-run arithmetic mean)")
+# Peaks per iteration summary
+peaks_per_iter <- colSums(peaks_mat, na.rm = TRUE)
+message(sprintf(
+  "\n(c) Peaks detected per ensemble iteration:\n      Reference run: %d peaks\n      Ensemble -- median: %.0f  |  range: %.0f - %.0f  (N = %d iterations)\n      Note: ref and ensemble mean FRI are not directly comparable if peak\n            counts differ -- chronological uncertainty affects detection,\n            not just timing.",
+  n_peaks,
+  median(peaks_per_iter), min(peaks_per_iter), max(peaks_per_iter),
+  n_iter
+))
+
+message("\n(d) Mean FRI (chronological uncertainty | reference-run arithmetic mean)")
 message("    Ensemble range reflects chronological uncertainty only.")
 
 fri_ensemble <- vector("list", n_zones + 1L)  # index 1 = whole record, 2:(n_zones+1) = zones
@@ -450,28 +597,39 @@ if (n_zones > 1L) {
 }
 
 # -- 9c. Ensemble-only peaks ---------------------------------------------
+n_ensemble_only <- n_secondary + n_indp
 message(sprintf(
-  "\n(c) Ensemble-only peaks: %d candidates (>= %.0f%% detection threshold)",
-  n_orphans, orphan_thresh * 100
+  "\n(e) Ensemble-only peaks (>= %.0f%% detection threshold): %d total",
+  orphan_thresh * 100, n_ensemble_only
 ))
-if (n_orphans > 0L) {
+
+# Near-reference: window-level secondary detections within reference windows
+if (n_secondary > 0L) {
+  sec_ages_str <- paste(
+    round(sort(secondary_summaries$ref_age, decreasing = TRUE)),
+    collapse = ", "
+  )
   message(sprintf(
-    "      %d near-reference (secondary detections near a known fire event)",
-    n_near))
-  if (n_indp > 0L) {
-    indp_ages <- sort(
-      orphan_summaries$ref_age[orphan_summaries$proximity == "independent"],
-      decreasing = TRUE
-    )
-    message(sprintf(
-      "      %d independent (no reference peak within search window)",
-      n_indp))
-    message(sprintf(
-      "        Ages (cal yr BP): %s",
-      paste(round(indp_ages), collapse = ", ")))
-  }
+    "    Near-reference: %d  |  median ages (cal yr BP): %s\n      Unclaimed detections within a reference peak's window, present in\n      >= %.0f%% of iterations, with 95%% CI spanning < 50%% of window (ci_frac < 0.5).",
+    n_secondary, sec_ages_str, orphan_thresh * 100))
 } else {
-  message("      None detected.")
+  message(sprintf(
+    "    Near-reference: 0  (no reference window had a secondary cluster\n      in >= %.0f%% of iterations)",
+    orphan_thresh * 100))
+}
+
+# Independent: time-step orphan clusters outside all reference windows
+if (n_indp > 0L) {
+  indp_ages_out <- sort(orphan_summaries$ref_age, decreasing = TRUE)
+  message(sprintf(
+    "    Independent: %d  |  ages (cal yr BP): %s\n      Detected outside all reference windows in >= %.0f%% of iterations.",
+    n_indp,
+    paste(round(indp_ages_out), collapse = ", "),
+    orphan_thresh * 100))
+} else {
+  message(sprintf(
+    "    Independent: 0  (no clusters outside reference windows exceeded\n      %.0f%% detection threshold)",
+    orphan_thresh * 100))
 }
 
 message(paste(rep("=", 60), collapse = ""))

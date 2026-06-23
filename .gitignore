@@ -24,3 +24,6 @@ bkgSens_refs/
 
 # Ensemble output files (large binary; regenerate with char_run_ensemble.R)
 *.rds
+
+# rbacon output directory (created in working directory when Bacon() runs)
+Bacon_runs/

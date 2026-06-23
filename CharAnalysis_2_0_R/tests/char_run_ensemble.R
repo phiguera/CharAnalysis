@@ -44,8 +44,8 @@ setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1
 # USER SETTINGS
 # =====================================================================
 
-params_file <- "CharAnalysis_2_0_R/inst/validation/CH10_charParams.csv"
-chron_file  <- "CharAnalysis_2_0_R/tests/CH10_MCAgeDepth_1000_chronologies_2026_06_12.csv"
+params_file <- "CharAnalysis_2_0_R/tests/SI17_charParams.csv"
+chron_file  <- "CharAnalysis_2_0_R/tests/SI17_MCAgeDepth_1000_chronologies.csv"
 
 # Number of CPU cores to use.
 # Default: all available cores minus one (leaves one core free for the OS).
@@ -346,7 +346,7 @@ class(ensemble) <- c("CharEnsemble", "list")
 
 message(sprintf("ensemble$peaks_matrix : %d steps x %d iterations",
                 nrow(ensemble$peaks_matrix), ncol(ensemble$peaks_matrix)))
-message(sprintf("ensemble$prob_peak    : range [%.3f, %.3f]",
+message(sprintf("ensemble$prob_peak    : range [%.3f, %.3f]  (per time-step; see SUMMARY for per-peak detection freq)",
                 min(ensemble$prob_peak, na.rm = TRUE),
                 max(ensemble$prob_peak, na.rm = TRUE)))
 
