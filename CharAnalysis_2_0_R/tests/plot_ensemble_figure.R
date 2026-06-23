@@ -177,6 +177,13 @@ zone_div  <- pretreatment$zoneDiv
 x_ticks   <- seq(0, max(zone_div, na.rm = TRUE), by = 1000)
 x_minor   <- seq(0, max(zone_div, na.rm = TRUE), by = 500)
 x_lims    <- c(max(zone_div, na.rm = TRUE), min(zone_div, na.rm = TRUE))
+
+# Zone boundary vlines for panels b-d (lines only; labels are on panel a).
+inner_zones <- zone_div[-c(1L, length(zone_div))]
+zone_vlines <- if (length(inner_zones) > 0L) {
+  geom_vline(xintercept = inner_zones, colour = "grey50",
+             linewidth = 0.8, linetype = "dashed")
+} else NULL
 transform <- pretreatment$transform
 cPeak     <- peak_analysis$cPeak
 
@@ -297,6 +304,7 @@ y_tick_sni <- pretty(c(0, max(sni_series, na.rm = TRUE)), n = 4)
 y_lim_sni  <- c(0, max(y_tick_sni))
 
 p_sni <- ggplot(df_sni, aes(x = x, y = sni)) +
+  zone_vlines +
   geom_line(colour = "black", linewidth = 1.2) +
   geom_hline(yintercept = 3, linetype = "dashed") +
   scale_x_reverse(limits = x_lims, breaks = x_ticks,
@@ -333,6 +341,7 @@ if (chron_ci_avail) {
   y_br_cc  <- sort(unique(c(-rev(y_br_cc[-1L]), y_br_cc)))
 
   p_chron_ci <- ggplot(df_cc, aes(x = median_age)) +
+    zone_vlines +
     geom_hline(yintercept = 0, colour = "black", linewidth = 0.3) +
     geom_line(aes(y =  hw), colour = "black", linewidth = 1.0) +
     geom_line(aes(y = -hw), colour = "black", linewidth = 1.0) +
@@ -424,6 +433,7 @@ df_all$peak_type <- factor(label_map[as.character(df_all$peak_type)],
 df_indp <- df_all[df_all$peak_type == "Ensemble-only: independent (+/- 95% CI)", ]
 
 p_combined <- ggplot(df_all, aes(y = det_freq, colour = peak_type)) +
+  zone_vlines +
   geom_errorbar(aes(y = det_freq, xmin = ci95_lo, xmax = ci95_hi),
                 width = cap_ht_pct, linewidth = 0.7,
                 show.legend = FALSE) +

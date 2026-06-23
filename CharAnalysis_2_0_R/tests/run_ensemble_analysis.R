@@ -65,41 +65,60 @@ n_peaks       <- length(ref_peak_ages)
 
 
 # ---- 4. Matching window (adaptive, per-peak) ---------------------------
-# The global floor is mean_mFRI / 2 (fire-ecology minimum) or yrInterp,
-# whichever is larger. On top of that, the per-peak window expands where
-# chronological uncertainty is high: for each reference peak, ci95_width
-# is interpolated from ensemble$chron_ci at the peak's median age, and
-# the window is set to max(mFRI_floor, ci95_width / 2). This absorbs
-# detections that are the same fire event shifted in time by age-model
-# uncertainty, preventing them from being miscategorised as orphan peaks.
-# Falls back to the global floor for all peaks if chron_ci is unavailable.
+# The window floor is mFRI_z / 2 for the zone containing each peak, where
+# mFRI_z is the mean fire-return interval for that zone from the benchmark
+# run, or yrInterp, whichever is larger. On top of that, the per-peak
+# window expands where chronological uncertainty is high: ci95_width is
+# interpolated from ensemble$chron_ci at the peak's age, and the window is
+# max(mFRI_floor_z, ci95_width / 2). Using per-zone mFRI ensures the floor
+# reflects local fire frequency rather than a record-wide average.
+# Falls back to a 500-yr global default for zones with invalid mFRI, and
+# to the zone floor for all peaks if chron_ci is unavailable.
 
-yrInterp    <- out$pretreatment$yrInterp
-fri_params  <- out$post$FRI_params_zone
-valid_zones <- !is.na(fri_params[, 2L]) & fri_params[, 2L] > 0
-if (any(valid_zones)) {
-  mean_mFRI  <- mean(fri_params[valid_zones, 2L])
-  mFRI_floor <- max(mean_mFRI / 2, yrInterp)
-} else {
-  mean_mFRI  <- NA_real_
-  mFRI_floor <- 500
+yrInterp   <- out$pretreatment$yrInterp
+zone_div   <- out$pretreatment$zoneDiv   # defined here; reused in section 9
+n_zones    <- length(zone_div) - 1L
+fri_params <- out$post$FRI_params_zone
+
+# Per-zone mFRI floor: max(mFRI_z / 2, yrInterp).
+mFRI_floor_by_zone <- vapply(seq_len(n_zones), function(z) {
+  mz <- fri_params[z, 2L]
+  if (!is.na(mz) && mz > 0) max(mz / 2, yrInterp) else 500
+}, numeric(1L))
+
+# Helper: return the mFRI floor for the zone containing a given age.
+mFRI_floor_for_age <- function(age) {
+  for (z in seq_len(n_zones)) {
+    zb <- sort(c(zone_div[z], zone_div[z + 1L]))
+    if (age >= zb[1L] && age <= zb[2L]) return(mFRI_floor_by_zone[z])
+  }
+  # Fallback: assign to nearest zone boundary
+  mFRI_floor_by_zone[which.min(
+    sapply(seq_len(n_zones), function(z) {
+      zb <- sort(c(zone_div[z], zone_div[z + 1L]))
+      min(abs(age - zb))
+    })
+  )]
 }
 
-# Interpolate ci95_width at each reference peak age from chron_ci
+# Per-peak mFRI floor (one value per reference peak).
+mFRI_floor_k <- vapply(ref_peak_ages, mFRI_floor_for_age, numeric(1L))
+
+# Interpolate ci95_width at each reference peak age from chron_ci.
 chron_ci_ok <- exists("ensemble") && !is.null(ensemble$chron_ci)
 if (chron_ci_ok) {
-  ci95_at_peak <- approx(
+  ci95_at_peak    <- approx(
     x    = ensemble$chron_ci$median_age,
     y    = ensemble$chron_ci$ci95_width,
     xout = ref_peak_ages,
     rule = 2L
   )$y
-  match_halfwin_k <- pmax(mFRI_floor, ci95_at_peak / 2)
+  match_halfwin_k <- pmax(mFRI_floor_k, ci95_at_peak / 2)
 } else {
-  match_halfwin_k <- rep(mFRI_floor, n_peaks)
+  match_halfwin_k <- mFRI_floor_k
 }
 
-# Keep a scalar for orphan-stage checks (use median window)
+# Keep a scalar for orphan-stage checks (use median window).
 match_halfwin <- median(match_halfwin_k)
 
 
@@ -202,7 +221,8 @@ if (any(is_cand, na.rm = TRUE)) {
     peak_pos <- seg_idx[which.max(prob_orphan[seg_idx])]
     peak_age <- age_grid[peak_pos]
 
-    # Adaptive window for this orphan cluster (same logic as reference peaks)
+    # Adaptive window for this orphan cluster (same logic as reference peaks,
+    # using the zone-specific mFRI floor for the age of this cluster).
     win_orp <- if (chron_ci_ok) {
       ci95_here <- approx(
         x    = ensemble$chron_ci$median_age,
@@ -210,9 +230,9 @@ if (any(is_cand, na.rm = TRUE)) {
         xout = peak_age,
         rule = 2L
       )$y
-      max(mFRI_floor, ci95_here / 2)
+      max(mFRI_floor_for_age(peak_age), ci95_here / 2)
     } else {
-      mFRI_floor
+      mFRI_floor_for_age(peak_age)
     }
 
     # Collect unmatched detected ages within win_orp for this cluster
@@ -487,7 +507,7 @@ message(sprintf(
 det_freq_pct <- peak_summaries$prob * 100
 hw           <- peak_summaries$match_halfwin   # half-window (± yr) per peak
 message(sprintf(
-  "\n(a) Detection frequency (%% of %d iterations):\n      Median: %.1f%%  |  range: %.1f - %.1f%%  (N = %d peaks)\n      >= 90%%: %d peaks  |  >= 75%%: %d peaks  |  >= 50%%: %d peaks\n    Matching window (+/- yr around each reference peak age):\n      Median: +/- %.0f yr  |  range: +/- %.0f to +/- %.0f yr\n      Note: window = max(mean mFRI / 2, yrInterp, ci95_width / 2); wide windows\n            may absorb potential ensemble-only peaks near reference peaks.",
+  "\n(a) Detection frequency (%% of %d iterations):\n      Median: %.1f%%  |  range: %.1f - %.1f%%  (N = %d peaks)\n      >= 90%%: %d peaks  |  >= 75%%: %d peaks  |  >= 50%%: %d peaks\n    Matching window (+/- yr around each reference peak age):\n      Median: +/- %.0f yr  |  range: +/- %.0f to +/- %.0f yr\n      Note: window = max(mFRI_z / 2, yrInterp, ci95_width / 2) per zone; wide windows\n            may absorb potential ensemble-only peaks near reference peaks.",
   ensemble$n_iter,
   median(det_freq_pct), min(det_freq_pct), max(det_freq_pct), n_peaks,
   sum(det_freq_pct >= 90), sum(det_freq_pct >= 75), sum(det_freq_pct >= 50),
@@ -503,8 +523,6 @@ message(sprintf(
 ))
 
 # Per-zone SD summary if multiple zones exist
-zone_div <- out$pretreatment$zoneDiv
-n_zones  <- length(zone_div) - 1L
 if (n_zones > 1L) {
   message("      By zone:")
   for (z in seq_len(n_zones)) {

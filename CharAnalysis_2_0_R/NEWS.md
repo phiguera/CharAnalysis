@@ -1,5 +1,177 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Development scripts (ROADMAP Section 3 — Chronological Uncertainty, continued)
+
+### Vignette finalization: methods figure, subscripts, title, x-axis crop (2026-06-23, continued)
+
+**Vignette** `vignettes/chronological_uncertainty_draft.md` — final round of edits:
+
+- Title changed to "Integrating Chronological Uncertainty into *CharAnalysis*".
+- *CharAnalysis* italicized in all prose instances (skipping code blocks and paths).
+- Step 3 gained a third bullet for ensemble-only peaks, including the 10%
+  detection frequency threshold and note that it is user-adjustable.
+- Subscripts switched from HTML `<sub>` tags to Pandoc `~subscript~` notation
+  (`~k~`, `~z~`, `~95,k~`) for correct rendering in RStudio Visual editor and
+  Quarto/HTML output.
+- Methods illustration figure (Figure 1) integrated into Section 2 after Step 4,
+  with full panel-by-panel caption; downstream figures renumbered 2–4.
+- Figure 1 caption updated to note x-axis shows only the most recent 3,000 years
+  of the CH10 record (full record ~6,200 cal yr BP).
+- rbacon cited as Blaauw & Christen (2011); MCAgeDepth cited as Higuera et al.
+  (2009) in Step 1 prose.
+
+**`plot_chronUncertainty_methods.R`** — x-axis crop:
+
+- Added `x_crop` user setting (oldest age to display); defaults to `NA` (full
+  record). CH10 override set to 3,000 cal yr BP via `switch(out$site, ...)`.
+- `ref_peak_ages_vis` filters benchmark peak vlines to the visible window so
+  out-of-range peaks do not add clutter.
+- Added `ggsave()` saving to `{site}_chronUncertainty_methods.png`
+  (6 × 10 in, 300 dpi).
+
+AI-assisted development (Claude/Anthropic).
+
+---
+
+### Per-zone mFRI, zone indicators, vignette restructure, age-depth figure (2026-06-23)
+
+**`run_ensemble_analysis.R`** — per-zone mFRI floor:
+
+- Replaced global `mean_mFRI` / `mFRI_floor` with a per-zone implementation.
+  `mFRI_floor_by_zone[]` computes the mFRI/2 floor for each zone from the
+  benchmark run's Weibull mean FRI. `mFRI_floor_for_age(age)` looks up the
+  correct floor for any peak age, falling back to the nearest zone boundary
+  for ages outside the record. `mFRI_floor_k` and `match_halfwin_k` are now
+  vectors aligned to `ref_peak_ages`, with per-zone values.
+- `zone_div` and `n_zones` are now defined once in Section 4 (removed
+  duplicate definition that previously appeared in Section 9).
+- Single-zone records (e.g. CH10) are unaffected; multi-zone records
+  (e.g. SI17) now use zone-specific mFRI floors.
+
+**`plot_ensemble_figure.R`** — zone boundary indicators:
+
+- Added dashed grey vertical lines (`inner_zones`, `zone_vlines`) at interior
+  zone boundaries in panels (b), (c), and (d). Centered zone labels added to
+  panel (b). Single-zone records produce `NULL` for `zone_vlines`; ggplot
+  ignores it silently.
+
+**`plot_chronUncertainty_methods.R`** (renamed from `plot_methods_figure.R`):
+
+- **Ensemble-only peaks** added to the bottom panel (Option B): grey open
+  circles on the same y-axis, plotted via `cluster_unmatched()` with
+  `ens_only_min_freq` threshold (default 40%); horizontal 95% CI bars shown
+  where ≥2 iterations contribute.
+- **Per-iteration deduplication** in `cluster_unmatched()`: detection
+  frequency now counts unique iterations, not total detections, preventing
+  double-counting when one iteration contributes two nearby unmatched peaks.
+- **Zone boundary indicators** on all panels (same `zone_vlines` pattern as
+  `plot_ensemble_figure.R`).
+- **CH10-specific CHAR y-axis ceiling** via `switch(out$site, "CH10" = 50, NA)`
+  in the user settings block; prevents extremely high outlier values from
+  compressing the visible CHAR range.
+- Bug fixes: `inherit.aes = FALSE` on `geom_errorbarh`/`geom_point` for
+  ensemble-only peaks; `if/else` parsing fixed with explicit braces;
+  `print(wrap_plots(...))` added so the figure displays when sourced from
+  RStudio.
+
+**Vignette** `vignettes/chronological_uncertainty_draft.md`:
+
+- **Step 3** gained a full adaptive matching window description: formula
+  (window_k = max(mFRI_z/2, CI_95,k/2)), ecological rationale for the
+  mFRI_z/2 floor ("once a peak shifts more than half the mean FRI, it is
+  likely a different event"), and a note that CI_95,k/2 typically dominates
+  in records with meaningful age uncertainty.
+- **Step 4**: "reference run" corrected to "benchmark run" throughout.
+- **Sections 3–4** merged into a unified "Site examples" section (Section 3)
+  with a framing paragraph, age-depth comparison figure (Figure 1), and
+  summary table. CH10 is described as "unusually well-dated"; SI17 as "less
+  precisely dated" (not "low precision"). Subsections 3.1/3.2 follow parallel
+  structure: chronology → benchmark run → ensemble behavior and key takeaway.
+  Figures renumbered 1–3.
+
+**New: `tests/plot_agedepth_vignette.R`** — age-depth comparison figure:
+
+- Plots median chronology and 95% CI ribbon for CH10 (blue) and SI17 (black)
+  on a single panel. Age (cal yr BP) on reversed y-axis (present at top);
+  depth on reversed x-axis. Shared axis limits allow direct visual comparison
+  of sediment accumulation rates (line slopes) and chronological precision
+  (ribbon widths). Legend positioned inside the panel at lower right.
+  Saves to `tests/agedepth_vignette.png` (3.5 × 3.5 in, 300 dpi).
+
+AI-assisted development (Claude/Anthropic).
+
+---
+
+### Secondary peak detection and coherence filter (2026-06-22)
+
+**`run_ensemble_analysis.R`** — major update to ensemble-only peak detection:
+
+- **Three peak types** now formally distinguished: *reference* (detected in the
+  median-chronology run), *ensemble-only: near-reference* (secondary detections
+  within a reference peak's matching window, absent from the reference run), and
+  *ensemble-only: independent* (detections outside all reference windows).
+- **Section 7 (time-step orphan scan)** now retains independent orphans only;
+  near-reference cases are handled exclusively by the new Section 7b.
+- **Section 7b (window-level secondary detection)**: for each reference peak *k*,
+  scans all iterations for unclaimed detections within ±`match_halfwin_k`. Per
+  iteration, the detection furthest from the reference peak age is recorded.
+  Candidates present in ≥10% of iterations are flagged.
+- **Merging pass**: overlapping secondary candidates (median ages within
+  `mFRI_floor` of each other) are collapsed into a single event before summary
+  statistics are computed.
+- **Coherence filter**: secondary candidates with `ci_frac ≥ 0.5` are discarded
+  as scatter. `ci_frac = ci95_width / (2 × match_halfwin)`; values near 1.0
+  indicate detections scattered across the full window (noise); values < 0.5
+  indicate genuine temporal clustering (real secondary event).
+- Section 8 now combines reference peaks, independent orphans, and
+  near-reference secondaries into a single `all_summaries` / `out_df`.
+- Summary section (e) reports near-reference and independent ensemble-only
+  peaks separately with distinct descriptions.
+
+**`plot_ensemble_figure.R`** — updated for three peak types:
+
+- Near-reference ensemble-only peaks now plotted with ±`match_halfwin` as the
+  x-axis bar (honest uncertainty bound) rather than the 95% CI (which reflects
+  the coherence filter criterion, not chronological uncertainty).
+- Legend labels include CI type: "Reference peak (+/- 95% CI)",
+  "Ensemble-only: near reference (+/- matching window)",
+  "Ensemble-only: independent (+/- 95% CI)".
+- Panel title simplified; `secondary_summaries` NULL-checked at load.
+
+**New: `char_extract_bacon_chronologies.R`** — generic function for extracting
+*N* chronologies from a completed rbacon MCMC run at user-supplied depths.
+Samples one index vector applied consistently across all depths, preserving the
+spatial correlation structure of the age-depth model. Returns a data frame
+compatible with `char_run_ensemble.R`. Roxygen stubs included; destined for
+`R/` with `rbacon` in Suggests.
+
+**New: SI17 (Silver Lake) site files** — `SI17.csv` (Bacon input), 
+`SI17_extract_bacon_chronologies.R` (site-specific extraction script),
+`SI17_bacon_compare.R` (median age comparison; max diff 25.8 yr, RMSE 6.3 yr),
+`SI17_MCAgeDepth_1000_chronologies.csv` (1000-member ensemble),
+`SI17_peakAgeUncertainty.csv`, and `SI17_ensemble_figure.pdf/.png`.
+
+**Applied results:**
+
+- *SI17 (Silver Lake)*: 25 reference peaks, all detected in ≥88.2% of
+  iterations (median 99.0%); median timing SD 53 yr. Zero ensemble-only peaks —
+  wide matching windows (±105–280 yr) and many extra detections per iteration
+  (median 32 vs. reference 25) produce only incoherent scatter (all candidates
+  ci_frac ≥ 0.76). Correct null result for a high-uncertainty chronology.
+- *CH10 (Chickaree Lake)*: 10 ensemble-only peaks total — 6 near-reference
+  (ci_frac 0.19–0.29 for the tightest candidates) and 4 independent. High-
+  precision chronology (narrow ±52 yr windows) allows genuine secondary
+  clustering to be detected.
+
+**Draft vignette** `vignettes/chronological_uncertainty_draft.md` Sections 1–4:
+motivation (two-mechanism argument, post-hoc correction critique, individual
+peak timing vs. fire-regime characteristics), workflow (4 steps with code
+examples), and site examples for CH10 and SI17 with embedded figure references.
+
+**`.gitignore`**: `Bacon_runs/` added (rbacon output directory).
+
+---
+
 ## Development scripts (ROADMAP Section 3 — Chronological Uncertainty)
 
 Three exploratory scripts in `tests/` (not yet exported functions), substantially

@@ -113,19 +113,64 @@ cluster (2420–2500 cal yr BP, P = 0.58–0.80) coincides with three closely
 spaced events, where chronological uncertainty causes detections to shift
 among peaks.
 
+### Also completed (June 2026, Round 8)
+
+- **Per-zone mFRI floor**: `run_ensemble_analysis.R` now uses `mFRI_floor_by_zone[]`
+  and `mFRI_floor_for_age()` to apply zone-specific mFRI floors to matching
+  windows, replacing the global mean. Single-zone records unaffected; multi-zone
+  records use zone-local fire frequency.
+- **Zone boundary indicators**: dashed grey vertical lines and centered zone
+  labels added to all ensemble figure panels and the methods illustration figure.
+- **Methods illustration figure** (`plot_chronUncertainty_methods.R`, renamed
+  from `plot_methods_figure.R`): ensemble-only peaks added to bottom panel with
+  per-iteration deduplication; CH10-specific y-axis ceiling; multiple bug fixes.
+- **Adaptive matching window documentation**: vignette Step 3 now describes the
+  window formula, ecological rationale for the mFRI/2 floor, and the observation
+  that CI_95,k/2 typically dominates in records with meaningful age uncertainty.
+- **Vignette restructured**: CH10 and SI17 examples merged into a unified "Site
+  examples" section (Section 3) with age-depth comparison figure, summary table,
+  and parallel subsections. CH10 described as "unusually well-dated"; SI17 as
+  "less precisely dated." All "reference run" → "benchmark run."
+- **Age-depth comparison figure** (`tests/plot_agedepth_vignette.R`): single-panel
+  figure with shared axes showing both sites' median chronology and 95% CI ribbon;
+  highlights differences in accumulation rate and chronological precision.
+
+### Also completed (June 2026, Round 7)
+
+- **Three peak types**: reference, ensemble-only near-reference, and
+  ensemble-only independent are now formally distinguished in analysis,
+  output CSV, and figure. Near-reference peaks are detected via a window-level
+  secondary scan (Section 7b) rather than the time-step orphan scan, which is
+  now reserved for independent peaks only.
+- **Window-level secondary detection**: for each reference peak, unclaimed
+  detections across iterations are aggregated within ±match_halfwin. A merging
+  pass (mFRI_floor criterion) collapses overlapping candidates; a coherence
+  filter (ci_frac < 0.5) suppresses scatter and retains only temporally
+  coherent secondary events.
+- **rbacon interface**: `char_extract_bacon_chronologies()` extracts N
+  chronologies from a completed rbacon run, preserving MCMC spatial correlation.
+  Roxygen-documented; destined for `R/` with `rbacon` in Suggests.
+- **SI17 applied**: null result (0 ensemble-only peaks) confirmed correct for
+  a wide-uncertainty chronology; CH10 yields 10 ensemble-only peaks (6
+  near-reference, 4 independent).
+- **Draft vignette**: `vignettes/chronological_uncertainty_draft.md` Sections
+  1–4 written (motivation, workflow, CH10 example, SI17 example).
+- **Parallel processing**: implemented in Round 6 (2026-06-22); ✓ complete.
+
 ### Pending
 
-- Package `char_run_ensemble()` as an exported function with full Roxygen
-  documentation and input validation.
-- Build an interface to `rbacon` (and eventually `rplum` for 210Pb records)
-  to replace the `MC_AgeDepth.m` MATLAB workflow as the chronology source.
-- Write a dedicated vignette (`vignettes/chronological_uncertainty.Rmd`)
-  covering rationale, the matching algorithm, interpretation guidance, and
-  a worked CH10 example. This is the intended home for the detailed methods
-  currently documented in `tests/plot_ensemble_figure.R`.
+- Test ensemble pipeline on additional sites beyond CH10 and SI17; CH10's
+  high-precision chronology may make it unusual in yielding coherent
+  near-reference secondary peaks.
+- Package `char_run_ensemble()` and `char_extract_bacon_chronologies()` as
+  exported functions with full Roxygen documentation and input validation.
+- Add `rbacon` to DESCRIPTION Suggests; move `char_extract_bacon_chronologies()`
+  to `R/`.
+- Complete vignette (`vignettes/chronological_uncertainty_draft.md` →
+  `chronological_uncertainty.Rmd`): convert to Rmd, add rendered figures,
+  finalize for package build.
 - Coordinate with `tapas` and `CharcoalFireReconstructionR` developers.
-- Consider parallelisation (`parallel::parLapply`) to reduce the ~16 min
-  runtime.
+- Validate global-threshold path (`threshType = 1`) against MATLAB.
 ---
 ## 4. Regional Synthesis
 

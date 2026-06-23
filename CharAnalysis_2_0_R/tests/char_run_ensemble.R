@@ -44,8 +44,8 @@ setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1
 # USER SETTINGS
 # =====================================================================
 
-params_file <- "CharAnalysis_2_0_R/tests/SI17_charParams.csv"
-chron_file  <- "CharAnalysis_2_0_R/tests/SI17_MCAgeDepth_1000_chronologies.csv"
+params_file <- "CharAnalysis_2_0_R/tests/CH10_charParams.csv"
+chron_file  <- "CharAnalysis_2_0_R/tests/CH10_MCAgeDepth_1000_chronologies_2026_06_12.csv"
 
 # Number of CPU cores to use.
 # Default: all available cores minus one (leaves one core free for the OS).
