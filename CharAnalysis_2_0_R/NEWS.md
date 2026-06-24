@@ -1,5 +1,12 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Bug fix (2026-06-24)
+
+- `run_ensemble_analysis.R`: fixed `object 'mFRI_floor' not found` error in the
+  Section 7b merging pass; `mFRI_floor` (removed in Round 8 per-zone refactor)
+  replaced with `mFRI_floor_for_age(median(grp_ages))`. Ensemble-only peak count
+  for CH10 updated from 10 to 9 as a result.
+
 ## Development scripts (ROADMAP Section 3 — Chronological Uncertainty, continued)
 
 ### Vignette finalization: methods figure, subscripts, title, x-axis crop (2026-06-23, continued)

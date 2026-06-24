@@ -41,13 +41,13 @@ This R package is a direct translation of *CharAnalysis* v2.0 (MATLAB), validate
 
 The full workflow proceeds in five steps:
 
-1. **Pretreatment** — Resample the raw charcoal series to equal time steps and compute charcoal accumulation rate (CHAR, pieces cm^-2^ yr^-1^).
-2. **Smoothing** — Estimate low-frequency trends (C~background~) using lowess or a moving-window statistic.
-3. **Peak decomposition** — Compute the high-frequency residual C~peak~ = C~interp~ − C~background~ (or ratio C~interp~ / C~background~).
-4. **Thresholding** — Define a noise threshold and flag C~peak~ values that exceed it as candidate fire events.  Thresholds can be global (one distribution fitted to the full record) or local (sliding-window distribution).
-5. **Screening and metrics** — Apply a minimum-count significance test, then compute fire-return intervals (FRIs), Weibull statistics, smoothed fire frequency, signal-to-noise index (SNI), and goodness-of-fit.
+1.  **Pretreatment** — Resample the raw charcoal series to equal time steps and compute charcoal accumulation rate (CHAR, pieces cm^-2^ yr^-1^).
+2.  **Smoothing** — Estimate low-frequency trends (C~background~) using lowess or a moving-window statistic.
+3.  **Peak decomposition** — Compute the high-frequency residual C~peak~ = C~interp~ − C~background~ (or ratio C~interp~ / C~background~).
+4.  **Thresholding** — Define a noise threshold and flag C~peak~ values that exceed it as candidate fire events. Thresholds can be global (one distribution fitted to the full record) or local (sliding-window distribution).
+5.  **Screening and metrics** — Apply a minimum-count significance test, then compute fire-return intervals (FRIs), Weibull statistics, smoothed fire frequency, signal-to-noise index (SNI), and goodness-of-fit.
 
----
+------------------------------------------------------------------------
 
 ## Installation
 
@@ -60,7 +60,7 @@ devtools::install_github("phiguera/CharAnalysis",
 install.packages(c("ggplot2", "patchwork", "ggtext"))
 ```
 
----
+------------------------------------------------------------------------
 
 ## Worked example: Code Lake
 
@@ -155,7 +155,7 @@ dim(out$char_results)
 sum(out$charcoal$charPeaks[, 4], na.rm = TRUE)
 ```
 
----
+------------------------------------------------------------------------
 
 ### Recommended workflow: parameter evaluation before interpretation
 
@@ -165,7 +165,7 @@ CharAnalysis separates figures into diagnostic and analytical categories for a r
 
 Inspect Fig 1 (`char_plot_raw()`) and Fig 3 (`char_plot_peaks()`) together. The central question is whether the background trend tracks genuine low-frequency variation in charcoal accumulation without fitting the peaks you are trying to detect. A smoothing window that is too narrow absorbs peaks into the background; one that is too wide misses meaningful low-frequency variation.
 
-```r
+``` r
 out <- CharAnalysis(params_file, plots = FALSE)
 char_plot_raw(out)    # Fig 1: compare smoothing methods and window widths
 char_plot_peaks(out)  # Fig 3: assess background fit and peak residuals
@@ -175,21 +175,21 @@ Adjust `smoothing$yr` and `smoothing$method` in the parameter file, re-run, and 
 
 **Step 2: Evaluate signal quality before proceeding (Fig 4)**
 
-Before examining any fire-history results, inspect Fig 4 (`char_plot_sni()`). The signal-to-noise index (SNI; Kelly et al. 2011) quantifies whether the charcoal record has sufficient contrast between fire-event peaks and background noise to support statistically reliable peak detection. The recommended minimum is SNI > 3.0.
+Before examining any fire-history results, inspect Fig 4 (`char_plot_sni()`). The signal-to-noise index (SNI; Kelly et al. 2011) quantifies whether the charcoal record has sufficient contrast between fire-event peaks and background noise to support statistically reliable peak detection. The recommended minimum is SNI \> 3.0.
 
-```r
+``` r
 char_plot_sni(out)   # Fig 4: SNI time series and distribution
 ```
 
 **If SNI falls below 3.0 for substantial portions of the record, peak detection in those intervals is not well justified.** This is not a minor caveat. Fire events identified in low-SNI intervals cannot be distinguished from noise with confidence, and fire-history statistics derived from them — fire-return intervals, fire frequency, zone comparisons — should not be interpreted without explicit acknowledgment of this limitation. The `CharAnalysis()` console flags this condition when it occurs; take it seriously.
 
-When SNI is < 3, consider: (1) adjusting the smoothing window (wider windows often increase SNI by better separating signal from noise), (2) restricting interpretation to the portion of the record where SNI > 3.0, or (3) reconsidering whether peak analysis is the appropriate method for this record.
+When SNI is \< 3, consider: (1) adjusting the smoothing window (wider windows often increase SNI by better separating signal from noise), (2) restricting interpretation to the portion of the record where SNI \> 3.0, or (3) reconsidering whether peak analysis is the appropriate method for this record.
 
 **Step 3: Examine threshold diagnostics if needed (Fig 2)**
 
 Fig 2 (`char_plot_thresh_diag()`) shows how the threshold is determined. For the local-threshold path (`threshType = 2`), it displays a 5×5 grid of sliding windows, each showing the C~peak~ distribution, fitted noise component, and threshold value — useful for identifying windows where the noise model fits poorly. For the global-threshold path (`threshType = 1`), it shows a single histogram of C~peak~ values with the fitted noise distribution and selected threshold. The local-path version is computationally slower and most useful when Fig 4 suggests threshold instability; it is not necessary to examine on every run.
 
-```r
+``` r
 char_plot_thresh_diag(out)   # Fig 2: threshold diagnostics
 ```
 
@@ -197,11 +197,11 @@ char_plot_thresh_diag(out)   # Fig 2: threshold diagnostics
 
 Only after the background, SNI, and threshold diagnostics are acceptable should you proceed to the analytical figures.
 
-```r
+``` r
 char_plot_analysis(out)   # Figs 6-9: zone comparisons, cumulative peaks, FRI distributions, fire history
 ```
 
----
+------------------------------------------------------------------------
 
 ### Output figures
 
@@ -296,7 +296,7 @@ char_plot_all(out, save = TRUE, out_dir = tempdir())
 
 > **Note:** The threshold-details figure (MATLAB Fig. 9) is not implemented in the R package. The background-sensitivity figure (Fig. 5, `char_bkg_sensitivity()`) is produced only when `bkgSens = 1` in the parameter file and is not shown here.
 
----
+------------------------------------------------------------------------
 
 ### Writing results to CSV
 
@@ -311,14 +311,14 @@ char_write_results(out$char_results,
 
 The output CSV contains one row per interpolated time step and 33 columns covering all analytical outputs from C~interp~ through to per-zone Weibull confidence intervals. Column headers match the MATLAB reference file exactly to facilitate direct numerical comparison.
 
----
+------------------------------------------------------------------------
 
 ## Key parameters
 
 The parameter file (`*_charParams.csv`) controls all aspects of the analysis. The most commonly adjusted parameters are:
 
 | Parameter | Default | Description |
-|-----------|---------|-------------|
+|----|----|----|
 | `yrInterp` | 15 | Resampling resolution (yr). Set to 0 for automatic (median raw resolution). |
 | `yr` | 500 | Smoothing window width (yr) for C~background~ estimation. |
 | `threshType` | 2 | Threshold type: 1 = global, 2 = local (sliding window). |
@@ -328,25 +328,25 @@ The parameter file (`*_charParams.csv`) controls all aspects of the analysis. Th
 | `peakFrequ` | 1000 | Window width (yr) for smoothed fire frequency and FRI statistics. |
 | `zoneDiv` | record bounds | Zone boundaries (yr BP) for stratified FRI and Weibull analysis. |
 
----
+------------------------------------------------------------------------
 
 ## Comparison with MATLAB v2.0
 
 *CharAnalysis* in R is a direct translation of *CharAnalysis* v2.0 (MATLAB). Outputs are quantitatively equivalent on all validated reference datasets. The table below summarises results across the four validation datasets; full details are in `inst/z_Validation_report_R_vs_MATLAB_V_2.0.md`.
 
 | Dataset | Site | Smoothing | Threshold | charBkg max\|diff\| | Peaks R v2.0.x | Peaks MATLAB v2.0 |
-|---------|------|-----------|-----------|-------------------|---------|-------------|
-| CO | Code Lake, AK | Method 4 (moving median) | 0.99 | ~5 × 10^-6^ | 39 | 48 |
-| CO (compensated) | Code Lake, AK | Method 4 (moving median) | 0.95\* | ~5 × 10^-6^ | 50 | 48 |
+|----|----|----|----|----|----|----|
+| CO | Code Lake, AK | Method 4 (moving median) | 0.99 | \~5 × 10^-6^ | 39 | 48 |
+| CO (compensated) | Code Lake, AK | Method 4 (moving median) | 0.95\* | \~5 × 10^-6^ | 50 | 48 |
 | CH10 | Chickaree Lake, CO | Method 2 (robust lowess) | 0.99 | 0.267 | 59 | 50 |
 | SI17 | Silver Lake, CO | Method 2 (robust lowess) | 0.99 | 0.130 | 25 | 31 |
-| RA07 | Raven Lake, AK | Method 2 (robust lowess) | 0.99 | < 0.001 | 15 | 17 |
+| RA07 | Raven Lake, AK | Method 2 (robust lowess) | 0.99 | \< 0.001 | 15 | 17 |
 
-\* The Threshold column lists the R-side working percentile (`threshValues[4]`); MATLAB uses 0.99 in all rows. The "CO (compensated)" row therefore compares R @ 0.95 with MATLAB @ 0.99, illustrating the parameter offset that brings R into qualitative agreement with the published MATLAB result. See *Compensating for GMM drift* below.
+\* The Threshold column lists the R-side working percentile (`threshValues[4]`); MATLAB uses 0.99 in all rows. The "CO (compensated)" row therefore compares R \@ 0.95 with MATLAB \@ 0.99, illustrating the parameter offset that brings R into qualitative agreement with the published MATLAB result. See *Compensating for GMM drift* below.
 
 Two sources of numerical difference are documented:
 
-**1. Robust lowess background (smoothing method 2)** — MATLAB's Curve Fitting Toolbox `smooth(..., 'rlowess')` and the R `char_lowess()` port produce slightly different C~background~ series. For gap-free records (RA07) the difference is negligible (< 0.001). For records with NaN gaps (CH10, SI17) the difference is larger (≤ 0.267) because the two implementations handle gap positions differently inside the bisquare robustness iteration. The other smoothing methods (1 plain lowess, 3 moving average, 4 moving median, 5 moving mode) are unaffected and agree to within floating-point noise on all datasets — including Code Lake (CO), which uses method 4.
+**1. Robust lowess background (smoothing method 2)** — MATLAB's Curve Fitting Toolbox `smooth(..., 'rlowess')` and the R `char_lowess()` port produce slightly different C~background~ series. For gap-free records (RA07) the difference is negligible (\< 0.001). For records with NaN gaps (CH10, SI17) the difference is larger (≤ 0.267) because the two implementations handle gap positions differently inside the bisquare robustness iteration. The other smoothing methods (1 plain lowess, 3 moving average, 4 moving median, 5 moving mode) are unaffected and agree to within floating-point noise on all datasets — including Code Lake (CO), which uses method 4.
 
 **2. Gaussian mixture model (GMM) peak counts** — The R package ports the MATLAB `GaussianMixture.m` EM algorithm directly. Floating-point arithmetic accumulates differently across languages during EM iterations, causing the two implementations to reach slightly different threshold values in some local windows. Peak counts differ by 10–20% across datasets, with the direction varying (R sometimes higher, sometimes lower). All threshold and peak differences are downstream consequences of this single source; interpolation and peak-magnitude outputs agree to within numerical precision.
 
@@ -356,18 +356,18 @@ The worked example earlier in this vignette uses the bundled `CO_compensated_cha
 
 **Weibull confidence intervals** — Bootstrap CIs use random resampling and will differ between R and MATLAB runs regardless of any other differences. Weibull point estimates (scale *b*, shape *c*) agree within a few percent on datasets where peak counts are similar.
 
----
+------------------------------------------------------------------------
 
 ## Citation
 
 If you use *CharAnalysis* in published research, please cite Higuera et al. (2009), the first study to apply the core analytical tools implemented in the program. If you used *CharAnalysis* v2.0 (MATLAB or R v2.0.x) specifically, please also cite the software:
 
-> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
+> Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. <https://doi.org/10.1890/07-2019.1>
 
-> Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo. https://doi.org/10.5281/zenodo.19304064
+> Higuera, P.E. 2026. *CharAnalysis*: Diagnostic and analytical tools for peak analysis in sediment-charcoal records (Version 2.0). Zenodo. <https://doi.org/10.5281/zenodo.19304064>
 
----
+------------------------------------------------------------------------
 
 ## References
 
-Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. https://doi.org/10.1890/07-2019.1
+Higuera, P.E., L.B. Brubaker, P.M. Anderson, F.S. Hu, and T.A. Brown. 2009. Vegetation mediated the impacts of postglacial climate change on fire regimes in the south-central Brooks Range, Alaska. *Ecological Monographs* 79:201–219. <https://doi.org/10.1890/07-2019.1>

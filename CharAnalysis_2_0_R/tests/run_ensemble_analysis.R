@@ -371,10 +371,10 @@ if (length(secondary_assgn) > 0L) {
     grp_ages <- secondary_assgn[[k]]
     grp_hw   <- secondary_halfwins[k]
 
-    # Absorb the next candidate if its median falls within mFRI_floor of
+    # Absorb the next candidate if its median falls within the zone mFRI floor of
     # the current group's running median
     while (k + 1L <= length(secondary_assgn)) {
-      if (abs(secondary_rep_ages[k + 1L] - median(grp_ages)) <= mFRI_floor) {
+      if (abs(secondary_rep_ages[k + 1L] - median(grp_ages)) <= mFRI_floor_for_age(median(grp_ages))) {
         k        <- k + 1L
         grp_ages <- c(grp_ages, secondary_assgn[[k]])
         grp_hw   <- max(grp_hw, secondary_halfwins[k])
