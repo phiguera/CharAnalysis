@@ -38,14 +38,39 @@
 
 library(CharAnalysis)
 
-setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1_working/CharAnalysis")
-
 # =====================================================================
 # USER SETTINGS
 # =====================================================================
 
-params_file <- "CharAnalysis_2_0_R/tests/CH10_charParams.csv"
-chron_file  <- "CharAnalysis_2_0_R/tests/CH10_MCAgeDepth_1000_chronologies_2026_06_12.csv"
+# Select the 1000-member chronology CSV produced by MC_AgeDepth or Bacon.
+# The script derives the site code from the filename and locates the
+# matching *_charParams.csv in the same folder automatically.
+#
+# Expected filename convention:
+#   <SiteCode>_MCAgeDepth_1000_chronologies.csv  (MC_AgeDepth output)
+#   <SiteCode>_<anything>_chronologies.csv       (other conventions)
+# The matching params file must be named <SiteCode>_charParams.csv and
+# reside in the same folder as the chronology file.
+
+message("Select the chronology CSV file (*_chronologies.csv):")
+chron_file <- file.choose()
+
+tests_dir  <- dirname(chron_file)
+site_code  <- sub("_MCAgeDepth.*$", "", basename(chron_file), ignore.case = TRUE)
+# Fallback: strip everything from the first underscore onward if the
+# MCAgeDepth pattern is absent (e.g., Bacon output with a different suffix).
+if (site_code == basename(chron_file))
+  site_code <- sub("_.*$", "", basename(chron_file))
+
+params_file <- file.path(tests_dir, paste0(site_code, "_charParams.csv"))
+if (!file.exists(params_file))
+  stop("Parameters file not found: ", params_file,
+       "\n  Expected '", site_code, "_charParams.csv' in the same folder",
+       "\n  as the chronology file. Check site code and folder.")
+
+message(sprintf("  Site      : %s", site_code))
+message(sprintf("  Params    : %s", basename(params_file)))
+message(sprintf("  Chronology: %s", basename(chron_file)))
 
 # Number of CPU cores to use.
 # Default: all available cores minus one (leaves one core free for the OS).
@@ -117,6 +142,44 @@ message("Reading chronology matrix...")
 chron_mat    <- read.csv(chron_file)
 chron_depths <- chron_mat[, 1]
 n_iter       <- ncol(chron_mat) - 1L
+
+# Validate file format: column 1 must be numeric depths, columns 2+ numeric ages.
+# Catches the common mistake of selecting a results CSV (e.g., *_peakAgeUncertainty.csv)
+# instead of the chronology CSV (*_chronologies.csv).
+if (!is.numeric(chron_mat[, 1L]) || (ncol(chron_mat) > 1L && !is.numeric(chron_mat[, 2L]))) {
+  stop(
+    "The selected file does not look like a chronology CSV.\n",
+    "  File selected : ", basename(chron_file), "\n",
+    "  Column 1 class: ", class(chron_mat[, 1L]),
+    if (ncol(chron_mat) > 1L) paste0("  |  Column 2 class: ", class(chron_mat[, 2L])) else "", "\n",
+    "  Expected: numeric depth in column 1 and numeric calibrated ages\n",
+    "  in columns 2 through ", ncol(chron_mat), ".\n",
+    "  Please re-run and select the '*_chronologies.csv' file."
+  )
+}
+
+
+# ---- enforce monotone-increasing ages -----------------------------------
+# MC_AgeDepth and Bacon occasionally produce small near-surface age
+# reversals (ages that decrease with increasing depth). These are
+# stochastic noise -- for CO they are all < 11 yr in a 7500-yr record --
+# but they produce non-monotone ageTop sequences in char_pretreatment,
+# which breaks approx() and can cause negative accumulation rates that
+# propagate to NA values downstream, crashing individual parallel workers.
+#
+# cummax() enforces strictly non-decreasing ages by replacing each
+# reversed value with the preceding maximum. Effect on the chronology
+# is negligible (< 1 sample interval in all observed cases).
+chron_ages_raw   <- as.matrix(chron_mat[, -1L])
+rev_magnitudes   <- apply(chron_ages_raw, 2L,
+                          function(x) { d <- diff(x); if (any(d < 0)) max(abs(d[d < 0])) else 0 })
+n_rev_before     <- sum(rev_magnitudes > 0)
+max_rev_yr       <- if (n_rev_before > 0L) max(rev_magnitudes) else 0
+chron_mat[, -1L] <- apply(chron_ages_raw, 2L, cummax)
+if (n_rev_before > 0L)
+  message(sprintf(
+    "  Age reversals corrected: %d of %d chronologies had reversals (max %.1f yr); each reversed age replaced with the preceding maximum.",
+    n_rev_before, n_iter, max_rev_yr))
 
 
 # ---- depth alignment ------------------------------------------------
@@ -197,6 +260,25 @@ run_one_iteration <- function(i) {
     CharAnalysis:::char_pretreatment(data_i, params$site,
                                      params$pretreatment, params$results, plot_data = 0L)
   )
+
+  # Bridge any boundary NAs in accI before smoothing.
+  # A resampled interval gets NA when the age grid extends slightly beyond
+  # the trimmed data for this chronology iteration (e.g., the youngest
+  # surviving sample starts after the first yrInterp window closes).
+  # char_smooth already bridges these internally in its acc_clean vector,
+  # but charcoal$peak = accI - accIS still uses the raw accI — so the NA
+  # must be removed here. approx() with rule=2 extends the nearest valid
+  # value to any leading/trailing boundary NA.
+  if (anyNA(pre$charcoal$accI)) {
+    n_ai   <- length(pre$charcoal$accI)
+    ok_ai  <- which(!is.na(pre$charcoal$accI))
+    pre$charcoal$accI <- approx(
+      x    = ok_ai,
+      y    = pre$charcoal$accI[ok_ai],
+      xout = seq_len(n_ai),
+      rule = 2L
+    )$y
+  }
 
   charcoal <- suppressMessages(
     CharAnalysis:::char_smooth(pre$charcoal, pre$pretreatment,
@@ -351,8 +433,17 @@ message(sprintf("ensemble$prob_peak    : range [%.3f, %.3f]  (per time-step; see
                 max(ensemble$prob_peak, na.rm = TRUE)))
 
 
+# ---- full reference run (for peak matching and figure panels a-b) ---
+# Must be done here -- not delegated to run_ensemble_analysis.R -- so that
+# `out` is always the current site. run_ensemble_analysis.R guards its
+# CharAnalysis() call with `if (!exists("out"))`, which would silently
+# reuse a stale object from a different site if one is in the workspace.
+message("Running reference CharAnalysis...")
+out <- CharAnalysis(params_file, plots = FALSE)
+
+
 # ---- run peak matching ----------------------------------------------
-source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
+source(file.path(tests_dir, "run_ensemble_analysis.R"))
 
 
 # ---- determine whether to save (data + figure PDF) ------------------
@@ -366,14 +457,12 @@ save_pdf <- do_save   # passed through to plot_ensemble_figure.R
 
 
 # ---- generate figure ------------------------------------------------
-source("CharAnalysis_2_0_R/tests/plot_ensemble_figure.R")
+source(file.path(tests_dir, "plot_ensemble_figure.R"))
 
 
 # ---- save data files ------------------------------------------------
-out_rds <- sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_results.rds",
-                   params$site)
-out_csv <- sprintf("CharAnalysis_2_0_R/tests/%s_peakAgeUncertainty.csv",
-                   out$site)
+out_rds <- file.path(tests_dir, sprintf("%s_ensemble_results.rds", params$site))
+out_csv <- file.path(tests_dir, sprintf("%s_peakAgeUncertainty.csv",  out$site))
 
 if (do_save) {
   saveRDS(ensemble, out_rds)

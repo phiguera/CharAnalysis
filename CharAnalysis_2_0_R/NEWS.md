@@ -1,5 +1,56 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Development scripts (ROADMAP Section 3 — Chronological Uncertainty, continued)
+
+### CO validation site; ensemble bug fixes; age-depth figure (2026-06-24)
+
+**`char_run_ensemble.R`** — three bug fixes:
+
+- **NA bridging** in `run_one_iteration`: after `char_pretreatment`, any boundary
+  NAs in `charcoal$accI` are now repaired with `approx(..., rule = 2L)` before
+  `char_smooth` is called. Root cause: for some MC chronologies the resampled age
+  grid extends slightly beyond the trimmed data, leaving the first or last
+  resampled interval with no overlapping raw sample. `char_smooth` bridges these
+  internally in `acc_clean`, but `charcoal$peak = accI - accIS` uses the raw
+  `accI`, so the NA propagated to `char_post_process` and caused `if (NA)` errors.
+- **Stale workspace fix**: `out <- CharAnalysis(params_file, plots = FALSE)` is
+  now called explicitly in `char_run_ensemble.R` before sourcing
+  `run_ensemble_analysis.R`. Previously, `run_ensemble_analysis.R` guarded its
+  `CharAnalysis()` call with `if (!exists("out"))`, which silently reused a stale
+  object from a prior site if one remained in the workspace.
+- **Input validation**: column class check added after `read.csv(chron_file)`;
+  catches the common mistake of selecting a `*_peakAgeUncertainty.csv` output
+  file instead of `*_chronologies.csv`, with an informative error message.
+
+**CO (Code Lake, Alaska) — third validation site** added to the chronological
+uncertainty ensemble workflow:
+
+- Results: 50 reference peaks (arithmetic mean FRI 148 yr), median detection
+  frequency 98.4%, median peak timing SD 21 yr — comparable to CH10 in
+  chronological precision. Matching windows narrow (median ±64 yr), dominated
+  by the mFRI/2 floor. 12 ensemble-only peaks (6 near-reference, 6 independent).
+- Files added: `tests/CO_MCAgeDepth_1000_chronologies.csv`,
+  `tests/CO_ensemble_results.rds`, `tests/CO_peakAgeUncertainty.csv`,
+  `tests/CO_ensemble_figure.png`, `inst/validation/CO_peakAgeUncertainty.csv`.
+
+**`tests/plot_agedepth_vignette.R`** — updated from two to three sites:
+
+- CO added in green (`#1b7837`); CH10 blue, SI17 black.
+- **Axis offset bug fixed**: replaced `limits = c(x_hi, x_lo)` + `expand` in
+  `scale_x_reverse()` with `expand = expansion(0)` + `coord_cartesian(xlim = ...)`.
+  The `limits`/`expand` combination on reversed ggplot2 scales mis-applies padding
+  in data-coordinate space, shifting all lines away from the surface axis edge by
+  ~2% of the depth range. `coord_cartesian` sets visual bounds post-reversal and
+  is unambiguous. General rule: always use `coord_cartesian()` to set display
+  limits on reversed axes, not `limits` + `expand`.
+
+**Vignette** `vignettes/chronological_uncertainty_draft.md`:
+
+- Section 3.3 (CO) added as a third worked example.
+- Section 3 framing paragraph and summary table updated to include CO.
+- Figure 2 (age-depth comparison) updated: CO ribbon added; caption corrected
+  from "CO (red)" to "CO (green)".
+
 ## Bug fix (2026-06-24)
 
 - `run_ensemble_analysis.R`: fixed `object 'mFRI_floor' not found` error in the

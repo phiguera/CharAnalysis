@@ -14,7 +14,10 @@
 
 library(CharAnalysis)
 
-setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1_working/CharAnalysis")
+# When sourced from char_run_ensemble.R, tests_dir is already set and
+# all paths are absolute -- skip setwd(). Only applies when run standalone.
+if (!exists("tests_dir"))
+  setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1_working/CharAnalysis")
 
 # ---- 1. Reference run --------------------------------------------------
 # Skipped if `out` already exists in the workspace (e.g., sourced from
@@ -37,8 +40,11 @@ if (!exists("out")) {
 # ---- 2. Load ensemble --------------------------------------------------
 # Skipped if `ensemble` already exists in the workspace.
 if (!exists("ensemble")) {
-  ensemble_rds <- sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_results.rds",
-                          out$site)
+  ensemble_rds <- if (exists("tests_dir")) {
+    file.path(tests_dir, sprintf("%s_ensemble_results.rds", out$site))
+  } else {
+    sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_results.rds", out$site)
+  }
   if (!file.exists(ensemble_rds)) {
     stop("Ensemble RDS not found: ", ensemble_rds,
          "\nRun char_run_ensemble.R first to generate it.")

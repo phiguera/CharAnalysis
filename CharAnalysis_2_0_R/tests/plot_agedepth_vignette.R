@@ -1,6 +1,6 @@
 # plot_agedepth_vignette.R
 # -----------------------------------------------------------------------
-# Age-depth model figure for the vignette: both sites on one panel.
+# Age-depth model figure for the vignette: three sites on one panel.
 # Age (cal yr BP) on y-axis, reversed (present at top).
 # Depth on x-axis, reversed (surface at right).
 # Shared axis limits so accumulation rate slopes are directly comparable.
@@ -9,11 +9,11 @@
 library(ggplot2)
 
 # ---- User settings -----------------------------------------------------
-sites    <- c("CH10", "SI17")
+sites    <- c("CH10", "CO", "SI17")
 rds_fmt  <- "CharAnalysis_2_0_R/tests/%s_ensemble_results.rds"
 out_file <- "CharAnalysis_2_0_R/tests/agedepth_vignette.png"
 
-site_colours <- c("CH10" = "#2166ac", "SI17" = "black")
+site_colours <- c("CH10" = "#2166ac", "CO" = "#1b7837", "SI17" = "black")
 
 # ---- Load chron_ci from each site's RDS --------------------------------
 ci_list <- lapply(sites, function(s) {
@@ -38,18 +38,15 @@ y_br <- seq(0, y_hi, by = 1000)
 p_ad <- ggplot(df_all, aes(x = depth_cm, y = median_age,
                             colour = site, fill = site)) +
   geom_ribbon(aes(ymin = ci95_lo, ymax = ci95_hi),
-              alpha = 0.20, colour = NA) +
+              alpha = 0.45, colour = NA) +
   geom_line(linewidth = 0.8) +
   scale_colour_manual(values = site_colours, name = NULL) +
   scale_fill_manual(  values = site_colours, name = NULL) +
-  scale_x_reverse(
-    limits = c(x_hi, x_lo),
-    expand = expansion(mult = 0.02)
-  ) +
-  scale_y_reverse(
-    limits = c(y_hi, 0),
-    breaks = y_br,
-    expand = expansion(mult = 0.02)
+  scale_x_reverse(expand = expansion(0)) +
+  scale_y_reverse(breaks = y_br, expand = expansion(0)) +
+  coord_cartesian(
+    xlim = c(x_hi + 20, x_lo),   # deep end has 20 cm breathing room; surface at right edge
+    ylim = c(y_hi + 100, -100)   # oldest age at bottom; slight padding top and bottom
   ) +
   labs(
     x = "Depth below mud-water interface (cm)",
@@ -58,19 +55,19 @@ p_ad <- ggplot(df_all, aes(x = depth_cm, y = median_age,
   theme_classic() +
   theme(
     aspect.ratio         = 1,
-    axis.text            = element_text(size = 9),
-    axis.title           = element_text(size = 10),
+    axis.text            = element_text(size = 12),
+    axis.title           = element_text(size = 13),
     panel.grid.major     = element_line(colour = "grey85", linewidth = 0.3),
     panel.grid.minor     = element_blank(),
-    legend.position      = c(0.98, 0.02),
-    legend.justification = c("right", "bottom"),
+    legend.position      = c(0.02, 0.98),
+    legend.justification = c("left", "top"),
     legend.background    = element_blank(),
-    legend.key.size      = unit(0.8, "lines"),
-    legend.text          = element_text(size = 9)
+    legend.key.size      = unit(1.0, "lines"),
+    legend.text          = element_text(size = 12)
   )
 
 print(p_ad)
 
 ggsave(out_file, plot = p_ad,
-       width = 3.5, height = 3.5, units = "in", dpi = 300)
+       width = 3, height = 3, units = "in", dpi = 300)
 message("Saved: ", out_file)

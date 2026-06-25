@@ -110,7 +110,10 @@ library(CharAnalysis)
 library(ggplot2)
 library(patchwork)
 
-setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1_working/CharAnalysis")
+# When sourced from char_run_ensemble.R, tests_dir is already set and
+# all paths are absolute -- skip setwd(). Only applies when run standalone.
+if (!exists("tests_dir"))
+  setwd("C:/Users/philip.higuera/OneDrive - The University of Montana/1_phiguera/1_working/CharAnalysis")
 
 # Save figure as PDF? 1 = yes, 0 = no (default).
 # When sourced from char_run_ensemble.R, save_pdf is set there and
@@ -120,7 +123,11 @@ if (!exists("save_pdf")) save_pdf <- 0
 # ---- Load data if not already in workspace ----------------------------
 if (!exists("out") || !exists("peak_summaries")) {
   message("Running ensemble analysis pipeline...")
-  source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
+  if (exists("tests_dir")) {
+    source(file.path(tests_dir, "run_ensemble_analysis.R"))
+  } else {
+    source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
+  }
 } else {
   message("Using existing 'out' and 'peak_summaries' from workspace.")
 }
@@ -500,10 +507,11 @@ grDevices::dev.flush()   # ensure figure reaches the display before any subseque
 
 # ---- Save PDF --------------------------------------------------------
 if (isTRUE(save_pdf) || identical(save_pdf, 1L)) {
-  out_pdf <- file.path(
-    getwd(),
-    sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_figure.pdf", site)
-  )
+  out_pdf <- if (exists("tests_dir")) {
+    file.path(tests_dir, sprintf("%s_ensemble_figure.pdf", site))
+  } else {
+    file.path(getwd(), sprintf("CharAnalysis_2_0_R/tests/%s_ensemble_figure.pdf", site))
+  }
   tryCatch({
     ggsave(out_pdf, plot = fig, width = 7, height = 10, units = "in")
     message(sprintf("Saved: %s", out_pdf))

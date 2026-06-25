@@ -313,6 +313,112 @@ The output CSV contains one row per interpolated time step and 33 columns coveri
 
 ------------------------------------------------------------------------
 
+## Chronological uncertainty
+
+Age-depth models yield a distribution of plausible chronologies rather than a single curve. Even a well-dated record carries age uncertainty that shifts the absolute timing of fire events, affects charcoal accumulation-rate denominators through sediment accumulation rate, and in some cases can suppress or elevate charcoal values enough to change whether a peak is detected. A standard CharAnalysis run uses the single best-estimate (median) chronology and ignores this uncertainty entirely. The ensemble approach makes it explicit.
+
+`char_run_ensemble.R` (in `tests/`) reruns the full CharAnalysis pipeline once per member of a 1,000-chronology ensemble produced by MC_AgeDepth or Bacon. For each reference fire event from the median-chronology run it reports two quantities: **detection frequency** — the fraction of ensemble iterations that identify a fire event near that age — and **timing CI** — the 95% confidence interval on the detected age across the ensemble. Events with high detection frequency (typically >90%) are robust to chronology uncertainty; events with low detection frequency are sensitive to it and warrant interpretive caution.
+
+### Code Lake: chronological uncertainty in a well-dated record
+
+Code Lake is ^210^Pb-dated through ~1850 CE and radiocarbon-dated below that, yielding a precision-dated record throughout. It therefore illustrates the low-uncertainty end of the spectrum: most fire events are chronologically robust, and the timing uncertainty that does exist is small relative to fire-return intervals.
+
+#### Running the ensemble
+
+The ensemble computation requires approximately 2 minutes on 19 parallel cores and is not rerun in this vignette. The script is launched interactively: a file dialog prompts for the `*_chronologies.csv` file; the matching `*_charParams.csv` is located automatically; results are written to `*_ensemble_results.rds` and `*_peakAgeUncertainty.csv` in the same folder.
+
+```{r run-ensemble, eval = FALSE}
+# Requires the package source; run from a CharAnalysis project session.
+# File dialog will open to select CO_MCAgeDepth_1000_chronologies.csv.
+source("tests/char_run_ensemble.R")
+```
+
+#### Loading pre-computed results
+
+Pre-computed results for Code Lake are bundled in the package. The output CSV contains one row per fire event (reference and ensemble-only) with detection frequency, mean/median detected age, timing SD, and 80 and 95% confidence intervals.
+
+```{r load-ensemble-results}
+peak_file <- system.file("validation", "CO_peakAgeUncertainty.csv",
+                         package = "CharAnalysis")
+pk <- read.csv(peak_file, check.names = FALSE)
+
+# Rename to R-friendly column names for plotting
+names(pk)[names(pk) == "age Top_i (yr BP)"]  <- "ref_age"
+names(pk)[names(pk) == "detection freq (%)"] <- "det_freq"
+names(pk)[names(pk) == "sd age (yr)"]        <- "sd_age"
+names(pk)[names(pk) == "CI95 lo (yr BP)"]    <- "ci95_lo"
+names(pk)[names(pk) == "CI95 hi (yr BP)"]    <- "ci95_hi"
+
+# Separate peak types
+ref  <- pk[pk$type == "reference",  ]
+ens  <- pk[pk$type == "ensemble_only" & pk$proximity == "independent", ]
+
+cat(sprintf("Reference peaks     : %d\n", nrow(ref)))
+cat(sprintf("Detection freq      : median %.1f%%   range %.0f-%.0f%%\n",
+            median(ref$det_freq), min(ref$det_freq), max(ref$det_freq)))
+cat(sprintf("Peaks >= 95%%        : %d of %d\n",
+            sum(ref$det_freq >= 95), nrow(ref)))
+cat(sprintf("Timing SD           : median %.0f yr  range %.0f-%.0f yr\n",
+            median(ref$sd_age, na.rm = TRUE),
+            min(ref$sd_age, na.rm = TRUE), max(ref$sd_age, na.rm = TRUE)))
+cat(sprintf("Ensemble-only peaks : %d (independent, >= 10%% detection)\n", nrow(ens)))
+```
+
+The output shows what a precision-dated record looks like under ensemble analysis: the large majority of peaks are highly robust, and timing uncertainty — with a median SD of ~21 yr — is comparable to the resampling interval (15 yr) and small relative to fire-return intervals of several hundred years. A single reference peak (69 cal yr BP) has very low detection (4%), indicating it is a borderline event in the single-chronology run that does not survive most alternative age models. Six ensemble-only peaks are identified, including a very recent event at ~−15 cal yr BP (~1965 CE) detected in 96% of iterations despite not appearing in the reference run — likely a threshold-boundary case.
+
+Peak timing uncertainty increases modestly with age, as expected: SDs range from ~10 yr near the core top to ~60 yr in the oldest portion of the record (>5,500 cal yr BP), where radiocarbon calibration curve features broaden the age distribution. Even at its largest, this uncertainty is a small fraction of the ~750-yr mean fire-return interval for that part of the record.
+
+#### Figure: detection frequency and timing uncertainty
+
+```{r ensemble-figure, eval = PLOT_OK, fig.width = 7, fig.height = 4}
+library(ggplot2)
+
+pk$peak_type <- ifelse(
+  pk$type == "reference", "Reference peak",
+  ifelse(pk$proximity == "independent",
+         "Ensemble-only: independent",
+         "Ensemble-only: near reference")
+)
+
+y_floor  <- floor(min(pk$det_freq) / 25) * 25 - 15
+cap_ht   <- (105 - y_floor) * 0.015
+x_breaks <- seq(0, 7000, by = 1000)
+
+ggplot(pk, aes(x = ref_age, y = det_freq)) +
+  geom_errorbar(aes(xmin = ci95_lo, xmax = ci95_hi),
+                width = cap_ht, linewidth = 0.6, colour = "grey40") +
+  geom_hline(yintercept = c(50, 90),
+             linetype = "dashed", colour = "grey60", linewidth = 0.4) +
+  geom_point(aes(shape = peak_type, fill = peak_type),
+             size = 2.2, stroke = 0.9) +
+  scale_x_reverse(breaks = x_breaks,
+                  labels = x_breaks / 1000,
+                  expand = expansion(0.02)) +
+  scale_y_continuous(limits = c(y_floor, 105),
+                     breaks = seq(max(0, y_floor), 100, by = 25),
+                     expand = expansion(0)) +
+  scale_shape_manual(
+    values = c("Reference peak"                  = 21L,
+               "Ensemble-only: independent"       = 23L,
+               "Ensemble-only: near reference"    = 21L)) +
+  scale_fill_manual(
+    values  = c("Reference peak"                  = "black",
+                "Ensemble-only: independent"       = "white",
+                "Ensemble-only: near reference"    = "white")) +
+  guides(shape = guide_legend(title = NULL, override.aes = list(size = 2.5)),
+         fill  = guide_legend(title = NULL)) +
+  theme_classic() +
+  theme(legend.position  = "bottom",
+        legend.key       = element_blank()) +
+  labs(x     = "Age (cal. yr BP × 1000)",
+       y     = "Detection frequency (%)",
+       title = "Code Lake: peak detection across 1,000-chronology ensemble")
+```
+
+The figure shows detection frequency (y) versus calibrated age (x) for each fire event, with horizontal bars spanning the 95% CI on detected peak timing. Filled black circles are reference peaks (identified in the median-chronology run); open diamonds are ensemble-only independent peaks. Dashed lines mark 50% and 90% detection thresholds. The uniformly small CI widths and the near-horizontal cluster of points near 100% detection reflect the high dating precision of this record.
+
+------------------------------------------------------------------------
+
 ## Key parameters
 
 The parameter file (`*_charParams.csv`) controls all aspects of the analysis. The most commonly adjusted parameters are:

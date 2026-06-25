@@ -81,7 +81,7 @@ where mFRI~z~ is the mean fire-return interval for the zone containing peak *k* 
 Results are saved to `{site}_peakAgeUncertainty.csv`, one row per peak (reference and ensemble-only). Key columns:
 
 | Column | Description |
-|:---|:---|
+|:-----------------------------------|:-----------------------------------|
 | `age Top_i (yr BP)` | Benchmark peak age |
 | `type` | `reference` or `ensemble_only` |
 | `proximity` | For ensemble-only peaks: `near_reference` or `independent`; `NA` for reference |
@@ -111,23 +111,26 @@ Results are saved to `{site}_peakAgeUncertainty.csv`, one row per peak (referenc
 
 ## 3. Site examples
 
-CH10 and SI17 illustrate how chronological precision shapes ensemble behavior. CH10 is unusually well-dated for a lake-sediment record, with closely spaced dates producing narrow, uniform uncertainty throughout. SI17 is less precisely dated, with wider and more variable uncertainty driven by date spacing and a calibration curve feature near 1,000 cal yr BP — though it remains a well-dated record by typical standards. Together they span a range of precision that captures the experience of most lake-sediment fire history studies, from narrow matching windows and high detection consistency to wide windows and substantial timing uncertainty.
+Three sites illustrate how chronological precision shapes ensemble behavior across a range of record characteristics. CH10 and CO are both unusually well-dated, with closely spaced dates producing narrow, uniform uncertainty throughout — they represent the high-precision end of the spectrum. SI17 is less precisely dated, with wider and more variable uncertainty driven by date spacing, though it remains a well-dated record by typical standards. Together these examples span the range of precision most common in lake-sediment fire history studies.
 
-![Age-depth comparison](../tests/agedepth_vignette.png){width="50%"} **Figure 2.** Age-depth models for CH10 (blue) and SI17 (black), each derived from the 1,000-chronology ensemble. Lines show the median chronology; shaded ribbons show the 95% CI. Ribbon width reflects chronological precision: narrow and uniform in CH10, where closely spaced dates constrain the model throughout; wider and more variable in SI17, particularly near 1,000 cal yr BP where calibration curve geometry broadens uncertainty. The shared axes allow direct comparison of sediment accumulation rates (line slopes) and chronological precision (ribbon widths) between sites.
+![](../tests/agedepth_vignette.png){width="56%"}
 
-|                                           |    CH10 |    SI17 |
-|:------------------------------------------|--------:|--------:|
-| Record length (cal yr BP)                 | \~6,200 | \~4,700 |
-| Benchmark peaks (*n*)                     |      59 |      25 |
-| Mean FRI (yr)                             |     104 |     193 |
-| Matching window (median ± yr)             |     ±72 |    ±162 |
-| Detection frequency (median %)            |      99 |      99 |
-| Peak timing uncertainty (median 1 SD, yr) |      23 |      53 |
-| Ensemble-only peaks detected              |  Yes (9)|      No |
+**Figure 2.** Age-depth models for CH10 (blue), CO (green), and SI17 (black), each derived from the 1,000-chronology ensemble. Lines show the median chronology; shaded ribbons show the 95% CI. Ribbon width reflects chronological precision: narrow and relatively uniform in both CH10 and CO, where closely spaced ²¹⁰Pb and radiocarbon dates constrain the models throughout; wider and more variable in SI17, particularly near 1,000 cal yr BP where calibration curve geometry broadens uncertainty. The shared axes allow direct comparison of sediment accumulation rates (line slopes) and chronological precision (ribbon widths) among sites.
 
-### 3.1 CH10 (unusually well-dated)
+|                 Parameter                 |  CH10   |  SI17   |    CO    |
+|:-----------------------------------------:|:-------:|:-------:|:--------:|
+|         Record length (cal yr BP)         | \~6,200 | \~4,700 | \~7,500  |
+|             Radiocarbon dates             |   25    |   11    |    7     |
+|           Benchmark peaks (*n*)           |   59    |   25    |    50    |
+|               Mean FRI (yr)               |   104   |   193   |   148    |
+|       Matching window (median ± yr)       |   ±72   |  ±162   |   ±64    |
+|      Detection frequency (median %)       |   99    |   99    |    98    |
+| Peak timing uncertainty (median 1 SD, yr) |   23    |   53    |    21    |
+|       Ensemble-only peaks detected        | Yes (9) |   No    | Yes (12) |
 
-CH10 is a lake-sediment record from a Rocky Mountain subalpine watershed spanning \~6,200 cal yr BP, with an age-depth model built from closely spaced ²¹⁰Pb and radiocarbon dates (Dunnette et al. 2014, Leys et al. 2016). Chronological uncertainty is low and nearly uniform across the record.
+### 3.1 CH10 (unusually well-dated; one zone)
+
+CH10 is a lake-sediment record from a Rocky Mountain subalpine watershed spanning \~6,200 cal yr BP, with an age-depth model built from ²¹⁰Pb activity in 13 samples from the upper 20 cm, and 25 radiocarbon dates (Dunnette et al. 2014, Leys et al. 2016). Chronological uncertainty is low and nearly uniform across the record.
 
 The benchmark run identifies 59 peaks (mean FRI 104 yr). Matching windows are narrow (median ±72 yr), driven by the mFRI floor rather than chronological uncertainty. Detection frequencies are high (median 99%; 56 of 59 peaks detected in ≥90% of iterations) and peak timing uncertainty is small (median 1 SD = 23 yr). The ensemble surfaces 9 additional candidate fire events absent from the benchmark run (6 near-reference, 3 independent). CH10 represents the best case: low uncertainty, high detection consistency, and interpretable ensemble-only candidates.
 
@@ -135,7 +138,7 @@ The benchmark run identifies 59 peaks (mean FRI 104 yr). Matching windows are na
 source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
 ```
 
-```
+```         
 ============================================================
   CHRONOLOGICAL UNCERTAINTY SUMMARY
 ============================================================
@@ -167,9 +170,9 @@ source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
 
 ![CH10 ensemble figure](../tests/CH10_ensemble_figure.png) **Figure 3.** Chronological uncertainty ensemble results for CH10. (a) CHAR time series with background and benchmark peak detections. (b) Detection frequency and timing uncertainty for each peak type; horizontal bars show ±95% CI on peak age. (c) Signal-to-noise index. (d) Chronological uncertainty ribbon (95% CI across the 1,000-chronology ensemble).
 
-### 3.2 SI17 (less precisely dated)
+### 3.2 SI17 (less precisely dated; two zones)
 
-SI17 (Silver Lake, Colorado) spans \~4,700 cal yr BP, with an age-depth model built from ²¹⁰Pb, radiocarbon, and tephra dates (Clark-Wolf et al. 2023). Chronological uncertainty is substantially higher than CH10, particularly near 1,000 cal yr BP where the IntCal calibration curve produces asymmetric age distributions.
+SI17 (Silver Lake, Colorado) spans \~4,700 cal yr BP, with an age-depth model built from ²¹⁰Pb activity in 15 samples spanning the upper 40 cm of sediment, 14 radiocarbon dates, and three estimated ages from tephra layers (Clark-Wolf et al. 2023). Chronological uncertainty is higher than CH10.
 
 The benchmark run identifies 25 peaks (mean FRI 193 yr). Matching windows are wide and variable (±105–280 yr, median ±162 yr), dominated by the CI~95~/2 term. Detection frequencies remain high (median 99%), confirming that fire events are robustly identified even when timing is less precise (median 1 SD = 53 yr). No ensemble-only peaks pass the coherence filter: wide matching windows absorb secondary detections as scatter rather than coherent signal. Ensemble iterations detect more peaks on average (median 32) than the benchmark run (25), a direct consequence of chronological uncertainty affecting CHAR magnitude and threshold determination, not just peak timing.
 
@@ -177,7 +180,7 @@ The benchmark run identifies 25 peaks (mean FRI 193 yr). Matching windows are wi
 source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
 ```
 
-```
+```         
 ============================================================
   CHRONOLOGICAL UNCERTAINTY SUMMARY
 ============================================================
@@ -213,6 +216,47 @@ source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
 ```
 
 ![SI17 ensemble figure](../tests/SI17_ensemble_figure.png) **Figure 4.** Chronological uncertainty ensemble results for SI17 (Silver Lake). See Figure 3 caption.
+
+### 3.3 CO (moderately well-dated; two zones)
+
+CO (Code Lake) is a lake-sediment record from the south-central Brooks Range, Alaska, spanning \~7,500 cal yr BP, with an age-depth model built from ²¹⁰Pb activity in four samples spanning the upper 2.5 cm of sediment, and seven radiocarbon dates (Higuera et al. 2009). It is the founding dataset for *CharAnalysis* and the primary validation record for the R package. Chronological precision is high throughout — broadly comparable to CH10 — with a modest increase in uncertainty in the oldest portion of the record (\>5,500 cal yr BP).
+
+The benchmark run identifies 50 peaks (arithmetic mean FRI 148 yr). Matching windows are narrow (median ±64 yr), driven by the mFRI floor rather than chronological uncertainty, as in CH10. Detection frequencies are high (median 98%; 38 of 50 peaks detected in ≥90% of iterations), and peak timing uncertainty is small (median 1 SD = 21 yr) — comparable to the resampling interval and a small fraction of the mean FRI.
+
+One reference peak (69 cal yr BP) has low detection frequency (4%), and there is an ensemble-only: independent" peak at -15 yr BP. These are odd. *NOT SURE WHAT THIS REFLECTS AT THIS POINT.*
+
+Matching windows expand from ±64 yr for most of the record to ±118 yr in the oldest zone (\>5,600 cal yr BP), driven by larger chronological uncertainty at depth. Even at their widest, these windows are substantially narrower than those in SI17, confirming that CO occupies the high-precision end of the spectrum alongside CH10.
+
+``` r
+source("CharAnalysis_2_0_R/tests/run_ensemble_analysis.R")
+```
+
+```         
+============================================================
+  CHRONOLOGICAL UNCERTAINTY SUMMARY
+============================================================
+  Site         : CO
+  Ensemble     : 1000 iterations  |  -51 - 7500 cal yr BP
+  Reference run: 50 peaks  |  69 - 7299 cal yr BP
+
+(a) Detection frequency (% of 1000 iterations):
+      Median: 98.4%  |  range: 4.0 - 100.0%  (N = 50 peaks)
+      >= 90%: 38 peaks  |  >= 75%: 44 peaks  |  >= 50%: 49 peaks
+    Matching window (+/- yr around each reference peak age):
+      Median: +/- 64 yr  |  range: +/- 64 to +/- 118 yr
+      Note: window = max(mFRI_z / 2, yrInterp, ci95_width / 2) per zone; wide windows
+            may absorb potential ensemble-only peaks near reference peaks.
+
+(b) Reference peak timing uncertainty (1 SD, chronological uncertainty only)
+      Median SD : 21 yr  |  range: 4 - 60 yr  (N = 50 peaks)
+
+(e) Ensemble-only peaks (>= 10% detection threshold): 12 total
+    Near-reference: 6  |  median ages (cal yr BP): 6105, 4995, 4785, 2805, 2580, 1395
+    Independent: 6  |  ages (cal yr BP): 5415, 2190, 2040, 1770, 1185, -15
+============================================================
+```
+
+![CO ensemble figure](../tests/CO_ensemble_figure.png) **Figure 5.** Chronological uncertainty ensemble results for Code Lake (CO). (a) CHAR time series with background and benchmark peak detections. (b) Detection frequency and timing uncertainty for each peak type; horizontal bars show ±95% CI on peak age. (c) Signal-to-noise index. (d) Chronological uncertainty ribbon (95% CI across the 1,000-chronology ensemble). The very recent ensemble-only peak (−15 cal yr BP) is visible at the left edge of panel (b) with high detection frequency.
 
 ------------------------------------------------------------------------
 
