@@ -39,7 +39,7 @@ p_ad <- ggplot(df_all, aes(x = depth_cm, y = median_age,
                             colour = site, fill = site)) +
   geom_ribbon(aes(ymin = ci95_lo, ymax = ci95_hi),
               alpha = 0.45, colour = NA) +
-  geom_line(linewidth = 0.8) +
+  geom_line(linewidth = 0.5) +
   scale_colour_manual(values = site_colours, name = NULL) +
   scale_fill_manual(  values = site_colours, name = NULL) +
   scale_x_reverse(expand = expansion(0)) +
@@ -55,19 +55,19 @@ p_ad <- ggplot(df_all, aes(x = depth_cm, y = median_age,
   theme_classic() +
   theme(
     aspect.ratio         = 1,
-    axis.text            = element_text(size = 12),
-    axis.title           = element_text(size = 13),
+    axis.text            = element_text(size = 9),
+    axis.title           = element_text(size = 10),
     panel.grid.major     = element_line(colour = "grey85", linewidth = 0.3),
     panel.grid.minor     = element_blank(),
     legend.position      = c(0.02, 0.98),
     legend.justification = c("left", "top"),
     legend.background    = element_blank(),
     legend.key.size      = unit(1.0, "lines"),
-    legend.text          = element_text(size = 12)
+    legend.text          = element_text(size = 9)
   )
 
 print(p_ad)
 
 ggsave(out_file, plot = p_ad,
-       width = 3, height = 3, units = "in", dpi = 300)
+       width = 3.5, height = 3.5, units = "in", dpi = 150)
 message("Saved: ", out_file)

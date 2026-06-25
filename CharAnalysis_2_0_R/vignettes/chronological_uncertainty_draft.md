@@ -113,20 +113,20 @@ Results are saved to `{site}_peakAgeUncertainty.csv`, one row per peak (referenc
 
 Three sites illustrate how chronological precision shapes ensemble behavior across a range of record characteristics. CH10 and CO are both unusually well-dated, with closely spaced dates producing narrow, uniform uncertainty throughout — they represent the high-precision end of the spectrum. SI17 is less precisely dated, with wider and more variable uncertainty driven by date spacing, though it remains a well-dated record by typical standards. Together these examples span the range of precision most common in lake-sediment fire history studies.
 
-![](../tests/agedepth_vignette.png){width="56%"}
+![](../tests/agedepth_vignette.png)
 
-**Figure 2.** Age-depth models for CH10 (blue), CO (green), and SI17 (black), each derived from the 1,000-chronology ensemble. Lines show the median chronology; shaded ribbons show the 95% CI. Ribbon width reflects chronological precision: narrow and relatively uniform in both CH10 and CO, where closely spaced ²¹⁰Pb and radiocarbon dates constrain the models throughout; wider and more variable in SI17, particularly near 1,000 cal yr BP where calibration curve geometry broadens uncertainty. The shared axes allow direct comparison of sediment accumulation rates (line slopes) and chronological precision (ribbon widths) among sites.
+**Figure 2.** Age-depth models for CH10 (blue), CO (green), and SI17 (black), each derived from the 1,000-chronology ensemble. Lines show the median chronology; shaded ribbons show the 95% CI. Ribbon width reflects chronological precision: narrow and relatively uniform in both CH10 and CO, where closely spaced ²¹⁰Pb and radiocarbon dates constrain the models throughout; wider and more variable in SI17.
 
-|                 Parameter                 |  CH10   |  SI17   |    CO    |
-|:-----------------------------------------:|:-------:|:-------:|:--------:|
-|         Record length (cal yr BP)         | \~6,200 | \~4,700 | \~7,500  |
-|             Radiocarbon dates             |   25    |   11    |    7     |
-|           Benchmark peaks (*n*)           |   59    |   25    |    50    |
-|               Mean FRI (yr)               |   104   |   193   |   148    |
-|       Matching window (median ± yr)       |   ±72   |  ±162   |   ±64    |
-|      Detection frequency (median %)       |   99    |   99    |    98    |
-| Peak timing uncertainty (median 1 SD, yr) |   23    |   53    |    21    |
-|       Ensemble-only peaks detected        | Yes (9) |   No    | Yes (12) |
+|                 Parameter                 |   CH10    |   SI17    |    CO    |
+|:-----------------------------------------:|:---------:|:---------:|:--------:|
+|         Record length (cal yr BP)         |  \~6,200  |  \~4,700  | \~7,500  |
+|      ^14^C, ^210^Pb, and other dates      | 25, 13, 0 | 15, 14, 3 | 7, 3, 0  |
+|           Benchmark peaks (*n*)           |    59     |    25     |    50    |
+|               Mean FRI (yr)               |    104    |    193    |   148    |
+|       Matching window (median ± yr)       |    ±72    |   ±162    |   ±64    |
+|      Detection frequency (median %)       |    99     |    99     |    98    |
+| Peak timing uncertainty (median 1 SD, yr) |    23     |    53     |    21    |
+|       Ensemble-only peaks detected        |  Yes (9)  |    No     | Yes (12) |
 
 ### 3.1 CH10 (unusually well-dated; one zone)
 
