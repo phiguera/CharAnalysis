@@ -28,3 +28,5 @@ bkgSens_refs/
 # rbacon output directory (created in working directory when Bacon() runs)
 Bacon_runs/
 CharAnalysis_update_20260624.pptx
+UPDATE_CharAnalysis_20260624.pptx
+*.pptx
