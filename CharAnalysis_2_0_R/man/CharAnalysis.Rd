@@ -4,15 +4,34 @@
 \alias{CharAnalysis}
 \title{Run the full CharAnalysis pipeline}
 \usage{
-CharAnalysis(file_name = NULL)
+CharAnalysis(file_name = NULL, plots = TRUE, save = TRUE)
 }
 \arguments{
 \item{file_name}{Path to the \code{*_charParams.csv} (or \code{.xlsx})
-parameter file.  If omitted (or \code{NULL}), a system file-picker dialog
-is opened so you can navigate to the file interactively -- matching the
-MATLAB behaviour of typing \code{CharAnalysis} with no argument.  In
-non-interactive sessions (e.g. scripts, batch jobs) the argument is
-required and an error is thrown if it is missing.}
+parameter file.  If omitted (or \code{NULL}), a console menu offers three
+options: run an existing parameter file (chosen with a file picker),
+revise an existing parameter file, or create a new one from a data file.
+The last two open the parameter interface ([char_params_gui()]) and run
+the analysis after the file is saved.  In non-interactive sessions (e.g.
+scripts, batch jobs) the argument is required and an error is thrown if
+it is missing.}
+
+\item{plots}{Logical.  If \code{TRUE} (default), all diagnostic figures
+(Figs 1-5) are produced automatically at the end of the pipeline via
+\code{\link{char_plot_diagnostic}}.  Fig 5 is shown only when the
+background-sensitivity analysis was run (\code{bkgSens = 1}).  The
+\code{allFigures} parameter in the parameter file is read but has no
+effect on figure output in the R package.  Set \code{plots = FALSE} to
+suppress all automatic figure output, e.g. in scripts or batch jobs.
+Analytical figures (Figs 6-9) are always produced by calling
+\code{\link{char_plot_analysis}(out)} explicitly.}
+
+\item{save}{Logical.  If \code{TRUE} (default), the \code{saveData} and
+\code{saveFigures} settings in the parameter file are honoured: when set
+to 1, the results table (\code{<site>_charResults.csv}) and all figures
+(Figs 1-9, as PDF files) are written to the folder holding the parameter
+file, replacing earlier copies.  Set \code{save = FALSE} to write nothing
+regardless of the file, e.g. in batch or ensemble runs.}
 }
 \value{
 Named list with the following elements:

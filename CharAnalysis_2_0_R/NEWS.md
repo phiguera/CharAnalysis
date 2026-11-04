@@ -1,5 +1,43 @@
 # *CharAnalysis* 2.0.4 (development version)
 
+## Parameter interface and saving (2026-11)
+
+- **New `char_params_gui()`**: a graphical interface, run from R or
+  RStudio, for creating or revising `<site>_charParams.csv` files. It summarizes
+  the charcoal record, explains each parameter, flags problems before saving,
+  and writes files in the template layout read by both the R and MATLAB
+  versions. Requires the suggested packages `shiny`, `miniUI`, and `htmltools`.
+- **`CharAnalysis()` with no file** now offers three choices: run an existing
+  parameter file, revise one in the interface, or create one from a data file.
+- **Revisions are logged in the parameter file.** When a file is revised, the
+  previous values move to a time-stamped Parameter Log column. A file holds at
+  most 10 logged sets, the limit that keeps it readable by the MATLAB reader.
+- **Behaviour change: `saveData` and `saveFigures` are now honoured.** When set
+  to 1 in the parameter file, `CharAnalysis()` writes `<site>_charResults.csv`
+  and all figures (PDF) to the folder holding the parameter file, replacing
+  earlier copies. New argument `save = FALSE` writes nothing regardless of the
+  file (used by the ensemble scripts). `saveData` is set to 0 in the bundled
+  validation and test parameter files so that reference results are not
+  overwritten.
+- `allFigures` remains in the file format for MATLAB compatibility but has no
+  effect in R and is not shown in the interface.
+- **Bundled template**: `inst/templates/template_charParams.csv` (a copy of
+  `DataTemplates_and_Examples/template_charParams.csv`) is used for new files.
+- **Tests**: `tests/test_params_writer.R` (11 tests) covers round trips on the
+  validation files, refusal to overwrite, the Parameter Log, the 10-log limit,
+  and file naming.
+- **MATLAB counterpart**: the MATLAB version gains the same menu, an equivalent
+  interface (`CharParamsGUI`), and writers that produce identical file layouts,
+  so parameter files and their logs are interchangeable between versions.
+- **Documentation**: the vignette gains short sections on creating a parameter
+  file and on saving results; the User's Guide gains Section 2.3 (parameter
+  interface and Parameter Log) and updated `saveData` / `saveFigures` /
+  `allFigures` descriptions. Comments in `char_plot_results.R` and the
+  vignette no longer say that `allFigures` controls Figures 1-2 in R.
+
+Developed with the assistance of Claude (Anthropic); tested interactively by
+the author in RStudio and MATLAB R2022a.
+
 ## Development scripts (ROADMAP Section 3 — Chronological Uncertainty, continued)
 
 ### CO validation site; ensemble bug fixes; age-depth figure (2026-06-24)

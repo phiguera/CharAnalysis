@@ -4,11 +4,13 @@
 #' all intermediate and final results as a single named list.
 #'
 #' @param file_name Path to the \code{*_charParams.csv} (or \code{.xlsx})
-#'   parameter file.  If omitted (or \code{NULL}), a system file-picker dialog
-#'   is opened so you can navigate to the file interactively -- matching the
-#'   MATLAB behaviour of typing \code{CharAnalysis} with no argument.  In
-#'   non-interactive sessions (e.g. scripts, batch jobs) the argument is
-#'   required and an error is thrown if it is missing.
+#'   parameter file.  If omitted (or \code{NULL}), a console menu offers three
+#'   options: run an existing parameter file (chosen with a file picker),
+#'   revise an existing parameter file, or create a new one from a data file.
+#'   The last two open the parameter interface ([char_params_gui()]) and run
+#'   the analysis after the file is saved.  In non-interactive sessions (e.g.
+#'   scripts, batch jobs) the argument is required and an error is thrown if
+#'   it is missing.
 #'
 #' @return Named list with the following elements:
 #'   \describe{
@@ -71,9 +73,15 @@
 #'   suppress all automatic figure output, e.g. in scripts or batch jobs.
 #'   Analytical figures (Figs 6-9) are always produced by calling
 #'   \code{\link{char_plot_analysis}(out)} explicitly.
+#' @param save Logical.  If \code{TRUE} (default), the \code{saveData} and
+#'   \code{saveFigures} settings in the parameter file are honoured: when set
+#'   to 1, the results table (\code{<site>_charResults.csv}) and all figures
+#'   (Figs 1-9, as PDF files) are written to the folder holding the parameter
+#'   file, replacing earlier copies.  Set \code{save = FALSE} to write nothing
+#'   regardless of the file, e.g. in batch or ensemble runs.
 #'
 #' @export
-CharAnalysis <- function(file_name = NULL, plots = TRUE) {
+CharAnalysis <- function(file_name = NULL, plots = TRUE, save = TRUE) {
 
   # If no file supplied, open an interactive picker (mirrors MATLAB behaviour
   # of prompting when CharAnalysis is called with no argument).
@@ -82,16 +90,30 @@ CharAnalysis <- function(file_name = NULL, plots = TRUE) {
       stop("file_name is required in non-interactive sessions (scripts, ",
            "batch jobs, RMarkdown, etc.).")
     }
-    message("No file specified -- opening file picker...")
-    file_name <- tryCatch(
-      file.choose(),
-      error = function(e) {
-        # file.choose() not available (e.g. RStudio Server, some terminals);
-        # fall back to a console prompt.
-        readline("Enter path to *_charParams.csv or .xlsx file: ")
-      }
-    )
-    if (!nzchar(file_name)) stop("No file selected. CharAnalysis cancelled.")
+    choice <- utils::menu(
+      c("Run an existing parameter file (<site>_charParams.csv or .xlsx)",
+        "Revise an existing parameter file in the parameter interface",
+        "Create a new parameter file from a data file (<site>_charData.csv)"),
+      title = "No parameter file specified. What would you like to do?")
+    if (choice == 0L) stop("CharAnalysis cancelled.", call. = FALSE)
+
+    if (choice == 1L) {
+      message("Opening file picker...")
+      file_name <- tryCatch(
+        file.choose(),
+        error = function(e) {
+          # file.choose() not available (e.g. RStudio Server, some terminals);
+          # fall back to a console prompt.
+          readline("Enter path to *_charParams.csv or .xlsx file: ")
+        }
+      )
+      if (!nzchar(file_name)) stop("No file selected. CharAnalysis cancelled.")
+    } else {
+      # Parameter interface (char_params_gui.R); returns the saved file path.
+      file_name <- .cp_gui(mode = c("revise", "new")[choice - 1L],
+                           button = "Save and run")
+      if (is.null(file_name)) stop("CharAnalysis cancelled.", call. = FALSE)
+    }
   }
 
   # (1) Read input file ---------------------------------------------------------
@@ -225,11 +247,9 @@ CharAnalysis <- function(file_name = NULL, plots = TRUE) {
   char_results <- post_result$char_results
   message("      ...done.")
 
-  # (7) Write results CSV -------------------------------------------------------
-  # In the R package, CSV output is explicit: call char_write_results() directly
-  # after CharAnalysis() returns.  The saveData flag from the parameter file is
-  # stored in results$save and can be inspected by the caller, but no file is
-  # written automatically here (prevents accidental overwrites of reference data).
+  # (7) Analysis complete -------------------------------------------------------
+  # Results and figures are written after the output list is assembled (below),
+  # when the parameter file's saveData / saveFigures are 1 and save = TRUE.
   message("(7) Analysis complete.")
   message("    Save CSV:     char_write_results(out$char_results, out$site, out_dir = \"<your/path>\")")
   message("    Diagnostic:   char_plot_diagnostic(out)     # Figs 1-5 [Fig 5 only when bkgSens = 1]")
@@ -281,12 +301,50 @@ CharAnalysis <- function(file_name = NULL, plots = TRUE) {
     message("      ...done.")
   }
 
+  # Saving (parameter file saveData / saveFigures; overridden by save = FALSE) --
+  # Files go to the folder holding the parameter file and replace earlier
+  # copies; results can always be recreated from the saved parameters.
+  out_dir   <- dirname(normalizePath(file_name, winslash = "/"))
+  save_data <- isTRUE(save) && isTRUE(out$results$save == 1)
+  save_figs <- isTRUE(save) && isTRUE(out$results$saveFigures == 1)
+
+  if (save_data) {
+    char_write_results(out$char_results, out$site, out_dir = out_dir)
+    message("Results table saved to: ", out_dir)
+  }
+
+  # Draw on a null device (nothing displayed) while still returning the plots
+  # for saving.
+  .quietly <- function(expr) {
+    grDevices::pdf(NULL)
+    on.exit(grDevices::dev.off(), add = TRUE)
+    force(expr)
+  }
+
   # Diagnostic figures (Figs 1-5) ----------------------------------------------
-  # Produced automatically when plots = TRUE (default).  Set plots = FALSE to
-  # suppress in scripts or batch jobs.  Analytical figures (Figs 6-9) are
-  # always produced by calling char_plot_analysis(out) explicitly.
+  # Displayed when plots = TRUE (default).  Set plots = FALSE to suppress in
+  # scripts or batch jobs.  Analytical figures (Figs 6-9) are displayed by
+  # calling char_plot_analysis(out) explicitly; when figures are saved, they
+  # are written without being displayed.
   if (isTRUE(plots)) {
-    char_plot_diagnostic(out)
+    char_plot_diagnostic(out, save = save_figs, out_dir = out_dir)
+  } else if (save_figs) {
+    .quietly(char_plot_diagnostic(out, save = TRUE, out_dir = out_dir))
+  }
+  if (save_figs) {
+    ok <- tryCatch({
+      .quietly(char_plot_analysis(out, save = TRUE, out_dir = out_dir))
+      TRUE
+    }, error = function(e) {
+      warning("Analytical figures could not be saved: ", conditionMessage(e),
+              call. = FALSE)
+      FALSE
+    })
+    if (ok) message("Figures saved to: ", out_dir)
+  }
+  if (!isTRUE(save) || (!save_data && !save_figs)) {
+    message("No files written (saveData and saveFigures are 0 in the parameter ",
+            "file, or save = FALSE).")
   }
 
   out

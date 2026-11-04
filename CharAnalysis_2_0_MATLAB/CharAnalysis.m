@@ -22,6 +22,17 @@ function [CharAnalysisResults] = CharAnalysis(fileName, runMode, figSelection, s
 %       CharThreshGlobal (set to 0 here; bkgCharSensitivity sets it to 1).
 %     - CharPeakAnalysisResults replaced by CharPostProcess + CharPlotResults.
 %     - Version banner updated to 2.0.
+%
+%   Parameter interface (November 2026; AI-assisted, Claude/Anthropic)
+%     - Called with no input, CharAnalysis offers three options: run an
+%       existing parameter file (file picker), revise an existing
+%       parameter file, or create a new one from a <site>_charData.csv
+%       file. The last two open CharParamsGUI and run the analysis after
+%       the file is saved. Previous values are kept in time-stamped
+%       Parameter Log columns (CharParamsRevise).
+%     - When fileName includes a folder, the analysis runs in that folder
+%       and returns to the original folder afterwards, so saved results
+%       and figures go to the folder holding the parameter file.
 
 %% Banner
 disp(' ')
@@ -50,27 +61,56 @@ if ~ismember(runMode, {'standard', 'modular'})
     error('CharAnalysis: runMode must be ''standard'' or ''modular''.')
 end
 
-%% Prompt for file name if not supplied
-if nargin == 0
-    disp('  CharAnalysis requires an input file in .xls or .csv format.    ')
-    disp('   This file includes the selected parameters for peak analysis,  ')
-    disp('   and it either includes (.xls) or references (.csv) the input   ')
-    disp('   charcoal dataset. The input file must be in the working        ')
-    disp('   directory for the program to run.                              ')
-    disp(' ')
-    disp('  If you choose to save the results (figures and/or data), they   ')
-    disp('   will be saved in the directory containing the input file.      ')
-    disp('   *NOTE*: you must close the input file before running           ')
-    disp('   CharAnalysis for the .xls or .csv file to be updated with new  ')
-    disp('   results.                                                       ')
-    disp(' ')
-    disp('*****************************************************************')
-    fileName = input('\n Input the file name OR the full path to the site directory,\n bounded with single quotations and including the file\n extension (if file name): ', 's');
-end
-
 % Add src/ subfolder to path so all program functions are accessible.
 baseDir = fileparts(mfilename('fullpath'));
 addpath(fullfile(baseDir, 'src'));
+
+%% No file supplied: run, revise, or create a parameter file
+if nargin == 0
+    disp('  CharAnalysis requires a parameter file (<site>_charParams.csv  ')
+    disp('   or .xls). A .csv parameter file references the charcoal data  ')
+    disp('   file <site>_charData.csv, which must be in the same folder.   ')
+    disp(' ')
+    disp('  If you choose to save the results (figures and/or data), they ')
+    disp('   will be saved in the folder containing the parameter file.    ')
+    disp(' ')
+    disp('*****************************************************************')
+    disp(' ')
+    disp('  No parameter file specified. What would you like to do?')
+    disp('    1: Run an existing parameter file (<site>_charParams.csv or .xls)')
+    disp('    2: Revise an existing parameter file in the parameter interface')
+    disp('    3: Create a new parameter file from a data file (<site>_charData.csv)')
+    choice = str2double(input('  Selection (0 to cancel): ', 's'));
+    if ~ismember(choice, [1 2 3])
+        disp('CharAnalysis cancelled.')
+        CharAnalysisResults = [];
+        return
+    end
+    if choice == 1
+        if usejava('desktop')
+            [f, p] = uigetfile({'*_charParams.csv;*.xls;*.xlsx', ...
+                'CharAnalysis parameter files'}, 'Select the parameter file');
+            if isequal(f, 0)
+                disp('No file selected. CharAnalysis cancelled.')
+                CharAnalysisResults = [];
+                return
+            end
+            fileName = fullfile(p, f);
+        else
+            fileName = input(['\n Input the file name OR the full path to the ' ...
+                'site directory,\n including the file extension (if file name): '], 's');
+        end
+    else
+        % Parameter interface (src/CharParamsGUI.m); returns the saved path.
+        modes = {'revise', 'new'};
+        fileName = CharParamsGUI('', modes{choice - 1}, 'Save and run');
+        if isempty(fileName)
+            disp('CharAnalysis cancelled.')
+            CharAnalysisResults = [];
+            return
+        end
+    end
+end
 
 warning('off', 'all')
 clear charData
@@ -89,6 +129,18 @@ if (~min(fileName(end-2:end) == 'xls') && ...
     i    = max([i1, i2]);
     site = fileName((i(end)+1):end);
     fileName = [site '_CharParams.csv'];
+end
+
+%% Work in the folder holding the parameter file
+% Results and figures are written to the current folder, so run from the
+% folder holding the parameter file and return to the original folder
+% afterwards (including on error).
+[fDir, fBase, fExt] = fileparts(fileName);
+if ~isempty(fDir)
+    origDir = pwd;
+    cd(fDir)
+    restoreDir = onCleanup(@() cd(origDir));   %#ok<NASGU>
+    fileName = [fBase fExt];
 end
 
 %% (1) Read input file

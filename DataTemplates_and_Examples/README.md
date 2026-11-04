@@ -50,3 +50,12 @@ To analyze your own data, start with these blank template files:
 Copy and rename each file to identify your site (e.g. `MyLake_charData.csv`),
 then follow the data input instructions in Part II of the
 [User's Guide](https://github.com/phiguera/CharAnalysis/blob/master/CharAnalysis_UsersGuide.md).
+
+Alternatively (development version), prepare only `<site>_charData.csv` and
+create the parameter file with the parameter interface: call `CharAnalysis()`
+with no input in R or MATLAB and choose "Create a new parameter file" (User's
+Guide, Section 2.3). Columns 7-16 of a parameter file form the Parameter Log;
+the interface stores previous parameter sets there when a file is revised.
+
+Keep the row order and labels of `template_charParams.csv` unchanged: both the R
+and MATLAB versions read parameters by row position.

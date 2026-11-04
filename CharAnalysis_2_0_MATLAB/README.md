@@ -12,7 +12,13 @@ and the [main README](https://github.com/phiguera/CharAnalysis/blob/master/READM
    addpath 'path/to/CharAnalysis_2_0_MATLAB'
    savepath
 ```
-2. Type `CharAnalysis` in the MATLAB Command Window and follow the prompts.
+2. Type `CharAnalysis` in the MATLAB Command Window. You can run an existing
+   parameter file, revise one, or create a new one from a data file named
+   `<site>_charData.csv`. Revising and creating open the parameter interface
+   (`CharParamsGUI`), which writes `<site>_charParams.csv` next to the data
+   file and then runs the analysis. When an existing file is revised, its
+   previous values are kept in time-stamped Parameter Log columns (up to 10).
+   The interface requires MATLAB R2018b or later.
 3. Use the template files in
    [`DataTemplates_and_Examples/`](https://github.com/phiguera/CharAnalysis/tree/master/DataTemplates_and_Examples)
    to set up input files for your own data.
@@ -36,7 +42,14 @@ CharAnalysis('mysite_charParams.csv', 'modular', [3 7])
 
 % Programmatic selection with automatic save
 CharAnalysis('mysite_charParams.csv', 'modular', [3 7], true)
+
+% Create or revise a parameter file without running the analysis
+paramsFile = CharParamsGUI('path/to/mysite_charData.csv')
+paramsFile = CharParamsGUI('path/to/mysite_charParams.csv')
 ```
+
+Results and figures are saved (when `saveData` or `saveFigures` is 1) to the
+folder holding the parameter file, replacing earlier copies.
 
 See Section 3.1 of the User's Guide for full details on the modular figure interface.
 
@@ -47,6 +60,10 @@ See Section 3.1 of the User's Guide for full details on the modular figure inter
 
 **Source code**
 - `src/` — all supporting `.m` files, including analytical functions, figure functions, and helper utilities. Added to the MATLAB path automatically when `CharAnalysis.m` runs; no manual path configuration of this subfolder is needed.
+- `templates/template_charParams.csv` — parameter-file template used by the parameter interface (a copy of the file in `DataTemplates_and_Examples/`).
+
+**Tests**
+- `z_test_params_writer.m` — tests for the parameter-file reader and writers (`CharParamsReadTable`, `CharParamsNew`, `CharParamsRevise`); writes only to a temporary folder.
 
 **Version comparison and validation**
 - `z_Compare_CharAnalysis_V1_V2.m` — script for comparing V2.0 outputs against

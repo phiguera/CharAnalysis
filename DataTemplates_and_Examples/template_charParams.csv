@@ -1,4 +1,4 @@
-"Stage","Variable","Parameters","Units","Description and Options",,"Parameter Log: use these columns to store parameters from previous analyses:"
+"Stage","Variable","Parameters","Units","Description and Options",,"Parameter Log: previous parameter sets (columns 7-16; up to 10). The parameter interface fills these automatically when a file is revised; you may also enter them by hand:"
 "Pretreatment","zoneDiv",-9999,"cal. yr BP","Years defining beginning and end of record and any zone divisions. Zone divisions are used for plotting and for analyzing fire return intervals. You must input at least two values, the beginning and end of your record, in ascending order (i.e. youngest age on top). You may leave the spaces you don't use blank. ",,
 ,,-9999,,"*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*",,
 ,,-9999,,"*NOTE: YOU MUST INPUT -9999 IN BLANK LOCATIONS IN THE zoneDiv PARAMETER*",,
@@ -21,6 +21,6 @@
 ,"minCountP",0.05,"probability","Cut-off probability for minimum count analysis. E.g. if minCountP = 0.05, then the minimum charcoal count within 75 years before a peak has to have < 5% chance of coming from the same Poisson distribution as the maximum charcoal count associated with the peak. Peaks with a probability > 5% will be flagged and displayed but not included in peak analysis. Set this value to 0.99 to turn it off.",,
 "Peak Analysis Results","peakFrequ",1000,"yr","Years to smooth fire frequency and fire return intervals over. ",,
 ,"Cbackground sensitivity",0,"index","Do you want to evaluate the sensitivity of your results to varying smoothing windows? 0 == no; 1 == yes.",,
-,"saveFigures",1,"index","Do you want to save the plots as .tiff and .pdf files? 0 == no; 1 == yes.",,
-,"saveData",1,"index","Do you want to save the output data by appending it to this file? 0 == no; 1 == yes.",,
-,"allFigures",1,"index","Do you want to display all (diagnostic) figures or only figures related to peak analysis results? 0 == no; 1 == yes.",,
+,"saveFigures",1,"index","Do you want to save the figures to the folder holding this file (.pdf and .tiff in MATLAB; .pdf in R)? Earlier copies are replaced. 0 == no; 1 == yes.",,
+,"saveData",1,"index","Do you want to save the results table (<site>_charResults.csv) to the folder holding this file? An earlier results file is replaced. 0 == no; 1 == yes.",,
+,"allFigures",1,"index","MATLAB only (no effect in R): do you want to display all (diagnostic) figures or only figures related to peak analysis results? 0 == no; 1 == yes.",,

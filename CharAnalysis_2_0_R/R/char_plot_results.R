@@ -871,7 +871,7 @@ char_plot_zones <- function(out) {
 
 # =============================================================================
 # char_plot_raw  --  Figure 1: C_raw / C_resampled / C_background options
-# Only produced when out$results$allFigures == 1.
+# Always produced by char_plot_diagnostic(); allFigures has no effect in R.
 # Mirrors MATLAB CharPretreatment.m (subplot 1) + CharSmooth.m (subplot 2).
 # =============================================================================
 
@@ -1023,7 +1023,7 @@ char_plot_raw <- function(out) {
 
 # =============================================================================
 # char_plot_thresh_diag  --  Figure 2: threshold determination diagnostics
-# Only produced when out$results$allFigures == 1.
+# Always produced by char_plot_diagnostic(); allFigures has no effect in R.
 # Global threshold: single panel histogram + noise PDF + threshold lines.
 # Local threshold:  5x5 grid of per-sample window distributions.
 # Mirrors MATLAB CharThreshGlobal.m (lines 201-268) and

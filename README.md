@@ -130,6 +130,7 @@ file any issues you encounter.
 Key features of the R package:
 - `CharAnalysis()` — single call runs the full five-step pipeline and returns a named list with S3 class `"CharAnalysis"`; `print()`, `summary()`, and `plot()` methods included.
 - Nine publication-quality ggplot2 figures in two categories: diagnostic (Figs 1–5, parameter evaluation) produced automatically by `CharAnalysis()`; analytical (Figs 6–9, fire-history interpretation) produced by `char_plot_analysis(out)`. Save all to PDF with `char_plot_all()`.
+- Parameter interface (development version): `CharAnalysis()` with no file offers to run, revise, or create a parameter file; `char_params_gui()` guides you through every parameter, checks values, and logs previous values in the file. The MATLAB version has an equivalent interface (`CharParamsGUI`). See Section 2.3 of the [User's Guide](CharAnalysis_UsersGuide.md).
 - `char_write_results()` — writes the 33-column output matrix to CSV with column headers and numeric format matching the MATLAB output exactly.
 - Validated against four benchmark datasets; known numerical differences from the MATLAB version are documented in `NEWS.md` and the package vignette.
 

@@ -1,5 +1,5 @@
 # *CharAnalysis* Development Roadmap
-*Last updated: June 2026*
+*Last updated: November 2026*
 ---
 This document describes planned future development of *CharAnalysis*. Items are
 listed in approximate priority order. It is not yet determined whether additional
@@ -56,6 +56,16 @@ Implemented in the `dev` branch (June 2026):
   any fire-history figures. The rationale — peak detection is only appropriate
   where SNI > 3.0 — is stated explicitly, with guidance on adjusting smoothing
   windows or restricting interpretation when SNI is low.
+- **Parameter interface** (November 2026, R and MATLAB): calling
+  `CharAnalysis()` with no file offers to run, revise, or create a parameter
+  file. A graphical interface (`char_params_gui()` in R, `CharParamsGUI` in
+  MATLAB) summarizes the charcoal record, explains each parameter, checks
+  values before saving, and writes `<site>_charParams.csv` in the template
+  layout. Revisions keep the previous values in time-stamped Parameter Log
+  columns (up to 10). In R, `saveData` and `saveFigures` are now honoured.
+  Plan and design decisions: [`docs/ROADMAP_ParamsGUI.md`](docs/ROADMAP_ParamsGUI.md).
+  Remaining: testing with graduate students and researchers new to R or
+  MATLAB, then release in a minor version.
 
 ---
 ## 3. Chronological Uncertainty — *In progress (development, June 2026)*

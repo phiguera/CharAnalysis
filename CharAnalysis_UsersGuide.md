@@ -289,6 +289,8 @@ Open the included template files `template_charData.csv` and
 `template_charParams.csv` and save them under new names identifying your site
 (e.g. `CO_charData.csv` and `CO_charParams.csv`). Place these files in the MATLAB
 working directory, or specify the full path when calling *CharAnalysis*.
+Alternatively, prepare only the data file and create the parameter file with the
+parameter interface (Section 2.3).
 
 > **V1.1 difference:** The CSV format is recommended for Version 2.0 and is the
 > only template format distributed with the program. Input files in `.xls` format
@@ -362,9 +364,83 @@ Parameter choices are entered in column C (column 3) of the `CharParams` workshe
 
 | Parameter | Description |
 |-----------|-------------|
-| `saveFigures` | Save output figures as `.tiff` and `.pdf` files? `0` = no; `1` = yes. Set to `0` when using MATLAB Online. |
-| `saveData` | Append output data to the input file? `0` = no; `1` = yes. Set to `0` when using MATLAB Online. |
-| `allFigures` | Display all diagnostic figures (including Figures 1, 2, and 9)? `0` = no (show only peak analysis results); `1` = yes. |
+| `saveFigures` | Save output figures? `0` = no; `1` = yes. MATLAB saves `.pdf` and `.tiff` files; R saves `.pdf` files. Figures are written to the folder holding the parameter file, replacing earlier copies. Set to `0` when using MATLAB Online. |
+| `saveData` | Save the results table? `0` = no; `1` = yes. Writes `<site>_charResults.csv` to the folder holding the parameter file, replacing any earlier results file. Set to `0` when using MATLAB Online. |
+| `allFigures` | MATLAB only: display all diagnostic figures (including Figures 1, 2, and 9)? `0` = no (show only peak analysis results); `1` = yes. This setting has no effect in R. |
+
+> **Development version:** `saveData` and `saveFigures` are honoured by the R
+> package from the development version (2.0.4.9000) onward; in the CRAN
+> release (2.0), R writes files only when `char_write_results()` or
+> `char_plot_all(save = TRUE)` is called. In R, `CharAnalysis(file, save = FALSE)`
+> writes nothing regardless of the parameter file.
+
+---
+
+#### 2.3 Creating or Revising a Parameter File with the Parameter Interface
+
+*Available in the development version of both implementations (November 2026).*
+
+Instead of editing `<site>_charParams.csv` by hand, you can use a graphical
+parameter interface. It summarizes the charcoal record (number of samples, age
+range, sample resolution, missing values, and breaks in sample depths), explains
+each parameter, and checks values before saving, using the same validation rules
+as the analysis. Problems that would stop the analysis must be fixed before the
+file can be saved; other notes are advisory.
+
+**Starting the interface.** Call *CharAnalysis* with no input and choose an
+option:
+
+1. Run an existing parameter file (a file picker opens).
+2. Revise an existing parameter file in the parameter interface.
+3. Create a new parameter file from a data file.
+
+Options 2 and 3 open the interface and run the analysis after the file is saved.
+The interface can also be opened without running the analysis:
+
+```r
+# R (requires the suggested packages shiny and miniUI)
+char_params_gui()                                 # asks what to do
+char_params_gui("path/to/mysite_charData.csv")    # create a new parameter file
+char_params_gui("path/to/mysite_charParams.csv")  # revise an existing file
+```
+
+```matlab
+% MATLAB (R2018b or later)
+paramsFile = CharParamsGUI('path/to/mysite_charData.csv')
+paramsFile = CharParamsGUI('path/to/mysite_charParams.csv')
+```
+
+**File names.** The data file must be named `<site>_charData.csv`; the site
+name is taken from the file name. The interface writes `<site>_charParams.csv`
+to the same folder. If a parameter file already exists for that site, the
+interface offers to revise it rather than replace it.
+
+**New files.** All parameters start from the template values, except the start
+and end of the record (`zoneDiv`), which are filled in from the top age of the
+youngest sample and the bottom age of the oldest sample, and `yrInterp`, which
+is set to the median sample resolution. Zone boundaries between the start and
+end are never suggested; enter up to six, youngest first, separated by commas.
+
+**Revising a file and the Parameter Log.** When you save a revised file, the
+interface lists the changed values and asks you to confirm. The previous values
+are then moved into a new Parameter Log column (column 7), headed with a time
+stamp and program version (e.g., `Replaced 2026-11-04 14:15, CharAnalysis 2.0
+MATLAB`), and the new values are written to the Parameters column. Older log
+columns, including any you entered by hand, shift right unchanged. If nothing
+has changed, the file is not rewritten. A file can hold up to 10 logged
+parameter sets, because the MATLAB reader parses 16 columns per row. When a file
+reaches this limit, save a copy to keep its history, then delete the oldest
+(rightmost) log columns before revising again.
+
+Files written by the interface keep the template layout exactly, so they can be
+read by both the R and MATLAB versions and still edited by hand. Files are
+written to a temporary copy first and then swapped in, so an interrupted save
+cannot leave a partial parameter file.
+
+> **R and MATLAB differences.** The R interface opens in an RStudio window (or a
+> web browser when R is run outside RStudio) and does not show `allFigures`, which has no effect in R. The
+> MATLAB interface opens in its own window, shows `allFigures`, and lists notes
+> at the bottom of each tab, with the affected settings highlighted.
 
 ---
 
@@ -372,39 +448,40 @@ Parameter choices are entered in column C (column 3) of the `CharParams` workshe
 
 #### 3.1 From within MATLAB
 
-Open MATLAB and type `CharAnalysis` into the Command Window. When prompted, enter the name of your parameter file with single quotation marks and the file extension:
+Open MATLAB and type `CharAnalysis` into the Command Window. A menu offers to run an existing parameter file (chosen with a file picker), revise one, or create one from a data file (Section 2.3):
 
 ```matlab
+>> CharAnalysis
 
->> >> CharAnalysis
->>                                                                 
->> *****************************************************************
->>                       CharAnalysis 2.0                           
->>                   (c) 2004 - 2026, P.E. Higuera                  
->>          MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.          
->>                   philip.higuera@umontana.edu                    
->>                    Please read documentation:                    
->>              https://phiguera.github.io/CharAnalysis/            
->> *****************************************************************
->>                                                                 
->>  CharAnalysis requires an input file in .xls or .csv format.    
->>  This file includes the selected parameters for peak analysis, 
->>  and it either includes (.xls) or references (.csv) the input  
->>  charcoal dataset. The input file must be in the working       
->>  directory for the program to run.                             
->>                                                                 
->>  If you choose to save the results (figures and/or data), they  
->>  will be saved in the directory containing the input file.     
->>  *NOTE*: you must close the input file before running          
->>  CharAnalysis for the .xls or .csv file to be updated with new 
->>  results.                                                      
->>                                                               
->>  *****************************************************************
->>
->> Input the file name OR the full path to the site directory, 
->> bounded with single quotations and including the file 
->> extension (if file name): 'mysite_charParams.csv'
+*****************************************************************
+                      CharAnalysis 2.0
+                  (c) 2004 - 2026, P.E. Higuera
+         MATLAB(r). (c) 1984 - 2024 The MathWorks, Inc.
+                  philip.higuera@umontana.edu
+                   Please read documentation:
+             https://phiguera.github.io/CharAnalysis/
+*****************************************************************
+
+  CharAnalysis requires a parameter file (<site>_charParams.csv
+   or .xls). A .csv parameter file references the charcoal data
+   file <site>_charData.csv, which must be in the same folder.
+
+  If you choose to save the results (figures and/or data), they
+   will be saved in the folder containing the parameter file.
+
+*****************************************************************
+
+  No parameter file specified. What would you like to do?
+    1: Run an existing parameter file (<site>_charParams.csv or .xls)
+    2: Revise an existing parameter file in the parameter interface
+    3: Create a new parameter file from a data file (<site>_charData.csv)
+  Selection (0 to cancel):
 ```
+
+> **Development version:** the menu and parameter interface are in the `dev`
+> branch (November 2026). The current release instead asks you to type the
+> parameter file name, in single quotation marks and including the extension
+> (e.g. `'mysite_charParams.csv'`).
 
 You can also call *CharAnalysis* directly with the filename as an argument, which is useful for processing multiple records:
 
@@ -417,6 +494,10 @@ To return results to the MATLAB workspace:
 ```matlab
 >> results = CharAnalysis('mysite_charParams.csv')
 ```
+
+If the file name includes a folder (e.g. `CharAnalysis('C:/data/CO/CO_charParams.csv')`),
+*CharAnalysis* runs in that folder, saves any results and figures there, and
+returns to your original folder when it finishes.
 
 #### 3.1b Modular figure selection
 
@@ -468,6 +549,8 @@ Figures 1, 2, and 10 are not part of the modular interface. Figures 1 and 2 are 
 | `Unable to find file` error when saving results | The output file does not exist in the current directory. Set `saveData = 0` and `saveFigures = 0` to skip saving (required for MATLAB Online). |
 | Unexpected peak counts vs. Version 1.1 | Verify parameter settings match between versions. Use `z_Compare_CharAnalysis_V1_V2.m` to compare outputs numerically. |
 | Figures appear very large in MATLAB Online | This is a display scaling issue. Drag figure window corners to resize, or use browser zoom (Ctrl/Cmd −) to reduce the interface size. |
+| Parameter interface says the file "does not follow the CharAnalysis naming convention" | The data file is not named `<site>_charData.csv` (or the parameter file `<site>_charParams.csv`). Rename the file; *CharAnalysis* finds the data file from the parameter file name. |
+| Parameter interface will not revise a file that "already holds 10 logged parameter sets" | The Parameter Log is full (Section 2.3). Save a copy of the file, delete the oldest (rightmost) log columns, and revise again. |
 | `Unrecognized field name` error when calling a figure function directly | The results struct was returned by an older version of `CharAnalysis.m`. Re-run `CharAnalysis` to generate a fresh results struct that includes the `Post`, `gapIn`, and `site` fields required by the figure functions. |
 
 ---
@@ -573,7 +656,7 @@ where X<sub>1</sub>, V<sub>1</sub> are the count and volume of the minimum-count
 
 #### 7.1 Data
 
-Output data are saved to a `CharResults` worksheet (.xlsx) or file (.csv) when `saveData = 1` (Figure 4). The columns are as follows:
+Output data are saved to a `CharResults` worksheet (.xlsx) or to `<site>_charResults.csv` in the folder holding the parameter file when `saveData = 1` (Figure 4). The columns are as follows:
 
 | Column | Variable | Description |
 |--------|----------|-------------|

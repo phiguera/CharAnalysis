@@ -2,6 +2,8 @@
 % Please edit documentation in R/char_plot_results.R
 \name{char_plot}
 \alias{char_plot}
+\alias{char_plot_diagnostic}
+\alias{char_plot_analysis}
 \alias{char_plot_raw}
 \alias{char_plot_thresh_diag}
 \alias{char_plot_peaks}
@@ -29,6 +31,16 @@ char_plot_thresh_diag(out)
 
 char_plot_sni(out)
 
+char_plot_diagnostic(
+  out,
+  save = FALSE,
+  out_dir = NULL,
+  width = 11,
+  height = 8.5
+)
+
+char_plot_analysis(out, save = FALSE, out_dir = NULL, width = 11, height = 8.5)
+
 char_plot_all(out, save = FALSE, out_dir = NULL, width = 11, height = 8.5)
 }
 \arguments{
@@ -47,54 +59,74 @@ a path of your choosing.  Ignored when \code{save = FALSE}.}
 }
 \value{
 Individual figure functions each return a \pkg{patchwork} / \pkg{ggplot2}
-  object.  \code{char_plot_all()} returns a named list of all figure objects.
+  object invisibly.  Wrapper functions (\code{char_plot_diagnostic()},
+  \code{char_plot_analysis()}, \code{char_plot_all()}) return a named list
+  of figure objects invisibly.
 }
 \description{
-Nine output figures mirroring the MATLAB CharAnalysis v2.0 plots.
-Function names follow R snake_case conventions.
+Nine output figures organized into diagnostic (Figs 1-5) and analytical
+(Figs 6-9) categories. Function names follow R snake_case conventions.
 }
 \details{
 \describe{
-  \item{[char_plot_raw()]}{Figure 1 (allFigures only):
+  \item{[char_plot_diagnostic()]}{Diagnostic wrapper (Figs 1-5): produces
+    all figures that support parameter selection and evaluation.
+    Fig 5 (\code{char_bkg_sensitivity()}) is shown only when the
+    background-sensitivity analysis was run (\code{bkgSens = 1}).
+    The \code{allFigures} parameter in the parameter file is read but
+    has no effect on figure output in the R package.}
+  \item{[char_plot_analysis()]}{Analytical wrapper (Figs 6-9): produces
+    all figures that support fire-history interpretation.}
+  \item{[char_plot_raw()]}{Figure 1:
     C_raw, C_interpolated, and C_background smoothing options.}
-  \item{[char_plot_thresh_diag()]}{Figure 2 (allFigures only):
-    Local threshold determination diagnostics (5x5 window grid).}
+  \item{[char_plot_thresh_diag()]}{Figure 2:
+    Threshold determination diagnostics (5x5 window grid).}
   \item{[char_plot_peaks()]}{Figure 3: Resampled CHAR with
     background trend (top) and C_peak with thresholds and peak markers (bottom).}
   \item{[char_plot_sni()]}{Figure 4: Sensitivity to alternative
     thresholds and signal-to-noise index.}
-  \item{[char_plot_cumulative()]}{Figure 5: Cumulative peaks through time.}
-  \item{[char_plot_fri()]}{Figure 6: FRI distributions by
+  \item{[char_plot_zones()]}{Figure 6: Between-zone comparisons
+    of raw CHAR distributions (CDF and box plots).}
+  \item{[char_plot_cumulative()]}{Figure 7: Cumulative peaks through time.}
+  \item{[char_plot_fri()]}{Figure 8: FRI distributions by
     zone with Weibull model fits.}
-  \item{[char_plot_fire_history()]}{Figure 7: Peak magnitude (top),
+  \item{[char_plot_fire_history()]}{Figure 9: Peak magnitude (top),
     FRIs through time with smoothed FRI and CI ribbon (middle), and smoothed
     fire frequency (bottom).}
-  \item{[char_plot_zones()]}{Figure 8: Between-zone comparisons
-    of raw CHAR distributions (CDF and box plots).}
-  \item{[char_plot_all()]}{Convenience wrapper: produces all figures and
-    optionally saves them as PDF files.}
+  \item{[char_plot_all()]}{Convenience wrapper: calls
+    \code{char_plot_diagnostic()} then \code{char_plot_analysis()} and
+    optionally saves all figures as PDF files.}
 }
 
 
   Requires the \pkg{ggplot2} package.  Multi-panel layout uses
   \pkg{patchwork} if available; otherwise panels are printed separately
   with a message.
+
+  The intended workflow is: run \code{CharAnalysis()} (which automatically
+  produces diagnostic figures when \code{plots = TRUE}), inspect and adjust
+  parameters as needed, then call \code{char_plot_analysis()} once satisfied
+  to generate the fire-history interpretation figures.
 }
 \examples{
 \donttest{
   # Run pipeline on the bundled example dataset, then plot:
   params_file <- system.file("validation", "CO_charParams.csv",
                              package = "CharAnalysis")
-  out <- CharAnalysis(params_file)
-  char_plot_peaks(out)
-  char_plot_fire_history(out)
+  out <- CharAnalysis(params_file, plots = FALSE)
+  # Diagnostic figures (parameter evaluation):
+  char_plot_diagnostic(out)
+  # Analytical figures (fire-history interpretation):
+  char_plot_analysis(out)
   # Individual figures can also be called directly:
-  char_plot_sni(out)
-  char_plot_fri(out)
+  char_plot_peaks(out)     # Fig 3
+  char_plot_sni(out)       # Fig 4
+  char_plot_fri(out)       # Fig 8
+  char_plot_fire_history(out)  # Fig 9
   # Save all figures to PDF in a temporary directory:
   char_plot_all(out, save = TRUE, out_dir = tempdir())
 }
 }
 \seealso{
-[CharAnalysis()], [char_post_process()]
+[CharAnalysis()], [char_bkg_sensitivity()], [char_post_process()]
 }

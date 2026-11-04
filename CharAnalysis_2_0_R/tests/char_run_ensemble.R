@@ -439,7 +439,7 @@ message(sprintf("ensemble$prob_peak    : range [%.3f, %.3f]  (per time-step; see
 # CharAnalysis() call with `if (!exists("out"))`, which would silently
 # reuse a stale object from a different site if one is in the workspace.
 message("Running reference CharAnalysis...")
-out <- CharAnalysis(params_file, plots = FALSE)
+out <- CharAnalysis(params_file, plots = FALSE, save = FALSE)
 
 
 # ---- run peak matching ----------------------------------------------

@@ -83,6 +83,30 @@ params_file <- system.file("validation", "CO_compensated_charParams.csv",
 params_file
 ```
 
+### Creating a parameter file for your own data
+
+For your own record, you need only the data file, named `<site>_charData.csv`.
+Calling `CharAnalysis()` with no argument in an interactive session offers to
+run an existing parameter file, revise one, or create one from a data file. The
+last two open a parameter interface (`char_params_gui()`; requires the suggested
+packages `shiny` and `miniUI`) that summarizes the record, explains each
+parameter, checks values before saving, writes `<site>_charParams.csv` next to
+the data file, and then runs the analysis. When a file is revised, the previous
+values are kept in a time-stamped Parameter Log column in the file (up to 10).
+
+```{r gui, eval = FALSE}
+out <- CharAnalysis()                                  # menu: run, revise, or create
+char_params_gui("path/to/mysite_charData.csv")         # create without running
+```
+
+### Saving results
+
+When `saveData` or `saveFigures` is 1 in the parameter file, `CharAnalysis()`
+writes `<site>_charResults.csv` and/or all figures (PDF) to the folder holding
+the parameter file, replacing earlier copies. Use `CharAnalysis(file, save = FALSE)`
+to write nothing regardless of the file. The bundled validation files have both
+set to 0, so this example writes no files.
+
 ### Running the full pipeline
 
 A single call to `CharAnalysis()` runs all five analytical steps and returns a named list of results. The function prints progress messages as it works through each step.
@@ -284,8 +308,8 @@ char_plot_fire_history(out)
 ```{r save-figs, eval = FALSE}
 char_plot_all(out, save = TRUE, out_dir = tempdir())
 # Saves to tempdir():
-#   CO_01_pretreatment.pdf           (Fig 1, when allFigures = 1)
-#   CO_02_threshold_determination.pdf (Fig 2, when allFigures = 1)
+#   CO_01_pretreatment.pdf            (Fig 1)
+#   CO_02_threshold_determination.pdf (Fig 2)
 #   CO_03_CHAR_analysis.pdf
 #   CO_04_threshold_sensitivity_SNI.pdf
 #   CO_06_zone_comparisons.pdf

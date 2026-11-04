@@ -31,7 +31,7 @@ if (!exists("out")) {
          "  or source char_run_ensemble.R instead (which sets params_file).")
   }
   message("Running reference CharAnalysis...")
-  out <- CharAnalysis(params_file, plots = FALSE)
+  out <- CharAnalysis(params_file, plots = FALSE, save = FALSE)
 } else {
   message("Using existing 'out' from workspace.")
 }

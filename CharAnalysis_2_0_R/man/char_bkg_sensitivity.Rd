@@ -53,7 +53,7 @@ Invisibly, a named list:
 Re-runs the core CharAnalysis peak-detection pipeline across a range of
 background (low-frequency) smoothing windows and summarises how the results
 change with that choice.  Mirrors \code{bkgCharSensitivity.m} from the MATLAB
-v2.0 codebase (Figure 10).
+v2.0 codebase (Figure 5).
 }
 \details{
 For each candidate window width the function repeats the four core stages:
