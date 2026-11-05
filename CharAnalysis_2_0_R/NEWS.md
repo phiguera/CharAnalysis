@@ -21,6 +21,11 @@
   overwritten.
 - `allFigures` remains in the file format for MATLAB compatibility but has no
   effect in R and is not shown in the interface.
+- **Template default changed (2026-11-05):** the third threshold value
+  (Peaks 3) in `template_charParams.csv` is now 0.999 instead of 1. A value of
+  1 fails validation for threshold methods 2 and 3, so new files created from
+  the template opened with an error. Changed in all three template copies (R,
+  MATLAB, and `DataTemplates_and_Examples`), which remain byte-identical.
 - **Bundled template**: `inst/templates/template_charParams.csv` (a copy of
   `DataTemplates_and_Examples/template_charParams.csv`) is used for new files.
 - **Tests**: `tests/test_params_writer.R` (11 tests) covers round trips on the
